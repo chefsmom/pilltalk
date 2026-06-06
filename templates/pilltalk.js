@@ -104,6 +104,20 @@ function populateResult(data){
   document.getElementById('cost').innerHTML=toBullets(data.cost);
   document.getElementById('costFull').innerHTML=toBullets(data.cost);
   document.getElementById('financialResources').innerHTML=toBullets(data.financialResources)||'<p style="margin:0;color:var(--g400)">Drug-specific programs not found — see broad resources below.</p>';
+  // Teachback
+  var tqs=Array.isArray(data.teachback)?data.teachback:[String(data.teachback||'')];
+  var tbEl=document.getElementById('teachback');
+  if(tbEl) tbEl.innerHTML=tqs.map(function(q,i){return '<li style="margin-bottom:8px">'+q+'</li>';}).join('');
+  var cqs=Array.isArray(data.caregiverTeachback)?data.caregiverTeachback:[String(data.caregiverTeachback||'')];
+  var cqHtml=cqs.map(function(q,i){return '<li style="margin-bottom:8px">'+q+'</li>';}).join('');
+  var cgt=document.getElementById('cgTeachback');if(cgt)cgt.innerHTML=cqHtml;
+  var cgt2=document.getElementById('cgTeachback2');if(cgt2)cgt2.innerHTML=cqHtml;
+  var cgTB=document.getElementById('cgTBCard');if(cgTB)cgTB.style.display=caregiverMode?'block':'none';
+  // Caregiver fields
+  var cgTips=document.getElementById('cgTips');if(cgTips)cgTips.innerHTML=toBullets(data.caregiverTips);
+  var cgMon=document.getElementById('cgMonitoring');if(cgMon)cgMon.innerHTML=toBullets(data.caregiverMonitoring);
+  var cgAdm=document.getElementById('cgAdmin');if(cgAdm)cgAdm.innerHTML=toBullets(data.caregiverAdmin);
+  var cgWF=document.getElementById('cgWatchFor');if(cgWF)cgWF.innerHTML=toBullets(data.caregiverWatchFor);
   document.getElementById('side').innerHTML=toBullets(data.side);
   document.getElementById('warn').innerHTML=toBullets(data.warn);
   document.getElementById('missedDose').innerHTML=toBullets(data.missedDose);
