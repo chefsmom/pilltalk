@@ -6,23 +6,47 @@ API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
 @app.route("/")
 def landing():
-    return send_from_directory('templates', 'landing.html')
+    return send_from_directory("templates", "landing.html")
 
 @app.route("/app")
 def index():
-    return send_from_directory('templates', 'index.html')
+    return send_from_directory("templates", "index.html")
 
 @app.route("/mymeds")
 def mymeds():
-    return send_from_directory('templates', 'mymeds.html')
+    return send_from_directory("templates", "mymeds.html")
+
+@app.route("/medcard")
+def medcard():
+    return send_from_directory("templates", "medcard.html")
+
+@app.route("/symptoms")
+def symptoms():
+    return send_from_directory("templates", "symptoms.html")
+
+@app.route("/tracker")
+def tracker():
+    return send_from_directory("templates", "tracker.html")
 
 @app.route("/icon.svg")
 def icon():
     return send_from_directory("templates", "icon.svg", mimetype="image/svg+xml")
 
-@app.route("/medcard")
-def medcard():
-    return send_from_directory('templates', 'medcard.html')
+def gemini(prompt, max_tokens=8192):
+    payload = json.dumps({
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "temperature": 0.2,
+            "maxOutputTokens": max_tokens,
+            "responseMimeType": "application/json"
+        }
+    }).encode()
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY
+    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req) as resp:
+        data = json.loads(resp.read())
+    text = data["candidates"][0]["content"]["parts"][0]["text"]
+    return text.strip().replace("```json", "").replace("```", "").strip()
 
 @app.route("/counsel", methods=["POST"])
 def counsel():
@@ -34,46 +58,36 @@ def counsel():
     if not drug:
         return jsonify({"error": "No drug name provided."}), 400
 
-    prompt = (
-        'You are a clinical pharmacist. The user entered: "' + drug + '". '
-        'This may be a brand name or generic name. Handle both. '
-        'Use ' + level + ' for ALL text fields. '
-        'Respond ONLY with valid JSON, no markdown, no backticks, using EXACTLY this schema with ALL fields present: '
-        '{'
-        '"drugName": "Generic name (Brand name) or just Generic if no brand",'
-        '"isBrand": true or false,'
-        '"brandNote": "If isBrand is true write: [Brand] is the brand name for [generic]. Otherwise empty string.",'
-        '"condition": "1-2 sentences describing what condition or disease this drug treats",'
-        '"what": "1-2 sentences on how this drug works in the body",'
-        '"how": "2-3 bullet points on how to take it (timing, food, storage)",'
-        '"missedDose": "2-3 sentences on what to do if a dose is missed",'
-        '"foodAlcohol": "bullet points on food interactions, alcohol, and timing",'
-        '"side": "3-4 bullet points of common side effects each prefixed with severity: [green] for mild, [yellow] for moderate, [red] for serious",'
-        '"warn": "2-3 bullet points of serious warning signs requiring medical attention, each prefixed [red]",'
-        '"injection": "if injectable or biologic return a 1-2 sentence plain text summary of how it is administered, else empty string","injectionSteps": "array of 6-12 step strings for injectable drugs e.g. ['Wash hands with soap and water', 'Remove from fridge 30 minutes before', 'Clean injection site with alcohol swab']. Return empty array [] if not injectable","injectionType": "one word: pen, syringe, autoinjector, IV, inhaler, or patch. Empty string if not injectable","injectionSite": "1-2 sentences describing where to inject and how to rotate sites. Empty string if not injectable",'
-        '"cost": "1-2 sentences on whether a generic is available and cost-saving options like GoodRx or manufacturer coupons",'
-        '"teachback": ["patient question 1", "patient question 2", "patient question 3"],'
-        '"caregiverTeachback": ["caregiver-specific question 1", "caregiver-specific question 2"],'
-        '"caregiverTips": "2-3 sentences of practical overview advice specifically written for a caregiver helping someone take this medication",'
-        '"caregiverMonitoring": "3-4 bullet points of specific things a caregiver should actively monitor in the patient: physical symptoms, behavioral changes, lab values if applicable",'
-        '"caregiverAdmin": "3 bullet points on how a caregiver can help manage this medication day-to-day: storage tips, setting up reminders, what to do if the patient refuses or forgets",'
-        '"caregiverWatchFor": "3 bullet points of specific warning signs a caregiver should watch for that mean call the doctor or call 911 right away"'
-        '}'
-    )
+    prompt = """You are a clinical pharmacist. The user entered: "{drug}". This may be a brand or generic name. Handle both.
+Use {level} for ALL text fields.
+Respond ONLY with valid JSON using EXACTLY this schema with ALL fields present:
+{{
+  "drugName": "Generic (Brand) or just Generic",
+  "isBrand": true or false,
+  "brandNote": "If isBrand: Brand X is the brand name for generic Y. Else empty string.",
+  "condition": "1-2 sentences on what condition this treats",
+  "what": "1-2 sentences on how this drug works in the body",
+  "how": "2-3 bullet points on how to take it",
+  "missedDose": "2-3 sentences on what to do if a dose is missed",
+  "foodAlcohol": "bullet points on food, alcohol, and timing interactions",
+  "side": "3-4 bullet points of common side effects each prefixed [green] [yellow] or [red]",
+  "warn": "2-3 bullet points of serious warning signs each prefixed [red]",
+  "injection": "if injectable/biologic: brief plain text summary of administration. Else empty string.",
+  "injectionSteps": "if injectable: array of 6-12 step strings like [\\"Wash hands thoroughly\\", \\"Remove from fridge 30 min before use\\"]. Else empty array [].",
+  "injectionType": "pen, syringe, autoinjector, IV, inhaler, or patch. Empty string if not injectable.",
+  "injectionSite": "if injectable: 1-2 sentences on rotation sites. Else empty string.",
+  "cost": "1-2 sentences on generic availability and cost-saving tips like GoodRx",
+  "teachback": ["patient question 1", "patient question 2", "patient question 3"],
+  "caregiverTeachback": ["caregiver question 1", "caregiver question 2"],
+  "caregiverTips": "2-3 sentences of practical advice for a caregiver helping someone take this medication",
+  "caregiverMonitoring": "3-4 bullet points of things a caregiver should actively monitor in the patient",
+  "caregiverAdmin": "3 bullet points on how a caregiver can help manage this medication day-to-day",
+  "caregiverWatchFor": "3 bullet points of warning signs a caregiver should watch for requiring doctor or 911"
+}}""".format(drug=drug, level=level)
 
-    payload = json.dumps({
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 8192, "responseMimeType": "application/json"}
-    }).encode()
-
-    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY
-    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
     try:
-        with urllib.request.urlopen(req) as resp:
-            data = json.loads(resp.read())
-        text = data["candidates"][0]["content"]["parts"][0]["text"]
-        text = text.strip().replace("```json", "").replace("```", "").strip()
-        return jsonify(json.loads(text))
+        result = json.loads(gemini(prompt))
+        return jsonify(result)
     except urllib.error.HTTPError as e:
         return jsonify({"error": json.loads(e.read()).get("error", {}).get("message", str(e))}), 502
     except Exception as e:
@@ -89,32 +103,66 @@ def interactions():
     if len(drugs) < 2:
         return jsonify({"error": "Please add at least 2 medications to check interactions."}), 400
 
-    prompt = (
-        'You are a clinical pharmacist. The patient is taking: ' + ", ".join(drugs) + '. '
-        'Check for drug-drug interactions, food-drug interactions, and therapeutic duplications. '
-        'Use ' + level + ' reading level. '
-        'Respond ONLY with valid JSON: '
-        '{"summary": "1-2 sentence overall safety summary",'
-        '"interactions": [{"drugs": "Drug A + Drug B", "severity": "green or yellow or red", "description": "plain language explanation", "action": "what to do"}],'
-        '"duplications": ["any therapeutic duplications as plain strings"],'
-        '"safe": true or false,'
-        '"recommendation": "overall recommendation in plain language"}'
-        'If no interactions found return empty interactions array and safe: true.'
-    )
+    prompt = """You are a clinical pharmacist. The patient is taking: {drugs}.
+Check for drug-drug interactions, food-drug interactions, and therapeutic duplications.
+Use {level} reading level.
+Respond ONLY with valid JSON:
+{{
+  "summary": "1-2 sentence overall safety summary",
+  "interactions": [{{"drugs": "Drug A + Drug B", "severity": "green or yellow or red", "description": "plain language explanation", "action": "what to do"}}],
+  "duplications": ["any therapeutic duplications"],
+  "safe": true or false,
+  "recommendation": "overall recommendation in plain language"
+}}
+If no interactions found return empty interactions array and safe: true.""".format(
+        drugs=", ".join(drugs), level=level)
 
-    payload = json.dumps({
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 8192, "responseMimeType": "application/json"}
-    }).encode()
-
-    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY
-    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
     try:
-        with urllib.request.urlopen(req) as resp:
-            data = json.loads(resp.read())
-        text = data["candidates"][0]["content"]["parts"][0]["text"]
-        text = text.strip().replace("```json", "").replace("```", "").strip()
-        return jsonify(json.loads(text))
+        result = json.loads(gemini(prompt))
+        return jsonify(result)
+    except urllib.error.HTTPError as e:
+        return jsonify({"error": json.loads(e.read()).get("error", {}).get("message", str(e))}), 502
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/check-symptoms", methods=["POST"])
+def check_symptoms():
+    if not API_KEY:
+        return jsonify({"error": "GEMINI_API_KEY not set."}), 500
+    body = request.get_json()
+    drugs = body.get("drugs", [])
+    syms = body.get("symptoms", "").strip()
+    level = body.get("level", "simple and clear language").strip()
+    if not syms:
+        return jsonify({"error": "Please describe your symptoms."}), 400
+
+    prompt = """You are a clinical pharmacist. A patient is taking: {drugs}.
+They are experiencing: "{syms}".
+Analyze whether each symptom is a known drug side effect, possible drug interaction, or requires medical attention.
+Use {level} reading level.
+Respond ONLY with valid JSON:
+{{
+  "overallRisk": "low, moderate, or high",
+  "overallSummary": "1-2 sentence plain language summary",
+  "findings": [
+    {{
+      "symptom": "symptom name",
+      "severity": "green, yellow, or red",
+      "category": "known side effect, possible interaction, unrelated, or seek care",
+      "explanation": "plain language explanation",
+      "action": "monitor at home, call your doctor, or go to ER now",
+      "drug": "which drug is likely causing this or empty string"
+    }}
+  ],
+  "urgentAction": "if any symptom is red: what to do immediately. Else empty string.",
+  "disclaimer": "one sentence reminder to consult a healthcare provider"
+}}""".format(
+        drugs=", ".join(drugs) if drugs else "unknown medications",
+        syms=syms, level=level)
+
+    try:
+        result = json.loads(gemini(prompt, max_tokens=4096))
+        return jsonify(result)
     except urllib.error.HTTPError as e:
         return jsonify({"error": json.loads(e.read()).get("error", {}).get("message", str(e))}), 502
     except Exception as e:
@@ -126,83 +174,13 @@ def translate():
         return jsonify({"error": "GEMINI_API_KEY not set."}), 500
     body = request.get_json()
     data = body.get("data", {})
-    prompt = (
-        'Translate the following medication information from English to plain conversational Spanish. '
-        'Preserve all medical accuracy. Keep bullet point formatting. '
-        'Respond ONLY with valid JSON using the exact same schema, translating only the values not the keys: '
-        + json.dumps(data)
-    )
-    payload = json.dumps({
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.1, "maxOutputTokens": 8192, "responseMimeType": "application/json"}
-    }).encode()
-    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY
-    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+    prompt = ("Translate the following medication information from English to plain conversational Spanish. "
+              "Preserve medical accuracy. Keep bullet point formatting. "
+              "Respond ONLY with valid JSON using the exact same schema, translating only the values not the keys: "
+              + json.dumps(data))
     try:
-        with urllib.request.urlopen(req) as resp:
-            data = json.loads(resp.read())
-        text = data["candidates"][0]["content"]["parts"][0]["text"]
-        text = text.strip().replace("```json", "").replace("```", "").strip()
-        return jsonify(json.loads(text))
-    except urllib.error.HTTPError as e:
-        return jsonify({"error": json.loads(e.read()).get("error", {}).get("message", str(e))}), 502
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/symptoms")
-def symptoms():
-    return send_from_directory("templates", "symptoms.html")
-
-@app.route("/tracker")
-def tracker():
-    return send_from_directory("templates", "tracker.html")
-
-@app.route("/check-symptoms", methods=["POST"])
-def check_symptoms():
-    if not API_KEY:
-        return jsonify({"error": "GEMINI_API_KEY not set."}), 500
-    body = request.get_json()
-    drugs = body.get("drugs", [])
-    symptoms = body.get("symptoms", "").strip()
-    level = body.get("level", "simple and clear language").strip()
-    if not symptoms:
-        return jsonify({"error": "Please describe your symptoms."}), 400
-
-    prompt = (
-        'You are a clinical pharmacist. A patient is taking these medications: ' + (", ".join(drugs) if drugs else "unknown medications") + '. '
-        'They are experiencing these symptoms: "' + symptoms + '". '
-        'Analyze whether each symptom is likely a known drug side effect, a possible drug interaction, or something requiring medical attention. '
-        'Use ' + level + ' reading level. '
-        'Respond ONLY with valid JSON: '
-        '{'
-        '"overallRisk": "low, moderate, or high",'
-        '"overallSummary": "1-2 sentence plain language summary of what is likely going on",'
-        '"findings": ['
-        '  {"symptom": "symptom name", "severity": "green, yellow, or red", '
-        '   "category": "known side effect, possible interaction, unrelated, or seek care", '
-        '   "explanation": "plain language explanation of why this symptom is occurring", '
-        '   "action": "specific action to take: monitor at home / call your doctor / go to ER now",'
-        '   "drug": "which drug is most likely causing this, or empty string"}'
-        '],'
-        '"urgentAction": "if any symptom is red/seek care, what to do immediately — else empty string",'
-        '"disclaimer": "one sentence reminder to always consult a healthcare provider"'
-        '}'
-    )
-
-    payload = json.dumps({
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 4096, "responseMimeType": "application/json"}
-    }).encode()
-
-    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY
-    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
-    try:
-        with urllib.request.urlopen(req) as resp:
-            data = json.loads(resp.read())
-        text = data["candidates"][0]["content"]["parts"][0]["text"]
-        text = text.strip().replace("```json", "").replace("```", "").strip()
-        return jsonify(json.loads(text))
+        result = json.loads(gemini(prompt))
+        return jsonify(result)
     except urllib.error.HTTPError as e:
         return jsonify({"error": json.loads(e.read()).get("error", {}).get("message", str(e))}), 502
     except Exception as e:
