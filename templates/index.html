@@ -220,6 +220,7 @@ footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color
         <button class="tab" onclick="showTab('practical')">Practical</button>
         <button class="tab" id="injTab" onclick="showTab('injection')" style="display:none">&#128137; Inject</button>
         <button class="tab" onclick="showTab('teachback')">Teach-Back</button>
+        <button class="tab" onclick="showTab('savings')">&#128176; Savings</button>
         <button class="tab" id="cgTab" onclick="showTab('caregiver')" style="display:none">&#128106; Caregiver</button>
       </div>
 
@@ -276,6 +277,35 @@ footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color
           <div class="ic" style="border-left:3px solid var(--purple);display:none" id="cgTBCard"><div class="ic-label">&#128106; caregiver teach-back</div><div class="ic-body"><ol id="cgTeachback" style="padding-left:1.2rem"></ol></div></div>
         </div>
 
+        <!-- SAVINGS -->
+        <div class="panel" id="panel-savings">
+          <div style="background:var(--green-bg);border:1px solid var(--green-b);border-radius:var(--r);padding:12px 16px;font-size:13px;color:var(--green);margin-bottom:1rem;line-height:1.6">
+            &#128161; Financial assistance is available for most medications. Programs listed here are drug-specific where possible, plus broad resources that help anyone.
+          </div>
+          <div class="ic gn" style="margin-bottom:12px">
+            <div class="ic-label">&#128176; cost &amp; generic availability</div>
+            <div class="ic-body" id="costFull"></div>
+          </div>
+          <div class="ic tl" style="margin-bottom:12px">
+            <div class="ic-label">&#127891; assistance programs for this medication</div>
+            <div class="ic-body" id="financialResources"></div>
+          </div>
+          <div class="ic bl">
+            <div class="ic-label">&#127758; broad resources — always available</div>
+            <div class="ic-body">
+              <ul style="padding-left:1.1rem">
+                <li style="margin-bottom:6px"><strong>GoodRx</strong> — goodrx.com — free coupons at most pharmacies, often 80%+ off</li>
+                <li style="margin-bottom:6px"><strong>NeedyMeds</strong> — needymeds.org — database of patient assistance programs by drug</li>
+                <li style="margin-bottom:6px"><strong>RxAssist</strong> — rxassist.org — manufacturer PAP directory with eligibility guides</li>
+                <li style="margin-bottom:6px"><strong>Partnership for Prescription Assistance</strong> — pparx.org — connects to 475+ assistance programs</li>
+                <li style="margin-bottom:6px"><strong>State Pharmaceutical Assistance Programs</strong> — many states offer help for seniors and low-income patients; search "[your state] SPAP"</li>
+                <li style="margin-bottom:6px"><strong>Medicare Extra Help</strong> — ssa.gov/extrahelp — subsidizes Part D costs for qualifying Medicare patients</li>
+                <li style="margin-bottom:6px"><strong>Community Health Centers</strong> — findahealthcenter.hrsa.gov — sliding scale fees, 340B drug pricing</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         <!-- CAREGIVER -->
         <div class="panel" id="panel-caregiver">
           <div class="ic pu-bg" style="margin-bottom:12px"><div class="ic-label">&#128106; caregiver overview</div><div class="ic-body" id="cgTips"></div></div>
@@ -288,6 +318,9 @@ footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color
         </div>
       </div>
 
+      <div style="padding:10px 1.5rem;background:var(--g50);border-top:1px solid var(--g200);font-size:11px;color:var(--g400);line-height:1.6">
+        &#9432; AI-generated from clinical sources. Information reflects current prescribing guidelines but may not capture recent label changes. Always verify with your pharmacist, prescribing information, Lexicomp, or Micromedex. Last checked: <span id="lastChecked"></span>
+      </div>
       <div class="action-bar">
         <button class="act-btn" id="copyBtn">&#10232; Copy Notes</button>
         <button class="act-btn" onclick="window.print()">&#9113; Print</button>
@@ -396,6 +429,7 @@ function toBullets(val){
 function populateResult(data){
   var lv=levels.filter(function(l){return l.val===currentLevel})[0];
   document.getElementById('heroName').textContent=data.drugName||currentDrug;
+  document.getElementById('lastChecked').textContent=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   document.getElementById('heroVerified').textContent='Verified ' + new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'});
   document.getElementById('heroCondition').textContent=data.condition?data.condition.split('.')[0]:'';
   document.getElementById('heroBadge').textContent=lv?lv.label:'';
@@ -407,6 +441,8 @@ function populateResult(data){
   document.getElementById('what').innerHTML=toBullets(data.what);
   document.getElementById('how').innerHTML=toBullets(data.how);
   document.getElementById('cost').innerHTML=toBullets(data.cost);
+  document.getElementById('costFull').innerHTML=toBullets(data.cost);
+  document.getElementById('financialResources').innerHTML=toBullets(data.financialResources)||'<p style="margin:0;color:var(--g400)">Drug-specific programs not available — see broad resources below.</p>';
   document.getElementById('side').innerHTML=toBullets(data.side);
   document.getElementById('warn').innerHTML=toBullets(data.warn);
   document.getElementById('missedDose').innerHTML=toBullets(data.missedDose);

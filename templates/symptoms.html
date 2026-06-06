@@ -134,7 +134,30 @@ footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color
 
   <div class="card">
     <div class="card-title">What symptoms are you experiencing?</div>
-    <textarea id="symptomInput" placeholder="Describe your symptoms in plain language. Example: I have a headache, feel nauseous, and my heart is racing. Started about 2 hours ago after taking my medication."></textarea>
+    <div class="chips-label">Quick select — tap to add</div>
+    <div class="symptom-chips">
+      <button class="sym-chip" onclick="toggleChip(this,'Nausea')">&#129298; Nausea</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Headache')">&#129354; Headache</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Dizziness')">&#129529; Dizziness</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Fatigue')">&#128564; Fatigue</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Stomach pain')">&#129760; Stomach pain</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Diarrhea')">&#128165; Diarrhea</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Vomiting')">&#129314; Vomiting</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Rash or itching')">&#129656; Rash/Itching</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Dry mouth')">&#128064; Dry mouth</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Muscle pain')">&#128170; Muscle pain</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Rapid heartbeat')">&#128147; Rapid heartbeat</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Trouble sleeping')">&#128336; Trouble sleeping</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Blurred vision')">&#128064; Blurred vision</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Swelling')">&#129466; Swelling</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Shortness of breath')">&#128168; Shortness of breath</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Chest pain')">&#128148; Chest pain</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Constipation')">&#128169; Constipation</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Loss of appetite')">&#127812; Loss of appetite</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Anxiety or racing thoughts')">&#128543; Anxiety</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Low mood or depression')">&#129297; Low mood</button>
+    </div>
+    <textarea id="symptomInput" placeholder="Describe your symptoms — or tap the chips above. Example: I have a headache and feel nauseous. Started about 2 hours after taking my medication."></textarea>
     <div class="hint">Be as specific as possible — when symptoms started, severity, anything that makes them better or worse.</div>
   </div>
 
