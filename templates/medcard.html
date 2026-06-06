@@ -1,342 +1,200 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<link rel="icon" type="image/svg+xml" href="/icon.svg">
-<link rel="manifest" href="/manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Pill Talk">
-<meta name="theme-color" content="#059669">
-<link rel="apple-touch-icon" href="/icon.svg">
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Medication Card — Pill Talk</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Pill Talk"/>
+<meta name="theme-color" content="#ffffff"/>
+<title>Med Card — Pill Talk</title>
+<link rel="icon" type="image/svg+xml" href="/icon.svg"/>
+<link rel="manifest" href="/manifest.json"/>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --teal: #0d7a5f; --teal-dark: #0a5c47; --teal-mid: #b8e0d6; --teal-light: #e8f5f1;
-  --red: #c0392b; --red-light: #fdecea; --red-mid: #fca5a5;
-  --text: #111827; --text2: #374151; --muted: #6b7280; --faint: #9ca3af;
-  --bg: #f9fafb; --surface: #ffffff; --border: #e5e7eb; --border2: #d1d5db;
-  --radius: 12px; --radius-sm: 8px; --radius-lg: 16px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08); --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --teal:#059669;--teal-d:#047857;--teal-dd:#065f46;--teal-50:#ecfdf5;--teal-100:#d1fae5;
+  --g900:#111827;--g800:#1f2937;--g700:#374151;--g600:#4b5563;--g500:#6b7280;
+  --g400:#9ca3af;--g300:#d1d5db;--g200:#e5e7eb;--g150:#eeeff1;--g100:#f3f4f6;--g50:#f9fafb;
+  --red:#dc2626;--red-bg:#fef2f2;
+  --safe-bottom:env(safe-area-inset-bottom,0px);--safe-top:env(safe-area-inset-top,0px);
 }
-body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; }
-
-nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow); }
-.nav-logo { font-size: 17px; font-weight: 800; text-decoration: none; color: var(--text); display: flex; align-items: center; gap: 8px; }
-.nav-logo-icon { background: var(--teal); color: white; width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
-.nav-links { display: flex; gap: 4px; }
-.nav-link { padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; border-radius: var(--radius-sm); }
-.nav-link:hover { background: var(--bg); color: var(--text); }
-.nav-link.active { background: var(--teal-light); color: var(--teal); }
-
-main { max-width: 760px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
-.page-title { font-size: 24px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 4px; }
-.page-sub { font-size: 14px; color: var(--muted); margin-bottom: 2rem; }
-
-.info-banner { background: var(--teal-light); border: 1px solid var(--teal-mid); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 1.5rem; font-size: 14px; color: var(--teal-dark); line-height: 1.6; }
-.info-banner strong { font-weight: 700; }
-
-/* Patient info form */
-.form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md); }
-.form-title { font-size: 16px; font-weight: 700; margin-bottom: 1rem; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-@media(max-width:500px){ .form-grid { grid-template-columns: 1fr; } }
-.form-group { display: flex; flex-direction: column; gap: 5px; }
-.form-group.full { grid-column: 1 / -1; }
-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
-input[type=text], input[type=date], textarea { padding: 10px 14px; font-size: 14px; font-family: inherit; border: 1.5px solid var(--border2); border-radius: var(--radius-sm); background: var(--bg); color: var(--text); outline: none; transition: border-color .15s; }
-input[type=text]:focus, input[type=date]:focus, textarea:focus { border-color: var(--teal); }
-textarea { resize: vertical; min-height: 70px; }
-
-/* Meds list on card */
-.meds-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md); }
-.meds-card-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-.meds-card-sub { font-size: 13px; color: var(--muted); margin-bottom: 1rem; }
-.med-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; margin-bottom: 8px; align-items: center; }
-@media(max-width:500px){ .med-row { grid-template-columns: 1fr 1fr; } }
-.med-row-header { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; margin-bottom: 6px; }
-@media(max-width:500px){ .med-row-header { display: none; } }
-.col-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); }
-.med-row input { font-size: 13px; }
-button.remove-row { background: transparent; border: none; color: var(--faint); cursor: pointer; font-size: 16px; padding: 4px; }
-button.remove-row:hover { color: var(--red); }
-button.add-med-row { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: transparent; border: 1.5px dashed var(--border2); border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; margin-top: 8px; transition: all .15s; width: 100%; justify-content: center; }
-button.add-med-row:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
-
-/* Actions */
-.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 2rem; }
-button.btn-primary { padding: 12px 24px; background: var(--teal); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .15s; }
-button.btn-primary:hover { background: var(--teal-dark); }
-button.btn-ghost { padding: 12px 20px; background: transparent; border: 1.5px solid var(--border2); border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; transition: all .15s; }
-button.btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
-
-/* THE CARD */
-#cardPreview { display: none; }
-.med-card-outer { background: var(--surface); border: 2px solid var(--teal); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); max-width: 600px; margin: 0 auto 1.5rem; }
-.med-card-header { background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%); padding: 1.25rem 1.5rem; color: white; display: flex; align-items: center; justify-content: space-between; }
-.med-card-header-left h2 { font-size: 18px; font-weight: 800; margin-bottom: 2px; }
-.med-card-header-left p { font-size: 12px; opacity: 0.8; }
-.med-card-logo { font-size: 22px; }
-.med-card-body { padding: 1.25rem 1.5rem; }
-.patient-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
-.patient-field { }
-.patient-field-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-bottom: 2px; }
-.patient-field-value { font-size: 14px; font-weight: 600; color: var(--text); }
-.meds-table { width: 100%; border-collapse: collapse; margin-bottom: 1.25rem; }
-.meds-table th { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); text-align: left; padding: 0 8px 8px 0; border-bottom: 1px solid var(--border); }
-.meds-table td { font-size: 13px; padding: 8px 8px 8px 0; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
-.meds-table tr:last-child td { border-bottom: none; }
-.meds-table td:first-child { font-weight: 600; color: var(--text); }
-.allergies-section { background: var(--red-light); border: 1px solid var(--red-mid); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 1rem; }
-.allergies-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--red); margin-bottom: 4px; }
-.allergies-value { font-size: 13px; color: var(--text2); }
-.emergency-section { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; }
-.emergency-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 4px; }
-.emergency-value { font-size: 13px; color: var(--text2); }
-.med-card-footer { background: var(--bg); border-top: 1px solid var(--border); padding: 10px 1.5rem; font-size: 11px; color: var(--faint); display: flex; justify-content: space-between; align-items: center; }
-
-.print-actions { display: flex; gap: 8px; flex-wrap: wrap; max-width: 600px; margin: 0 auto; }
-button.action-btn { display: flex; align-items: center; gap: 6px; padding: 10px 18px; background: transparent; border: 1.5px solid var(--border2); border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; transition: all .15s; }
-button.action-btn:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
-
-@media print {
-  nav, main > *:not(#cardPreview), .print-actions { display: none !important; }
-  #cardPreview { display: block !important; }
-  .med-card-outer { border: 2px solid #0d7a5f; box-shadow: none; max-width: 100%; }
-  body { background: white; }
+html{height:100%;background:#fff}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;background:var(--g50);color:var(--g900);-webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:calc(83px + var(--safe-bottom))}
+.status-bar{height:var(--safe-top);background:#fff}
+.app-header{background:#fff;border-bottom:0.5px solid var(--g200);padding:12px 20px;position:sticky;top:var(--safe-top);z-index:50;display:flex;align-items:center;justify-content:space-between}
+.app-title{font-size:17px;font-weight:700;letter-spacing:-.2px}
+.header-logo{display:flex;align-items:center;gap:8px}
+.header-logo img{width:28px;height:28px;border-radius:7px}
+main{padding:16px 16px 8px}
+/* The card itself */
+.medcard{
+  background:linear-gradient(145deg,#059669 0%,#047857 50%,#065f46 100%);
+  border-radius:20px;padding:20px;margin-bottom:16px;color:#fff;
+  box-shadow:0 8px 30px rgba(5,150,105,.35);position:relative;overflow:hidden;
 }
-
-footer { max-width: 760px; margin: 0 auto; padding: 0 1.5rem 2rem; font-size: 11px; color: var(--faint); line-height: 1.6; border-top: 1px solid var(--border); padding-top: 1.5rem; margin-top: 2rem; }
-
-@media(max-width:580px){
-  .nl span.full{display:none}
-  .nl{padding:6px 8px;font-size:16px}
-  nav{padding:0 .75rem}
-  .logo span{display:none}
-}
+.medcard::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.07)}
+.medcard::after{content:'';position:absolute;bottom:-30px;left:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.05)}
+.mc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.mc-logo{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;opacity:.9}
+.mc-logo img{width:24px;height:24px;border-radius:6px;filter:brightness(0) invert(1)}
+.mc-tag{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;opacity:.7}
+.mc-name{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:2px}
+.mc-dob{font-size:13px;opacity:.75;margin-bottom:14px}
+.mc-row{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.mc-field{flex:1;min-width:120px}
+.mc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;opacity:.65;margin-bottom:3px}
+.mc-value{font-size:14px;font-weight:600;line-height:1.4}
+.mc-meds{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.2)}
+.mc-meds-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;opacity:.65;margin-bottom:8px}
+.mc-med-list{display:flex;flex-wrap:wrap;gap:5px}
+.mc-med{background:rgba(255,255,255,.18);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;backdrop-filter:blur(4px)}
+/* Form */
+.form-card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.form-section{padding:14px 16px;border-bottom:0.5px solid var(--g100)}
+.form-section:last-child{border-bottom:none}
+.form-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin-bottom:8px}
+input[type=text]{width:100%;padding:11px 14px;font-size:15px;font-family:inherit;border:1.5px solid var(--g200);border-radius:10px;background:var(--g50);color:var(--g900);outline:none;-webkit-appearance:none;transition:border-color .15s}
+input[type=text]:focus{border-color:var(--teal);background:#fff;box-shadow:0 0 0 4px rgba(5,150,105,.08)}
+input::placeholder{color:var(--g400)}
+.allergy-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.allergy-tag{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:var(--red-bg);border-radius:20px;font-size:13px;font-weight:500;color:var(--red)}
+.allergy-tag button{background:none;border:none;cursor:pointer;color:var(--red);font-size:13px}
+.btn-primary{padding:14px;background:var(--teal);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;-webkit-appearance:none;box-shadow:0 2px 8px rgba(5,150,105,.3);margin-bottom:8px}
+.btn-primary:active{transform:scale(.98)}
+.btn-ghost{padding:12px;background:var(--g50);border:1px solid var(--g200);border-radius:12px;font-size:14px;font-weight:500;color:var(--g700);cursor:pointer;font-family:inherit;width:100%;margin-bottom:8px}
+.btn-ghost:active{background:var(--g100)}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:0.5px solid rgba(0,0,0,.12);display:flex;padding-bottom:var(--safe-bottom);z-index:100}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;text-decoration:none;cursor:pointer;min-height:50px}
+.tab-icon{font-size:22px;line-height:1;margin-bottom:3px;transition:transform .15s}
+.tab-label{font-size:10px;font-weight:500;color:var(--g400)}
+.tab-item.on .tab-label{color:var(--teal);font-weight:700}
+.tab-item.on .tab-icon{transform:scale(1.1)}
+::-webkit-scrollbar{display:none}*{scrollbar-width:none}
 </style>
 </head>
 <body>
-<nav class="pt-nav">
-  <a class="pt-logo" href="/"><img src="/icon.svg" alt="Pill Talk"/>Pill Talk</a>
-  <div class="pt-links">
-    <a class="pt-nl" href="/app">&#128138;<span class="full"> Look Up</span></a>
-    <a class="pt-nl" href="/mymeds">&#128137;<span class="full"> My Meds</span></a>
-    <a class="pt-nl" href="/symptoms">&#128308;<span class="full"> Symptoms</span></a>
-    <a class="pt-nl" href="/tracker">&#128197;<span class="full"> Tracker</span></a>
-    <a class="pt-nl on" href="/medcard">&#128203;<span class="full"> Med Card</span></a>
+<div class="status-bar"></div>
+<div class="app-header">
+  <div class="header-logo">
+    <img src="/icon.svg" alt="Pill Talk"/>
+    <span class="app-title">Med Card</span>
   </div>
-</nav>
-
+  <button onclick="saveCard()" style="background:var(--teal);color:#fff;border:none;padding:7px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Save</button>
+</div>
 <main>
-  <div class="page-title">&#128203; Medication Card</div>
-  <p class="page-sub">Create a wallet-sized card or printable summary of all your medications — perfect for ER visits, new doctors, and emergencies.</p>
-
-  <div class="info-banner">
-    <strong>&#128161; Why this matters:</strong> In an emergency, first responders and ER doctors need to know what medications you take. This card can save your life. Keep a printed copy in your wallet and share it with family members.
+  <!-- Live card preview -->
+  <div class="medcard" id="preview">
+    <div class="mc-header">
+      <div class="mc-logo"><img src="/icon.svg" alt=""/> Pill Talk</div>
+      <div class="mc-tag">Emergency Med Card</div>
+    </div>
+    <div class="mc-name" id="prev-name">Your Name</div>
+    <div class="mc-dob" id="prev-dob">Date of birth not set</div>
+    <div class="mc-row">
+      <div class="mc-field"><div class="mc-label">Blood type</div><div class="mc-value" id="prev-blood">—</div></div>
+      <div class="mc-field"><div class="mc-label">Primary care</div><div class="mc-value" id="prev-doc">—</div></div>
+      <div class="mc-field"><div class="mc-label">Emergency contact</div><div class="mc-value" id="prev-contact">—</div></div>
+    </div>
+    <div id="prev-allergy-section">
+      <div class="mc-label" style="margin-top:10px;margin-bottom:5px">Allergies</div>
+      <div class="mc-value" id="prev-allergies" style="font-size:13px;opacity:.9">None listed</div>
+    </div>
+    <div class="mc-meds" id="prev-meds-section">
+      <div class="mc-meds-label">Medications</div>
+      <div class="mc-med-list" id="prev-meds"></div>
+    </div>
   </div>
 
+  <!-- Form -->
   <div class="form-card">
-    <div class="form-title">Patient Information</div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" id="patientName" placeholder="Jane Smith" />
-      </div>
-      <div class="form-group">
-        <label>Date of Birth</label>
-        <input type="date" id="patientDOB" />
-      </div>
-      <div class="form-group">
-        <label>Primary Doctor</label>
-        <input type="text" id="patientDoctor" placeholder="Dr. Johnson" />
-      </div>
-      <div class="form-group">
-        <label>Doctor Phone</label>
-        <input type="text" id="doctorPhone" placeholder="(555) 123-4567" />
-      </div>
-      <div class="form-group">
-        <label>Emergency Contact</label>
-        <input type="text" id="emergencyContact" placeholder="Name &amp; phone number" />
-      </div>
-      <div class="form-group">
-        <label>Insurance / Member ID</label>
-        <input type="text" id="insuranceId" placeholder="Optional" />
-      </div>
-      <div class="form-group full">
-        <label>&#128680; Allergies</label>
-        <input type="text" id="allergies" placeholder="e.g. Penicillin, sulfa drugs, latex — or 'NKDA'" />
-      </div>
+    <div class="form-section">
+      <div class="form-label">Full name</div>
+      <input type="text" id="fName" placeholder="Your full name" oninput="updatePreview()"/>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Date of birth</div>
+      <input type="text" id="fDob" placeholder="MM/DD/YYYY" oninput="updatePreview()"/>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Blood type</div>
+      <input type="text" id="fBlood" placeholder="e.g. A+, O-" oninput="updatePreview()"/>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Primary care provider</div>
+      <input type="text" id="fDoc" placeholder="Doctor name & phone" oninput="updatePreview()"/>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Emergency contact</div>
+      <input type="text" id="fContact" placeholder="Name & phone number" oninput="updatePreview()"/>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Allergies</div>
+      <input type="text" id="allergyInput" placeholder="Add an allergy..."/>
+      <div class="allergy-tags" id="allergyTags"></div>
     </div>
   </div>
 
-  <div class="meds-card">
-    <div class="meds-card-title">Medications</div>
-    <div class="meds-card-sub">Add all your current medications including dose and frequency.</div>
-    <div class="med-row-header">
-      <div class="col-label">Medication Name</div>
-      <div class="col-label">Dose</div>
-      <div class="col-label">How Often</div>
-    </div>
-    <div id="medRows"></div>
-    <button class="add-med-row" onclick="addRow()">+ Add Medication</button>
-  </div>
-
-  <div class="actions">
-    <button class="btn-primary" onclick="generateCard()">&#128203; Generate Card</button>
-    <button class="btn-ghost" onclick="loadFromMyMeds()">&#128137; Load from My Medications</button>
-  </div>
-
-  <div id="cardPreview">
-    <div class="med-card-outer">
-      <div class="med-card-header">
-        <div class="med-card-header-left">
-          <h2>Medication Card</h2>
-          <p>Keep this card with you at all times</p>
-        </div>
-        <div class="med-card-logo">&#9883;</div>
-      </div>
-      <div class="med-card-body">
-        <div class="patient-info-grid" id="cardPatientInfo"></div>
-        <table class="meds-table">
-          <thead>
-            <tr>
-              <th>Medication</th>
-              <th>Dose</th>
-              <th>Frequency</th>
-            </tr>
-          </thead>
-          <tbody id="cardMedsTable"></tbody>
-        </table>
-        <div class="allergies-section" id="cardAllergies"></div>
-        <div class="emergency-section" id="cardEmergency"></div>
-      </div>
-      <div class="med-card-footer">
-        <span>Generated by Pill Talk — pilltalk.onrender.com</span>
-        <span id="cardDate"></span>
-      </div>
-    </div>
-
-    <div class="print-actions">
-      <button class="action-btn" onclick="window.print()">&#9113; Print Card</button>
-      <button class="action-btn" onclick="copyCardText()">&#10232; Copy as Text</button>
-      <button class="action-btn" onclick="document.getElementById('cardPreview').style.display='none'">&#8635; Edit</button>
-    </div>
-  </div>
+  <button class="btn-primary" onclick="saveCard()">&#10003; Save Card</button>
+  <button class="btn-ghost" onclick="shareCard()">&#128279; Share card link</button>
+  <button class="btn-ghost" onclick="printCard()">&#128438; Print</button>
 </main>
 
-<footer>
-  This card is for informational purposes only. Always keep your healthcare providers updated on any changes to your medications.
-  Built by Kathryn Bowman, PharmD Candidate — University of Kentucky College of Pharmacy.
-</footer>
+<nav class="tab-bar">
+  <a class="tab-item" href="/app"><div class="tab-icon">&#128138;</div><div class="tab-label">Look Up</div></a>
+  <a class="tab-item" href="/mymeds"><div class="tab-icon">&#128137;</div><div class="tab-label">My Meds</div></a>
+  <a class="tab-item" href="/symptoms"><div class="tab-icon">&#128308;</div><div class="tab-label">Symptoms</div></a>
+  <a class="tab-item" href="/tracker"><div class="tab-icon">&#128197;</div><div class="tab-label">Tracker</div></a>
+  <a class="tab-item on" href="/medcard"><div class="tab-icon">&#128203;</div><div class="tab-label">Med Card</div></a>
+</nav>
 
 <script>
-var rowCount = 0;
-
-function addRow(name, dose, freq) {
-  rowCount++;
-  var div = document.createElement('div');
-  div.className = 'med-row';
-  div.id = 'row-' + rowCount;
-  div.innerHTML =
-    '<input type="text" placeholder="Medication name" value="' + (name||'') + '" class="med-name-input" />' +
-    '<input type="text" placeholder="e.g. 10mg" value="' + (dose||'') + '" class="med-dose-input" />' +
-    '<input type="text" placeholder="e.g. Once daily" value="' + (freq||'') + '" class="med-freq-input" />';
-  document.getElementById('medRows').appendChild(div);
+var data=JSON.parse(localStorage.getItem('pt_medcard')||'{}');
+var allergies=data.allergies||[];
+var meds=JSON.parse(localStorage.getItem('pilltalk_meds')||'[]');
+function load(){
+  if(data.name) document.getElementById('fName').value=data.name;
+  if(data.dob) document.getElementById('fDob').value=data.dob;
+  if(data.blood) document.getElementById('fBlood').value=data.blood;
+  if(data.doc) document.getElementById('fDoc').value=data.doc;
+  if(data.contact) document.getElementById('fContact').value=data.contact;
+  renderAllergies();updatePreview();
 }
-
-function loadFromMyMeds() {
-  var meds = JSON.parse(localStorage.getItem('pilltalk_meds') || '[]');
-  if (meds.length === 0) { alert('No medications saved in My Medications yet. Add some there first.'); return; }
-  document.getElementById('medRows').innerHTML = '';
-  rowCount = 0;
-  for (var i = 0; i < meds.length; i++) addRow(meds[i], '', '');
+function updatePreview(){
+  var name=document.getElementById('fName').value.trim()||'Your Name';
+  var dob=document.getElementById('fDob').value.trim();
+  var blood=document.getElementById('fBlood').value.trim();
+  var doc=document.getElementById('fDoc').value.trim();
+  var contact=document.getElementById('fContact').value.trim();
+  document.getElementById('prev-name').textContent=name;
+  document.getElementById('prev-dob').textContent=dob?'DOB: '+dob:'Date of birth not set';
+  document.getElementById('prev-blood').textContent=blood||'—';
+  document.getElementById('prev-doc').textContent=doc||'—';
+  document.getElementById('prev-contact').textContent=contact||'—';
+  document.getElementById('prev-allergies').textContent=allergies.length?allergies.join(', '):'None listed';
+  var medEl=document.getElementById('prev-meds');
+  medEl.innerHTML=meds.length?meds.map(function(m){return '<span class="mc-med">'+m+'</span>';}).join(''):'<span style="opacity:.7;font-size:13px">No medications added</span>';
 }
-
-function generateCard() {
-  var name = document.getElementById('patientName').value.trim();
-  var dob = document.getElementById('patientDOB').value;
-  var doctor = document.getElementById('patientDoctor').value.trim();
-  var doctorPhone = document.getElementById('doctorPhone').value.trim();
-  var emergency = document.getElementById('emergencyContact').value.trim();
-  var insurance = document.getElementById('insuranceId').value.trim();
-  var allergies = document.getElementById('allergies').value.trim() || 'None known';
-
-  var rows = document.querySelectorAll('.med-row');
-  var meds = [];
-  for (var i = 0; i < rows.length; i++) {
-    var inputs = rows[i].querySelectorAll('input');
-    var medName = inputs[0].value.trim();
-    if (medName) meds.push({ name: medName, dose: inputs[1].value.trim() || '—', freq: inputs[2].value.trim() || '—' });
-  }
-
-  if (!name && meds.length === 0) { alert('Please enter at least a patient name and one medication.'); return; }
-
-  // Patient info
-  var patInfo = document.getElementById('cardPatientInfo');
-  var fields = [
-    { label: 'Patient Name', value: name || '—' },
-    { label: 'Date of Birth', value: dob ? new Date(dob + 'T00:00:00').toLocaleDateString() : '—' },
-    { label: 'Primary Doctor', value: doctor || '—' },
-    { label: 'Doctor Phone', value: doctorPhone || '—' },
-    { label: 'Emergency Contact', value: emergency || '—' },
-    { label: 'Insurance / ID', value: insurance || '—' }
-  ];
-  patInfo.innerHTML = fields.map(function(f) {
-    return '<div class="patient-field"><div class="patient-field-label">' + f.label + '</div><div class="patient-field-value">' + f.value + '</div></div>';
-  }).join('');
-
-  // Meds table
-  var tbody = document.getElementById('cardMedsTable');
-  if (meds.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="3" style="color:var(--faint);font-style:italic;">No medications listed</td></tr>';
-  } else {
-    tbody.innerHTML = meds.map(function(m) {
-      return '<tr><td>' + m.name + '</td><td>' + m.dose + '</td><td>' + m.freq + '</td></tr>';
-    }).join('');
-  }
-
-  // Allergies
-  document.getElementById('cardAllergies').innerHTML =
-    '<div class="allergies-label">&#128680; Allergies</div><div class="allergies-value">' + allergies + '</div>';
-
-  // Emergency
-  document.getElementById('cardEmergency').innerHTML =
-    '<div class="emergency-label">Emergency Contact</div><div class="emergency-value">' + (emergency || '—') + '</div>';
-
-  // Date
-  document.getElementById('cardDate').textContent = 'Updated ' + new Date().toLocaleDateString();
-
-  document.getElementById('cardPreview').style.display = 'block';
-  document.getElementById('cardPreview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+function renderAllergies(){
+  var el=document.getElementById('allergyTags');
+  el.innerHTML=allergies.map(function(a,i){return '<span class="allergy-tag">'+a+'<button onclick="removeAllergy('+i+')">&#10005;</button></span>';}).join('');
+  updatePreview();
 }
-
-function copyCardText() {
-  var name = document.getElementById('patientName').value.trim() || 'Patient';
-  var rows = document.querySelectorAll('.med-row');
-  var meds = [];
-  for (var i = 0; i < rows.length; i++) {
-    var inputs = rows[i].querySelectorAll('input');
-    var medName = inputs[0].value.trim();
-    if (medName) meds.push(inputs[0].value + ' | ' + (inputs[1].value||'—') + ' | ' + (inputs[2].value||'—'));
-  }
-  var text = 'MEDICATION CARD — ' + name + '\n' +
-    'DOB: ' + (document.getElementById('patientDOB').value || '—') + '\n' +
-    'Doctor: ' + (document.getElementById('patientDoctor').value || '—') + '\n' +
-    'Doctor Phone: ' + (document.getElementById('doctorPhone').value || '—') + '\n' +
-    'Emergency Contact: ' + (document.getElementById('emergencyContact').value || '—') + '\n\n' +
-    'ALLERGIES: ' + (document.getElementById('allergies').value || 'None known') + '\n\n' +
-    'MEDICATIONS:\n' + meds.join('\n') + '\n\n' +
-    'Generated by Pill Talk — ' + new Date().toLocaleDateString();
-  navigator.clipboard.writeText(text);
+function addAllergy(){
+  var v=document.getElementById('allergyInput').value.trim();
+  if(!v)return;
+  allergies.push(v);document.getElementById('allergyInput').value='';renderAllergies();
 }
-
-// Start with 3 empty rows
-addRow(); addRow(); addRow();
+function removeAllergy(i){allergies.splice(i,1);renderAllergies();}
+function saveCard(){
+  var card={name:document.getElementById('fName').value.trim(),dob:document.getElementById('fDob').value.trim(),blood:document.getElementById('fBlood').value.trim(),doc:document.getElementById('fDoc').value.trim(),contact:document.getElementById('fContact').value.trim(),allergies:allergies};
+  localStorage.setItem('pt_medcard',JSON.stringify(card));
+  alert('Card saved!');
+}
+function shareCard(){navigator.clipboard.writeText(window.location.href);alert('Link copied!');}
+function printCard(){window.print();}
+document.getElementById('allergyInput').addEventListener('keydown',function(e){if(e.key==='Enter')addAllergy();});
+load();
 </script>
 </body>
 </html>

@@ -1,362 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<link rel="icon" type="image/svg+xml" href="/icon.svg">
-<link rel="manifest" href="/manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Pill Talk">
-<meta name="theme-color" content="#059669">
-<link rel="apple-touch-icon" href="/icon.svg">
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Pill Talk"/>
+<meta name="theme-color" content="#ffffff"/>
 <title>My Medications — Pill Talk</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/icon.svg"/>
+<link rel="manifest" href="/manifest.json"/>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --teal: #0d7a5f; --teal-dark: #0a5c47; --teal-mid: #b8e0d6; --teal-light: #e8f5f1;
-  --red: #c0392b; --red-light: #fdecea; --red-mid: #fca5a5;
-  --amber: #92400e; --amber-light: #fef3c7; --amber-mid: #fcd34d;
-  --green: #166534; --green-light: #dcfce7; --green-mid: #86efac;
-  --blue: #1e40af; --blue-light: #eff6ff; --blue-mid: #93c5fd;
-  --purple: #6d28d9; --purple-light: #f5f3ff; --purple-mid: #c4b5fd;
-  --text: #111827; --text2: #374151; --muted: #6b7280; --faint: #9ca3af; --xfaint: #d1d5db;
-  --bg: #f9fafb; --surface: #ffffff; --surface2: #f3f4f6;
-  --border: #e5e7eb; --border2: #d1d5db;
-  --radius: 12px; --radius-sm: 8px; --radius-lg: 16px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08); --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --teal:#059669;--teal-d:#047857;--teal-dd:#065f46;--teal-50:#ecfdf5;--teal-100:#d1fae5;
+  --g900:#111827;--g800:#1f2937;--g700:#374151;--g600:#4b5563;--g500:#6b7280;
+  --g400:#9ca3af;--g300:#d1d5db;--g200:#e5e7eb;--g150:#eeeff1;--g100:#f3f4f6;--g50:#f9fafb;
+  --red:#dc2626;--red-bg:#fef2f2;--red-b:#fecaca;
+  --amber:#d97706;--amber-bg:#fffbeb;--amber-b:#fde68a;
+  --green:#16a34a;--green-bg:#f0fdf4;--green-b:#bbf7d0;
+  --blue:#2563eb;--blue-bg:#eff6ff;--blue-b:#bfdbfe;
+  --purple:#7c3aed;--purple-bg:#f5f3ff;--purple-b:#ddd6fe;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-top:env(safe-area-inset-top,0px);
 }
-body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; }
-
-nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow); }
-.nav-logo { font-size: 17px; font-weight: 800; text-decoration: none; color: var(--text); display: flex; align-items: center; gap: 8px; }
-.nav-logo-icon { background: var(--teal); color: white; width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
-.nav-links { display: flex; gap: 4px; }
-.nav-link { padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; border-radius: var(--radius-sm); }
-.nav-link:hover { background: var(--surface2); color: var(--text); }
-.nav-link.active { background: var(--teal-light); color: var(--teal); }
-
-main { max-width: 760px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
-
-.page-header { margin-bottom: 2rem; }
-.page-title { font-size: 24px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 4px; }
-.page-sub { font-size: 14px; color: var(--muted); }
-
-.add-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md); }
-.add-row { display: flex; gap: 8px; }
-input[type=text] { flex: 1; padding: 11px 16px; font-size: 15px; font-family: inherit; border: 1.5px solid var(--border2); border-radius: var(--radius-sm); background: var(--bg); color: var(--text); outline: none; transition: border-color .15s, box-shadow .15s; }
-input[type=text]:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(13,122,95,0.1); }
-input[type=text]::placeholder { color: var(--faint); }
-button.add { padding: 11px 22px; background: var(--teal); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .15s; }
-button.add:hover { background: var(--teal-dark); }
-
-.med-list { margin-bottom: 1.5rem; }
-.empty-state { text-align: center; padding: 3rem 2rem; color: var(--muted); font-size: 14px; background: var(--surface); border: 1.5px dashed var(--border2); border-radius: var(--radius-lg); line-height: 2; }
-.empty-icon { font-size: 36px; margin-bottom: 12px; }
-.med-item { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 8px; box-shadow: var(--shadow); transition: border-color .15s; }
-.med-item:hover { border-color: var(--teal-mid); }
-.med-left { display: flex; align-items: center; gap: 12px; }
-.med-icon { width: 36px; height: 36px; background: var(--teal-light); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-.med-name { font-size: 15px; font-weight: 600; }
-.med-actions { display: flex; gap: 6px; }
-button.med-lookup { padding: 6px 14px; font-size: 12px; font-weight: 600; background: var(--teal-light); color: var(--teal); border: 1px solid var(--teal-mid); border-radius: 20px; cursor: pointer; font-family: inherit; transition: all .15s; }
-button.med-lookup:hover { background: var(--teal); color: white; }
-button.med-remove { padding: 6px 10px; font-size: 13px; background: transparent; color: var(--faint); border: 1px solid var(--border); border-radius: 20px; cursor: pointer; font-family: inherit; transition: all .15s; }
-button.med-remove:hover { background: var(--red-light); color: var(--red); border-color: var(--red-mid); }
-
-.action-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: var(--shadow); }
-.action-bar-info { font-size: 14px; color: var(--muted); }
-.action-bar-info strong { color: var(--text); font-weight: 700; }
-.action-bar-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-button.btn-ghost { padding: 8px 16px; background: transparent; border: 1.5px solid var(--border2); border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; transition: all .15s; }
-button.btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
-button.btn-check { padding: 10px 22px; background: var(--text); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .15s; }
-button.btn-check:hover { background: #1f2937; }
-button.btn-check:disabled { background: var(--faint); cursor: not-allowed; }
-
-.error-box { display: none; padding: 12px 16px; background: var(--red-light); border: 1px solid var(--red-mid); border-radius: var(--radius-sm); color: var(--red); font-size: 14px; margin-bottom: 1rem; }
-.spinner { display: none; text-align: center; padding: 3rem 0; }
-.spinner-inner { display: inline-flex; flex-direction: column; align-items: center; gap: 14px; }
-.ring { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin .7s linear infinite; }
-.spinner-text { font-size: 14px; color: var(--muted); }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-#interactionResult { display: none; }
-.result-summary-card { display: flex; align-items: center; gap: 14px; padding: 1.25rem 1.5rem; border-radius: var(--radius-lg); margin-bottom: 1.25rem; }
-.result-summary-card.safe { background: var(--green-light); border: 1px solid var(--green-mid); }
-.result-summary-card.unsafe { background: var(--red-light); border: 1px solid var(--red-mid); }
-.result-icon { font-size: 28px; }
-.result-summary-text { font-size: 15px; font-weight: 500; color: var(--text2); line-height: 1.5; }
-
-.no-interactions { text-align: center; padding: 1.5rem; background: var(--green-light); border: 1px solid var(--green-mid); border-radius: var(--radius); color: var(--green); font-size: 15px; font-weight: 500; margin-bottom: 1rem; display: none; }
-
-.section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-bottom: 10px; }
-
-.interaction-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 10px; box-shadow: var(--shadow); }
-.interaction-card.green { border-left: 4px solid #22c55e; }
-.interaction-card.yellow { border-left: 4px solid #f59e0b; }
-.interaction-card.red { border-left: 4px solid #ef4444; }
-.int-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.sev-chip { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 3px 8px; border-radius: 20px; }
-.sev-chip.green { background: var(--green-light); color: var(--green); }
-.sev-chip.yellow { background: var(--amber-light); color: var(--amber); }
-.sev-chip.red { background: var(--red-light); color: var(--red); }
-.int-drugs { font-size: 15px; font-weight: 700; }
-.int-desc { font-size: 14px; color: var(--muted); margin-bottom: 8px; line-height: 1.6; }
-.int-action { font-size: 13px; font-weight: 600; color: var(--text); background: var(--bg); padding: 7px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
-
-.dup-card { background: var(--amber-light); border: 1px solid var(--amber-mid); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 1rem; }
-.dup-card .section-label { color: var(--amber); }
-.dup-item { font-size: 14px; color: var(--text2); margin-bottom: 4px; }
-
-.rec-card { background: var(--blue-light); border: 1px solid var(--blue-mid); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 1.25rem; font-size: 14px; color: var(--text2); line-height: 1.6; }
-.rec-card .section-label { color: var(--blue); }
-
-.result-actions { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 1rem; }
-button.action-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: transparent; border: 1.5px solid var(--border2); border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; transition: all .15s; }
-button.action-btn:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
-
-footer { max-width: 760px; margin: 0 auto; padding: 0 1.5rem 2rem; font-size: 11px; color: var(--faint); line-height: 1.6; border-top: 1px solid var(--border); padding-top: 1.5rem; }
-
-@media(max-width:580px){
-  .nl span.full{display:none}
-  .nl{padding:6px 8px;font-size:16px}
-  nav{padding:0 .75rem}
-  .logo span{display:none}
-}
+html{height:100%;background:#fff}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;background:var(--g50);color:var(--g900);-webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:calc(83px + var(--safe-bottom))}
+.status-bar{height:var(--safe-top);background:#fff}
+.app-header{background:#fff;border-bottom:0.5px solid var(--g200);padding:12px 20px;position:sticky;top:var(--safe-top);z-index:50}
+.app-header-inner{display:flex;align-items:center;justify-content:space-between}
+.app-title{font-size:17px;font-weight:700;letter-spacing:-.2px}
+.header-logo{display:flex;align-items:center;gap:8px}
+.header-logo img{width:28px;height:28px;border-radius:7px}
+main{padding:16px 16px 8px}
+.card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+input[type=text]{width:100%;padding:12px 14px;font-size:15px;font-family:inherit;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g900);outline:none;-webkit-appearance:none;transition:border-color .15s}
+input[type=text]:focus{border-color:var(--teal);background:#fff;box-shadow:0 0 0 4px rgba(5,150,105,.08)}
+input::placeholder{color:var(--g400)}
+.btn-add{padding:12px 18px;background:var(--teal);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;-webkit-appearance:none;white-space:nowrap;box-shadow:0 2px 6px rgba(5,150,105,.25)}
+.btn-add:active{transform:scale(.97)}
+.btn-primary{padding:14px;background:var(--g900);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;-webkit-appearance:none}
+.btn-primary:active{transform:scale(.98)}
+.btn-ghost{padding:10px 16px;background:var(--g50);border:1px solid var(--g200);border-radius:10px;font-size:13px;font-weight:500;color:var(--g700);cursor:pointer;font-family:inherit;-webkit-appearance:none}
+.med-row{display:flex;align-items:center;padding:14px 16px;border-bottom:0.5px solid var(--g100)}
+.med-row:last-child{border-bottom:none}
+.med-icon{width:36px;height:36px;background:var(--teal-50);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-right:12px}
+.med-name{font-size:15px;font-weight:600;flex:1}
+.med-btns{display:flex;gap:6px}
+.med-btn{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:none;-webkit-appearance:none}
+.med-btn-look{background:var(--teal-50);color:var(--teal-dd)}
+.med-btn-rm{background:var(--g100);color:var(--g600)}
+.empty-state{text-align:center;padding:40px 20px;color:var(--g400)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty-txt{font-size:15px;font-weight:500;margin-bottom:4px;color:var(--g600)}
+.empty-sub{font-size:13px}
+.action-bar{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:none}
+.action-bar-info{font-size:14px;color:var(--g600);margin-bottom:12px}
+.action-bar-info strong{color:var(--g900);font-weight:700}
+.result-card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:none}
+.result-header{padding:16px;display:flex;align-items:center;gap:12px}
+.result-header.safe{background:var(--green-bg)}
+.result-header.unsafe{background:var(--red-bg)}
+.result-icon{font-size:26px}
+.result-summary{font-size:14px;font-weight:500;line-height:1.5;color:var(--g800)}
+.int-card{border-bottom:0.5px solid var(--g100)}
+.int-card:last-child{border-bottom:none}
+.int-card-inner{padding:14px 16px}
+.int-severity{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;margin-bottom:6px}
+.sev-mild{background:var(--green-bg);color:var(--green)}
+.sev-moderate{background:var(--amber-bg);color:var(--amber)}
+.sev-serious{background:var(--red-bg);color:var(--red)}
+.int-drugs{font-size:15px;font-weight:700;margin-bottom:6px}
+.int-desc{font-size:14px;color:var(--g600);line-height:1.5;margin-bottom:8px}
+.int-action{font-size:13px;font-weight:600;color:var(--g800);background:var(--g50);padding:8px 12px;border-radius:8px}
+.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);padding:12px 16px 6px}
+.error-box{display:none;padding:14px 16px;background:var(--red-bg);border-radius:12px;color:var(--red);font-size:14px;margin-bottom:12px;border:1px solid var(--red-b)}
+.spinner{display:none;text-align:center;padding:48px 0}
+.spin-ring{width:32px;height:32px;border:3px solid var(--g200);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin-txt{font-size:14px;color:var(--g500)}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:0.5px solid rgba(0,0,0,.12);display:flex;padding-bottom:var(--safe-bottom);z-index:100}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:50px}
+.tab-icon{font-size:22px;line-height:1;margin-bottom:3px;transition:transform .15s}
+.tab-label{font-size:10px;font-weight:500;color:var(--g400)}
+.tab-item.on .tab-label{color:var(--teal);font-weight:700}
+.tab-item.on .tab-icon{transform:scale(1.1)}
+::-webkit-scrollbar{display:none}*{scrollbar-width:none}
 </style>
 </head>
 <body>
-<nav class="pt-nav">
-  <a class="pt-logo" href="/"><img src="/icon.svg" alt="Pill Talk"/>Pill Talk</a>
-  <div class="pt-links">
-    <a class="pt-nl" href="/app">&#128138;<span class="full"> Look Up</span></a>
-    <a class="pt-nl on" href="/mymeds">&#128137;<span class="full"> My Meds</span></a>
-    <a class="pt-nl" href="/symptoms">&#128308;<span class="full"> Symptoms</span></a>
-    <a class="pt-nl" href="/tracker">&#128197;<span class="full"> Tracker</span></a>
-    <a class="pt-nl" href="/medcard">&#128203;<span class="full"> Med Card</span></a>
+<div class="status-bar"></div>
+<div class="app-header">
+  <div class="app-header-inner">
+    <div class="header-logo">
+      <img src="/icon.svg" alt="Pill Talk"/>
+      <span class="app-title">My Medications</span>
+    </div>
+    <button class="btn-ghost" onclick="clearAll()" style="font-size:13px;padding:7px 14px">Clear all</button>
   </div>
-</nav>
+</div>
 
 <main>
-  <div class="page-header">
-    <div class="page-title">&#128137; My Medications</div>
-    <div class="page-sub">Save your medications and check for dangerous interactions.</div>
+  <div class="card">
+    <div style="padding:16px;display:flex;gap:8px">
+      <input type="text" id="addInput" placeholder="Add a medication..."/>
+      <button class="btn-add" onclick="addMed()">Add</button>
+    </div>
+    <div id="medList"></div>
   </div>
 
-  <div class="add-card">
-    <div class="add-row">
-      <input type="text" id="addInput" placeholder="Add a medication (brand or generic name)..." />
-      <button class="add" onclick="addMed()">+ Add</button>
-    </div>
-  </div>
-
-  <div class="med-list" id="medList"></div>
-
-  <div class="action-bar" id="actionBar" style="display:none;">
-    <div class="action-bar-info"><strong id="medCount">0</strong> medications saved — ready to check for interactions</div>
-    <div class="action-bar-btns">
-      <button class="btn-ghost" onclick="clearAll()">Clear all</button>
-      <button class="btn-check" id="checkBtn" onclick="checkInteractions()">Check Interactions &rarr;</button>
-    </div>
+  <div class="action-bar" id="actionBar">
+    <div class="action-bar-info"><strong id="medCount">0</strong> medications — tap to check for interactions</div>
+    <button class="btn-primary" id="checkBtn" onclick="checkInteractions()">Check Interactions</button>
   </div>
 
   <div class="error-box" id="errorBox"></div>
+  <div class="spinner" id="spinner"><div class="spin-ring"></div><div class="spin-txt">Checking interactions...</div></div>
 
-  <div class="spinner" id="spinner">
-    <div class="spinner-inner">
-      <div class="ring"></div>
-      <div class="spinner-text">Checking for interactions...</div>
-    </div>
-  </div>
-
-  <div id="interactionResult">
-    <div class="result-summary-card" id="resultHeader">
+  <div class="result-card" id="resultCard">
+    <div class="result-header" id="resultHeader">
       <div class="result-icon" id="resultIcon"></div>
-      <div class="result-summary-text" id="resultSummary"></div>
+      <div class="result-summary" id="resultSummary"></div>
     </div>
-
-    <div class="no-interactions" id="noInteractions">&#10003; No significant drug interactions found between your medications.</div>
-
-    <div id="interactionCards"></div>
-
-    <div id="dupSection" style="display:none;">
-      <div class="dup-card">
-        <div class="section-label">&#9888; Possible Therapeutic Duplications</div>
-        <div id="dupList"></div>
+    <div id="noInt" style="display:none;padding:16px;text-align:center;color:var(--green);font-size:15px;font-weight:600;background:var(--green-bg)">&#10003; No significant interactions found</div>
+    <div id="intCards"></div>
+    <div id="dupSection" style="display:none">
+      <div class="section-label" style="color:var(--amber)">&#9888; Possible duplications</div>
+      <div id="dupList" style="padding:0 16px 14px;font-size:14px;color:var(--g700);line-height:1.7"></div>
+    </div>
+    <div id="recSection" style="display:none">
+      <div style="padding:14px 16px;background:var(--blue-bg);font-size:14px;color:var(--blue);line-height:1.6">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">&#128203; Recommendation</div>
+        <div id="recText"></div>
       </div>
     </div>
-
-    <div class="rec-card" id="recCard" style="display:none;">
-      <div class="section-label">&#128203; Pharmacist Recommendation</div>
-      <div id="recText"></div>
-    </div>
-
-    <div class="result-actions">
-      <button class="action-btn" onclick="copyReport()">&#10232; Copy Report</button>
-      <button class="action-btn" onclick="window.print()">&#9113; Print</button>
-      <button class="action-btn" onclick="document.getElementById('interactionResult').style.display='none'">&#8635; Check Again</button>
+    <div style="padding:12px 16px;display:flex;gap:8px">
+      <button class="btn-ghost" onclick="copyReport()" style="flex:1">&#10232; Copy Report</button>
+      <button class="btn-ghost" onclick="document.getElementById('resultCard').style.display='none'" style="flex:1">&#8635; Reset</button>
     </div>
   </div>
 </main>
 
-<footer>
-  AI-generated content. Always verify with your pharmacist or prescriber.
-  Not a substitute for professional clinical judgment. Built by Kathryn Bowman, PharmD Candidate.
-</footer>
+<nav class="tab-bar">
+  <a class="tab-item" href="/app"><div class="tab-icon">&#128138;</div><div class="tab-label">Look Up</div></a>
+  <a class="tab-item on" href="/mymeds"><div class="tab-icon">&#128137;</div><div class="tab-label">My Meds</div></a>
+  <a class="tab-item" href="/symptoms"><div class="tab-icon">&#128308;</div><div class="tab-label">Symptoms</div></a>
+  <a class="tab-item" href="/tracker"><div class="tab-icon">&#128197;</div><div class="tab-label">Tracker</div></a>
+  <a class="tab-item" href="/medcard"><div class="tab-icon">&#128203;</div><div class="tab-label">Med Card</div></a>
+</nav>
 
 <script>
-var meds = JSON.parse(localStorage.getItem('pilltalk_meds') || '[]');
-var lastReport = {};
-
-function saveMeds() { localStorage.setItem('pilltalk_meds', JSON.stringify(meds)); }
-
-function renderMeds() {
-  var list = document.getElementById('medList');
-  var bar = document.getElementById('actionBar');
-  document.getElementById('medCount').textContent = meds.length;
-
-  if (meds.length === 0) {
-    list.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128137;</div>No medications added yet.<br>Add your first medication above to get started.</div>';
-    bar.style.display = 'none';
-    return;
+var meds=JSON.parse(localStorage.getItem('pilltalk_meds')||'[]');
+var lastReport={};
+function save(){localStorage.setItem('pilltalk_meds',JSON.stringify(meds));}
+function renderMeds(){
+  var el=document.getElementById('medList');
+  var bar=document.getElementById('actionBar');
+  document.getElementById('medCount').textContent=meds.length;
+  if(!meds.length){
+    el.innerHTML='<div class="empty-state"><div class="empty-icon">&#128137;</div><div class="empty-txt">No medications yet</div><div class="empty-sub">Add your first medication above</div></div>';
+    bar.style.display='none';return;
   }
-
-  bar.style.display = 'flex';
-  var html = '';
-  for (var i = 0; i < meds.length; i++) {
-    html += '<div class="med-item">' +
-      '<div class="med-left"><div class="med-icon">&#9883;</div><div class="med-name">' + meds[i] + '</div></div>' +
-      '<div class="med-actions">' +
-      '<button class="med-lookup" onclick="lookupDrug(\'' + meds[i].replace(/'/g, "\\'") + '\')">Look up</button>' +
-      '<button class="med-remove" onclick="removeMed(' + i + ')">&#10005;</button>' +
-      '</div></div>';
-  }
-  list.innerHTML = html;
+  bar.style.display='block';
+  el.innerHTML=meds.map(function(m,i){
+    return '<div class="med-row"><div class="med-icon">&#9883;</div><div class="med-name">'+m+'</div><div class="med-btns"><button class="med-btn med-btn-look" onclick="lookupDrug(\''+m.replace(/'/g,"\\'")+'\'">Look up</button><button class="med-btn med-btn-rm" onclick="removeMed('+i+')">&#10005;</button></div></div>';
+  }).join('');
 }
-
-function addMed() {
-  var input = document.getElementById('addInput');
-  var val = input.value.trim();
-  if (!val) return;
-  if (meds.indexOf(val) === -1) { meds.push(val); saveMeds(); renderMeds(); }
-  input.value = '';
-  input.focus();
-}
-
-function removeMed(i) {
-  meds.splice(i, 1);
-  saveMeds();
+function addMed(){
+  var v=document.getElementById('addInput').value.trim();
+  if(!v) return;
+  if(meds.indexOf(v)===-1){meds.push(v);save();}
+  document.getElementById('addInput').value='';
   renderMeds();
-  document.getElementById('interactionResult').style.display = 'none';
 }
-
-function clearAll() {
-  meds = [];
-  saveMeds();
-  renderMeds();
-  document.getElementById('interactionResult').style.display = 'none';
-}
-
-function lookupDrug(name) { window.location.href = '/app?drug=' + encodeURIComponent(name); }
-
-function showError(msg) {
-  var el = document.getElementById('errorBox');
-  el.textContent = msg;
-  el.style.display = 'block';
-  document.getElementById('spinner').style.display = 'none';
-  document.getElementById('checkBtn').disabled = false;
-}
-
-function checkInteractions() {
-  if (meds.length < 2) { showError('Add at least 2 medications to check interactions.'); return; }
-  document.getElementById('errorBox').style.display = 'none';
-  document.getElementById('interactionResult').style.display = 'none';
-  document.getElementById('spinner').style.display = 'block';
-  document.getElementById('checkBtn').disabled = true;
-
-  fetch('/interactions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ drugs: meds, level: 'simple and clear language, avoid jargon, explain terms' })
+function removeMed(i){meds.splice(i,1);save();renderMeds();document.getElementById('resultCard').style.display='none';}
+function clearAll(){if(confirm('Clear all medications?')){meds=[];save();renderMeds();document.getElementById('resultCard').style.display='none';}}
+function lookupDrug(n){window.location.href='/app?drug='+encodeURIComponent(n);}
+function showError(msg){var el=document.getElementById('errorBox');el.textContent=msg;el.style.display='block';document.getElementById('spinner').style.display='none';document.getElementById('checkBtn').disabled=false;}
+function checkInteractions(){
+  if(meds.length<2){showError('Add at least 2 medications to check interactions.');return;}
+  document.getElementById('errorBox').style.display='none';
+  document.getElementById('resultCard').style.display='none';
+  document.getElementById('spinner').style.display='block';
+  document.getElementById('checkBtn').disabled=true;
+  fetch('/interactions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({drugs:meds,level:'simple and clear language'})})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if(data.error){showError(data.error);return;}
+    lastReport=data;
+    var header=document.getElementById('resultHeader');
+    document.getElementById('resultIcon').textContent=data.safe?'✅':'⚠️';
+    header.className='result-header '+(data.safe?'safe':'unsafe');
+    document.getElementById('resultSummary').textContent=data.summary||'';
+    var noInt=document.getElementById('noInt');
+    var cards=document.getElementById('intCards');
+    if(!data.interactions||!data.interactions.length){noInt.style.display='block';cards.innerHTML='';}
+    else{
+      noInt.style.display='none';
+      cards.innerHTML=data.interactions.map(function(int){
+        var sev=(int.severity||'green').toLowerCase();
+        var chipClass=sev==='red'?'sev-serious':sev==='yellow'?'sev-moderate':'sev-mild';
+        var chipLabel=sev==='red'?'Serious':sev==='yellow'?'Moderate':'Mild';
+        return '<div class="int-card"><div class="int-card-inner"><span class="int-severity '+chipClass+'">'+chipLabel+'</span><div class="int-drugs">'+(int.drugs||'')+'</div><div class="int-desc">'+(int.description||'')+'</div><div class="int-action">'+int.action+'</div></div></div>';
+      }).join('');
+    }
+    var dupSec=document.getElementById('dupSection');
+    if(data.duplications&&data.duplications.length){
+      document.getElementById('dupList').innerHTML=data.duplications.map(function(d){return '&#8226; '+d;}).join('<br>');
+      dupSec.style.display='block';
+    } else dupSec.style.display='none';
+    var recSec=document.getElementById('recSection');
+    if(data.recommendation){document.getElementById('recText').textContent=data.recommendation;recSec.style.display='block';}
+    else recSec.style.display='none';
+    document.getElementById('spinner').style.display='none';
+    document.getElementById('resultCard').style.display='block';
+    document.getElementById('checkBtn').disabled=false;
+    document.getElementById('resultCard').scrollIntoView({behavior:'smooth',block:'start'});
   })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    if (data.error) { showError(data.error); return; }
-    lastReport = data;
-
-    var header = document.getElementById('resultHeader');
-    document.getElementById('resultIcon').textContent = data.safe ? '✅' : '⚠️';
-    header.className = 'result-summary-card ' + (data.safe ? 'safe' : 'unsafe');
-    document.getElementById('resultSummary').textContent = data.summary || '';
-
-    var noInt = document.getElementById('noInteractions');
-    var cards = document.getElementById('interactionCards');
-
-    if (!data.interactions || data.interactions.length === 0) {
-      noInt.style.display = 'block';
-      cards.innerHTML = '';
-    } else {
-      noInt.style.display = 'none';
-      var html = '';
-      for (var i = 0; i < data.interactions.length; i++) {
-        var int = data.interactions[i];
-        var sev = (int.severity || 'green').toLowerCase();
-        var chipLabel = sev === 'red' ? 'Serious' : sev === 'yellow' ? 'Moderate' : 'Mild';
-        html += '<div class="interaction-card ' + sev + '">' +
-          '<div class="int-top"><span class="sev-chip ' + sev + '">' + chipLabel + '</span><span class="int-drugs">' + (int.drugs || '') + '</span></div>' +
-          '<div class="int-desc">' + (int.description || '') + '</div>' +
-          '<div class="int-action">&#128203; ' + (int.action || '') + '</div>' +
-          '</div>';
-      }
-      cards.innerHTML = html;
-    }
-
-    var dupSection = document.getElementById('dupSection');
-    var dupList = document.getElementById('dupList');
-    if (data.duplications && data.duplications.length > 0) {
-      dupList.innerHTML = data.duplications.map(function(d){ return '<div class="dup-item">&#8226; ' + d + '</div>'; }).join('');
-      dupSection.style.display = 'block';
-    } else {
-      dupSection.style.display = 'none';
-    }
-
-    var recCard = document.getElementById('recCard');
-    if (data.recommendation) {
-      document.getElementById('recText').textContent = data.recommendation;
-      recCard.style.display = 'block';
-    } else {
-      recCard.style.display = 'none';
-    }
-
-    document.getElementById('spinner').style.display = 'none';
-    document.getElementById('interactionResult').style.display = 'block';
-    document.getElementById('checkBtn').disabled = false;
-    document.getElementById('interactionResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  })
-  .catch(function(err) { showError('Could not reach the server. (' + err.message + ')'); });
+  .catch(function(err){showError('Could not reach server. ('+err.message+')');});
 }
-
-function copyReport() {
-  if (!lastReport.summary) return;
-  var r = lastReport;
-  var text = 'PILL TALK — INTERACTION REPORT\nMedications: ' + meds.join(', ') + '\n\nSUMMARY\n' + r.summary + '\n\n';
-  if (r.interactions && r.interactions.length > 0) {
-    text += 'INTERACTIONS\n';
-    r.interactions.forEach(function(i){ text += '• ' + i.drugs + ' [' + (i.severity||'').toUpperCase() + ']\n  ' + i.description + '\n  Action: ' + i.action + '\n\n'; });
+function copyReport(){
+  var text='PILL TALK - INTERACTION REPORT\nMedications: '+meds.join(', ')+'\n\n';
+  text+='SUMMARY\n'+(lastReport.summary||'')+'\n\n';
+  if(lastReport.interactions&&lastReport.interactions.length){
+    lastReport.interactions.forEach(function(i){text+='• '+i.drugs+' ['+i.severity+']\n  '+i.description+'\n  Action: '+i.action+'\n\n';});
   }
-  if (r.recommendation) text += 'RECOMMENDATION\n' + r.recommendation + '\n\n';
-  text += '---\nGenerated by Pill Talk · Always verify with your pharmacist';
+  if(lastReport.recommendation) text+='RECOMMENDATION\n'+lastReport.recommendation+'\n';
   navigator.clipboard.writeText(text);
 }
-
-document.getElementById('addInput').onkeydown = function(e) { if (e.key === 'Enter') addMed(); };
-
-var urlParams = new URLSearchParams(window.location.search);
-var drugParam = urlParams.get('drug');
-if (drugParam && meds.indexOf(drugParam) === -1) { meds.push(drugParam); saveMeds(); }
+document.getElementById('addInput').addEventListener('keydown',function(e){if(e.key==='Enter')addMed();});
+var urlParams=new URLSearchParams(window.location.search);
+var dp=urlParams.get('drug');
+if(dp&&meds.indexOf(dp)===-1){meds.push(dp);save();}
 renderMeds();
 </script>
 </body>

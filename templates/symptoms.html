@@ -2,355 +2,240 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Pill Talk"/>
+<meta name="theme-color" content="#ffffff"/>
 <title>Symptom Checker — Pill Talk</title>
-<link rel="icon" type="image/svg+xml" href="/icon.svg">
-<link rel="manifest" href="/manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Pill Talk">
-<meta name="theme-color" content="#059669">
-<link rel="apple-touch-icon" href="/icon.svg">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/icon.svg"/>
+<link rel="manifest" href="/manifest.json"/>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --teal:#059669;--teal-d:#047857;--teal-dd:#065f46;--teal-50:#ecfdf5;--teal-100:#d1fae5;
-  --g900:#111827;--g700:#374151;--g500:#6b7280;--g400:#9ca3af;--g300:#d1d5db;--g200:#e5e7eb;--g100:#f3f4f6;--g50:#f9fafb;
+  --g900:#111827;--g800:#1f2937;--g700:#374151;--g600:#4b5563;--g500:#6b7280;
+  --g400:#9ca3af;--g300:#d1d5db;--g200:#e5e7eb;--g150:#eeeff1;--g100:#f3f4f6;--g50:#f9fafb;
   --red:#dc2626;--red-bg:#fef2f2;--red-b:#fecaca;
   --amber:#d97706;--amber-bg:#fffbeb;--amber-b:#fde68a;
   --green:#16a34a;--green-bg:#f0fdf4;--green-b:#bbf7d0;
   --blue:#2563eb;--blue-bg:#eff6ff;--blue-b:#bfdbfe;
-  --r:10px;--rl:14px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);--safe-top:env(safe-area-inset-top,0px);
 }
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--g50);color:var(--g900);-webkit-font-smoothing:antialiased;min-height:100vh}
-nav{background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--g200);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.logo{font-size:17px;font-weight:800;text-decoration:none;color:var(--g900);display:flex;align-items:center;gap:9px}
-.logo-icon{width:30px;height:30px;border-radius:8px;box-shadow:0 2px 4px rgba(5,150,105,.3)}
-.nav-links{display:flex;gap:2px}
-.nl{padding:6px 12px;font-size:13px;font-weight:500;color:var(--g500);text-decoration:none;border-radius:6px;transition:all .15s;white-space:nowrap}
-.nl:hover{background:var(--g100);color:var(--g900)}
-.nl.on{background:var(--teal-50);color:var(--teal-dd);font-weight:600}
-main{max-width:760px;margin:0 auto;padding:2rem 1.25rem 5rem}
-.page-title{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:4px}
-.page-sub{font-size:13px;color:var(--g500);margin-bottom:1.5rem}
-.card{background:#fff;border:1px solid var(--g200);border-radius:var(--rl);box-shadow:0 2px 8px rgba(0,0,0,.05);padding:1.5rem;margin-bottom:1.25rem}
-.card-title{font-size:15px;font-weight:700;margin-bottom:1rem}
-.med-row{display:flex;gap:8px;margin-bottom:8px}
-.med-row input{flex:1;padding:10px 14px;font-size:14px;font-family:inherit;border:1.5px solid var(--g300);border-radius:var(--r);background:var(--g50);color:var(--g900);outline:none;transition:border-color .15s}
-.med-row input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(5,150,105,.1)}
-.med-row input::placeholder{color:var(--g400)}
-.med-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:var(--teal-50);border:1px solid var(--teal-100);border-radius:20px;font-size:13px;font-weight:500;color:var(--teal-dd);margin:3px}
-.med-tag button{background:none;border:none;cursor:pointer;color:var(--teal-dd);font-size:15px;line-height:1;padding:0;opacity:.6}
-.med-tag button:hover{opacity:1}
-.add-btn{padding:10px 18px;background:var(--g100);color:var(--g700);border:1.5px solid var(--g200);border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
-.add-btn:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-50)}
-textarea{width:100%;padding:12px 14px;font-size:14px;font-family:inherit;border:1.5px solid var(--g300);border-radius:var(--r);background:var(--g50);color:var(--g900);outline:none;resize:vertical;min-height:100px;line-height:1.6;transition:border-color .15s}
-textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(5,150,105,.1)}
-textarea::placeholder{color:var(--g400)}
-
-.symptom-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:1rem}
-.sym-chip{padding:6px 13px;border:1.5px solid var(--g300);border-radius:20px;font-size:13px;font-weight:500;color:var(--g600);cursor:pointer;background:#fff;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:5px}
-.sym-chip:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-50)}
+html{height:100%;background:#fff}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;background:var(--g50);color:var(--g900);-webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:calc(83px + var(--safe-bottom))}
+.status-bar{height:var(--safe-top);background:#fff}
+.app-header{background:#fff;border-bottom:0.5px solid var(--g200);padding:12px 20px;position:sticky;top:var(--safe-top);z-index:50}
+.app-title{font-size:17px;font-weight:700;letter-spacing:-.2px}
+.header-logo{display:flex;align-items:center;gap:8px}
+.header-logo img{width:28px;height:28px;border-radius:7px}
+main{padding:16px 16px 8px}
+.card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);padding:16px}
+.card-label{font-size:13px;font-weight:600;color:var(--g600);margin-bottom:10px}
+.med-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--teal-50);border-radius:20px;font-size:13px;font-weight:500;color:var(--teal-dd);margin:3px}
+.med-tag button{background:none;border:none;cursor:pointer;color:var(--teal-dd);font-size:14px;opacity:.6}
+.chips-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:8px}
+.chips-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.sym-chip{padding:8px 14px;border:1.5px solid var(--g200);border-radius:20px;font-size:14px;font-weight:500;color:var(--g700);cursor:pointer;background:#fff;font-family:inherit;transition:all .15s;-webkit-appearance:none}
+.sym-chip:active{transform:scale(.96)}
 .sym-chip.on{background:var(--teal);border-color:var(--teal);color:#fff}
-.chips-label{font-size:12px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-
-.hint{font-size:12px;color:var(--g400);margin-top:6px}
-.btn-go{width:100%;padding:13px;background:var(--teal);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;box-shadow:0 2px 4px rgba(5,150,105,.25)}
-.btn-go:hover{background:var(--teal-d)}
-.btn-go:disabled{background:var(--g400);cursor:not-allowed}
-.spinner{display:none;text-align:center;padding:4rem 0}
-.spin-ring{width:34px;height:34px;border:3px solid var(--g200);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+input[type=text],textarea{width:100%;padding:12px 14px;font-size:15px;font-family:inherit;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g900);outline:none;-webkit-appearance:none;transition:border-color .15s;margin-bottom:8px}
+input[type=text]:focus,textarea:focus{border-color:var(--teal);background:#fff;box-shadow:0 0 0 4px rgba(5,150,105,.08)}
+input::placeholder,textarea::placeholder{color:var(--g400)}
+textarea{resize:vertical;min-height:80px;line-height:1.5}
+.btn-primary{padding:14px;background:var(--teal);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;-webkit-appearance:none;box-shadow:0 2px 8px rgba(5,150,105,.3);margin-bottom:12px}
+.btn-primary:active{transform:scale(.98)}
+.btn-primary:disabled{background:var(--g300);box-shadow:none}
+.warning-card{background:var(--amber-bg);border:1px solid var(--amber-b);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--amber);line-height:1.6;margin-bottom:12px}
+.error-box{display:none;padding:14px 16px;background:var(--red-bg);border-radius:12px;color:var(--red);font-size:14px;margin-bottom:12px;border:1px solid var(--red-b)}
+.spinner{display:none;text-align:center;padding:48px 0}
+.spin-ring{width:32px;height:32px;border:3px solid var(--g200);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.spin-txt{font-size:13px;color:var(--g500);font-weight:500}
-.error-box{display:none;padding:12px 16px;background:var(--red-bg);border:1px solid var(--red-b);border-radius:var(--r);color:var(--red);font-size:13px;margin-bottom:1rem}
+.spin-txt{font-size:14px;color:var(--g500)}
 #result{display:none}
-.risk-banner{display:flex;align-items:center;gap:14px;padding:1.25rem 1.5rem;border-radius:var(--rl);margin-bottom:1.25rem}
+.risk-card{border-radius:16px;padding:16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:12px}
 .risk-low{background:var(--green-bg);border:1px solid var(--green-b)}
 .risk-moderate{background:var(--amber-bg);border:1px solid var(--amber-b)}
 .risk-high{background:var(--red-bg);border:1px solid var(--red-b)}
 .risk-icon{font-size:28px;flex-shrink:0}
-.risk-text{font-size:15px;font-weight:500;line-height:1.5}
-.urgent-banner{display:none;background:var(--red-bg);border:2px solid var(--red);border-radius:var(--r);padding:14px 18px;margin-bottom:1.25rem}
+.risk-text{font-size:15px;font-weight:500;line-height:1.5;color:var(--g800)}
+.urgent-card{background:var(--red-bg);border:2px solid var(--red);border-radius:16px;padding:16px;margin-bottom:12px;display:none}
 .urgent-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--red);margin-bottom:6px}
 .urgent-text{font-size:14px;font-weight:600;color:var(--red);line-height:1.6}
-.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);margin-bottom:10px}
-.finding-card{background:#fff;border:1px solid var(--g200);border-radius:var(--r);padding:16px 18px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.finding-card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .finding-card.green{border-left:4px solid #22c55e}
 .finding-card.yellow{border-left:4px solid #f59e0b}
 .finding-card.red{border-left:4px solid #ef4444}
-.finding-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.finding-inner{padding:14px 16px}
+.finding-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
 .finding-symptom{font-size:15px;font-weight:700}
-.chip{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:3px 9px;border-radius:20px}
-.chip-green{background:var(--green-bg);color:var(--green)}
-.chip-yellow{background:var(--amber-bg);color:var(--amber)}
-.chip-red{background:var(--red-bg);color:var(--red)}
-.chip-blue{background:var(--blue-bg);color:var(--blue)}
-.finding-drug{font-size:12px;color:var(--g500);font-style:italic}
-.finding-exp{font-size:14px;color:var(--g700);margin-bottom:8px;line-height:1.6}
-.finding-action{font-size:13px;font-weight:600;padding:7px 12px;border-radius:6px;display:inline-flex;align-items:center;gap:6px}
-.action-monitor{background:var(--green-bg);color:var(--green)}
-.action-call{background:var(--amber-bg);color:var(--amber)}
-.action-er{background:var(--red-bg);color:var(--red)}
-.disclaimer-card{background:var(--g100);border-radius:var(--r);padding:12px 16px;font-size:12px;color:var(--g500);line-height:1.6;margin-top:1rem}
-.result-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem}
-.act-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;background:#fff;border:1.5px solid var(--g300);border-radius:var(--r);font-size:13px;font-weight:600;color:var(--g600);cursor:pointer;font-family:inherit;transition:all .15s}
-.act-btn:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-50)}
-.info-banner{background:var(--teal-50);border:1px solid var(--teal-100);border-radius:var(--r);padding:12px 16px;font-size:13px;color:var(--teal-dd);margin-bottom:1.5rem;line-height:1.6}
-footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color:var(--g400);line-height:1.7;border-top:1px solid var(--g200);padding-top:1.5rem}
-
-@media(max-width:580px){
-  .nl span.full{display:none}
-  .nl{padding:6px 8px;font-size:16px}
-  nav{padding:0 .75rem}
-  .logo span{display:none}
-}
+.finding-chip{font-size:11px;font-weight:700;text-transform:uppercase;padding:3px 8px;border-radius:20px}
+.fc-green{background:var(--green-bg);color:var(--green)}
+.fc-yellow{background:var(--amber-bg);color:var(--amber)}
+.fc-red{background:var(--red-bg);color:var(--red)}
+.finding-drug{font-size:12px;color:var(--g400);font-style:italic}
+.finding-exp{font-size:14px;color:var(--g600);margin-bottom:8px;line-height:1.6}
+.finding-action{font-size:13px;font-weight:600;padding:8px 12px;border-radius:8px;display:inline-flex;align-items:center;gap:5px}
+.fa-monitor{background:var(--green-bg);color:var(--green)}
+.fa-call{background:var(--amber-bg);color:var(--amber)}
+.fa-er{background:var(--red-bg);color:var(--red)}
+.disclaimer{font-size:11px;color:var(--g400);background:var(--g50);border-radius:12px;padding:12px 14px;line-height:1.6;margin-top:12px}
+.btn-ghost{padding:10px 16px;background:var(--g50);border:1px solid var(--g200);border-radius:10px;font-size:13px;font-weight:500;color:var(--g700);cursor:pointer;font-family:inherit}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:0.5px solid rgba(0,0,0,.12);display:flex;padding-bottom:var(--safe-bottom);z-index:100}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:50px}
+.tab-icon{font-size:22px;line-height:1;margin-bottom:3px;transition:transform .15s}
+.tab-label{font-size:10px;font-weight:500;color:var(--g400)}
+.tab-item.on .tab-label{color:var(--teal);font-weight:700}
+.tab-item.on .tab-icon{transform:scale(1.1)}
+::-webkit-scrollbar{display:none}*{scrollbar-width:none}
 </style>
 </head>
 <body>
-<nav>
-  <a class="logo" href="/"><img class="logo-icon" src="/icon.svg" alt="Pill Talk"/>Pill Talk</a>
-  <div class="nav-links">
-    <a class="nl" href="/app">&#128138;<span class="full"> Look Up</span></a>
-    <a class="nl" href="/mymeds">&#128137;<span class="full"> My Meds</span></a>
-    <a class="nl on" href="/symptoms">&#128308;<span class="full"> Symptoms</span></a>
-    <a class="nl" href="/tracker">&#128197;<span class="full"> Tracker</span></a>
-    <a class="nl" href="/medcard">&#128203;<span class="full"> Med Card</span></a>
+<div class="status-bar"></div>
+<div class="app-header">
+  <div class="header-logo">
+    <img src="/icon.svg" alt="Pill Talk"/>
+    <span class="app-title">Symptom Checker</span>
   </div>
-</nav>
-
+</div>
 <main>
-  <div class="page-title">&#128308; Symptom Checker</div>
-  <div class="page-sub">Enter your medications and symptoms to find out if what you're feeling is a side effect, a drug interaction, or something that needs medical attention.</div>
+  <div class="warning-card">&#9888; This is not a medical diagnosis. Call 911 for emergencies.</div>
 
-  <div class="info-banner">
-    &#9888; This tool is for informational purposes only and does not replace professional medical advice. If you are experiencing a medical emergency, call 911 immediately.
+  <div class="card">
+    <div class="card-label">Your medications</div>
+    <input type="text" id="medInput" placeholder="Add a medication..."/>
+    <div id="medTags" style="margin-top:4px;min-height:28px"></div>
   </div>
 
   <div class="card">
-    <div class="card-title">Your medications</div>
-    <div class="med-row">
-      <input type="text" id="medInput" placeholder="Add a medication (brand or generic)..."/>
-      <button class="add-btn" onclick="addMed()">+ Add</button>
-    </div>
-    <div id="medTags" style="margin-top:8px;min-height:32px"></div>
-    <div class="hint">Or <a href="/mymeds" style="color:var(--teal);text-decoration:none;font-weight:600">load from My Medications</a></div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">What symptoms are you experiencing?</div>
-    <div class="chips-label">Quick select — tap to add</div>
-    <div class="symptom-chips">
+    <div class="chips-label">Quick select symptoms</div>
+    <div class="chips-wrap">
       <button class="sym-chip" onclick="toggleChip(this,'Nausea')">&#129298; Nausea</button>
       <button class="sym-chip" onclick="toggleChip(this,'Headache')">&#129354; Headache</button>
       <button class="sym-chip" onclick="toggleChip(this,'Dizziness')">&#129529; Dizziness</button>
       <button class="sym-chip" onclick="toggleChip(this,'Fatigue')">&#128564; Fatigue</button>
       <button class="sym-chip" onclick="toggleChip(this,'Stomach pain')">&#129760; Stomach pain</button>
-      <button class="sym-chip" onclick="toggleChip(this,'Diarrhea')">&#128165; Diarrhea</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Diarrhea')">Diarrhea</button>
       <button class="sym-chip" onclick="toggleChip(this,'Vomiting')">&#129314; Vomiting</button>
-      <button class="sym-chip" onclick="toggleChip(this,'Rash or itching')">&#129656; Rash/Itching</button>
-      <button class="sym-chip" onclick="toggleChip(this,'Dry mouth')">&#128064; Dry mouth</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Rash or itching')">Rash/Itch</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Dry mouth')">Dry mouth</button>
       <button class="sym-chip" onclick="toggleChip(this,'Muscle pain')">&#128170; Muscle pain</button>
-      <button class="sym-chip" onclick="toggleChip(this,'Rapid heartbeat')">&#128147; Rapid heartbeat</button>
-      <button class="sym-chip" onclick="toggleChip(this,'Trouble sleeping')">&#128336; Trouble sleeping</button>
-      <button class="sym-chip" onclick="toggleChip(this,'Blurred vision')">&#128064; Blurred vision</button>
-      <button class="sym-chip" onclick="toggleChip(this,'Swelling')">&#129466; Swelling</button>
-      <button class="sym-chip" onclick="toggleChip(this,'Shortness of breath')">&#128168; Shortness of breath</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Rapid heartbeat')">&#128147; Heart racing</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Trouble sleeping')">&#128336; Insomnia</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Blurred vision')">Blurred vision</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Swelling')">Swelling</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Shortness of breath')">&#128168; Short of breath</button>
       <button class="sym-chip" onclick="toggleChip(this,'Chest pain')">&#128148; Chest pain</button>
-      <button class="sym-chip" onclick="toggleChip(this,'Constipation')">&#128169; Constipation</button>
-      <button class="sym-chip" onclick="toggleChip(this,'Loss of appetite')">&#127812; Loss of appetite</button>
-      <button class="sym-chip" onclick="toggleChip(this,'Anxiety or racing thoughts')">&#128543; Anxiety</button>
-      <button class="sym-chip" onclick="toggleChip(this,'Low mood or depression')">&#129297; Low mood</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Constipation')">Constipation</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Loss of appetite')">No appetite</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Anxiety')">&#128543; Anxiety</button>
+      <button class="sym-chip" onclick="toggleChip(this,'Low mood')">&#129297; Low mood</button>
     </div>
-    <textarea id="symptomInput" placeholder="Describe your symptoms — or tap the chips above. Example: I have a headache and feel nauseous. Started about 2 hours after taking my medication."></textarea>
-    <div class="hint">Be as specific as possible — when symptoms started, severity, anything that makes them better or worse.</div>
+    <div class="card-label">Or describe in your own words</div>
+    <textarea id="symptomInput" placeholder="e.g. I have a headache and feel nauseous after taking my medication..."></textarea>
   </div>
 
-  <button class="btn-go" id="checkBtn" onclick="checkSymptoms()">Check My Symptoms &rarr;</button>
+  <button class="btn-primary" id="checkBtn" onclick="checkSymptoms()">Check My Symptoms</button>
 
   <div class="error-box" id="errorBox"></div>
-
-  <div class="spinner" id="spinner">
-    <div class="spin-ring"></div>
-    <div class="spin-txt">Analyzing your symptoms...</div>
-  </div>
+  <div class="spinner" id="spinner"><div class="spin-ring"></div><div class="spin-txt">Analyzing symptoms...</div></div>
 
   <div id="result">
-    <div class="risk-banner" id="riskBanner">
+    <div class="risk-card" id="riskCard">
       <div class="risk-icon" id="riskIcon"></div>
       <div class="risk-text" id="riskText"></div>
     </div>
-
-    <div class="urgent-banner" id="urgentBanner">
-      <div class="urgent-label">&#128680; Urgent — Take Action Now</div>
+    <div class="urgent-card" id="urgentCard">
+      <div class="urgent-label">&#128680; Take action now</div>
       <div class="urgent-text" id="urgentText"></div>
     </div>
-
-    <div class="section-label">Symptom findings</div>
     <div id="findings"></div>
-
-    <div class="disclaimer-card" id="disclaimerCard"></div>
-
-    <div class="result-actions">
-      <button class="act-btn" onclick="copyReport()">&#10232; Copy Report</button>
-      <button class="act-btn" onclick="window.print()">&#9113; Print</button>
-      <button class="act-btn" onclick="clearAll()">&#8635; Check Again</button>
+    <div class="disclaimer" id="disclaimerCard"></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn-ghost" onclick="copyReport()" style="flex:1">&#10232; Copy</button>
+      <button class="btn-ghost" onclick="clearAll()" style="flex:1">&#8635; Reset</button>
     </div>
   </div>
 </main>
 
-<footer>
-  AI-generated content. This is not a medical diagnosis. Always consult your pharmacist, doctor, or call 911 in an emergency.
-  Built by Kathryn Bowman, PharmD Candidate — University of Kentucky College of Pharmacy.
-</footer>
+<nav class="tab-bar">
+  <a class="tab-item" href="/app"><div class="tab-icon">&#128138;</div><div class="tab-label">Look Up</div></a>
+  <a class="tab-item" href="/mymeds"><div class="tab-icon">&#128137;</div><div class="tab-label">My Meds</div></a>
+  <a class="tab-item on" href="/symptoms"><div class="tab-icon">&#128308;</div><div class="tab-label">Symptoms</div></a>
+  <a class="tab-item" href="/tracker"><div class="tab-icon">&#128197;</div><div class="tab-label">Tracker</div></a>
+  <a class="tab-item" href="/medcard"><div class="tab-icon">&#128203;</div><div class="tab-label">Med Card</div></a>
+</nav>
 
 <script>
 var meds=JSON.parse(localStorage.getItem('pilltalk_meds')||'[]');
+var selectedChips=[];
 var lastReport={};
 
 function renderTags(){
-  var html='';
-  for(var i=0;i<meds.length;i++){
-    html+='<span class="med-tag">'+meds[i]+'<button onclick="removeMed('+i+')">&#10005;</button></span>';
-  }
-  document.getElementById('medTags').innerHTML=html||'<span style="font-size:13px;color:var(--g400)">No medications added yet</span>';
+  var el=document.getElementById('medTags');
+  if(!meds.length){el.innerHTML='<span style="font-size:13px;color:var(--g400)">No medications added</span>';return;}
+  el.innerHTML=meds.map(function(m,i){return '<span class="med-tag">'+m+'<button onclick="removeMed('+i+')">&#10005;</button></span>';}).join('');
 }
-
 function addMed(){
-  var input=document.getElementById('medInput');
-  var val=input.value.trim();
-  if(!val) return;
-  if(meds.indexOf(val)===-1){meds.push(val);localStorage.setItem('pilltalk_meds',JSON.stringify(meds));}
-  // Auto-load from My Meds
-var savedMeds = JSON.parse(localStorage.getItem('pilltalk_meds') || '[]');
-savedMeds.forEach(function(m) { if (meds.indexOf(m) === -1) meds.push(m); });
-renderTags();
-  input.value='';input.focus();
+  var v=document.getElementById('medInput').value.trim();
+  if(!v)return;
+  if(meds.indexOf(v)===-1){meds.push(v);localStorage.setItem('pilltalk_meds',JSON.stringify(meds));}
+  document.getElementById('medInput').value='';renderTags();
 }
-
-function removeMed(i){
-  meds.splice(i,1);
-  localStorage.setItem('pilltalk_meds',JSON.stringify(meds));
-  // Auto-load from My Meds
-var savedMeds = JSON.parse(localStorage.getItem('pilltalk_meds') || '[]');
-savedMeds.forEach(function(m) { if (meds.indexOf(m) === -1) meds.push(m); });
-renderTags();
+function removeMed(i){meds.splice(i,1);localStorage.setItem('pilltalk_meds',JSON.stringify(meds));renderTags();}
+function toggleChip(btn,symptom){
+  var idx=selectedChips.indexOf(symptom);
+  if(idx===-1){selectedChips.push(symptom);btn.classList.add('on');}
+  else{selectedChips.splice(idx,1);btn.classList.remove('on');}
+  var ta=document.getElementById('symptomInput');
+  var manual=ta.value.replace(/^Selected:.*\n?/,'').trim();
+  var chipTxt=selectedChips.length?'Selected: '+selectedChips.join(', '):'';
+  ta.value=[chipTxt,manual].filter(Boolean).join('\n');
 }
-
-function showError(msg){
-  var el=document.getElementById('errorBox');
-  el.textContent=msg;el.style.display='block';
-  document.getElementById('spinner').style.display='none';
-  document.getElementById('checkBtn').disabled=false;
-}
-
+function showError(msg){var el=document.getElementById('errorBox');el.textContent=msg;el.style.display='block';document.getElementById('spinner').style.display='none';document.getElementById('checkBtn').disabled=false;}
 function checkSymptoms(){
-  var symptoms=document.getElementById('symptomInput').value.trim();
-  if(!symptoms){showError('Please describe your symptoms.');return;}
+  var syms=document.getElementById('symptomInput').value.trim();
+  if(!syms){showError('Please describe your symptoms.');return;}
   document.getElementById('errorBox').style.display='none';
   document.getElementById('result').style.display='none';
   document.getElementById('spinner').style.display='block';
   document.getElementById('checkBtn').disabled=true;
-
-  fetch('/check-symptoms',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({drugs:meds,symptoms:symptoms,level:'simple and clear language, avoid jargon'})
-  })
-  .then(function(r){return r.json()})
+  fetch('/check-symptoms',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({drugs:meds,symptoms:syms,level:'simple and clear language'})})
+  .then(function(r){return r.json();})
   .then(function(data){
     if(data.error){showError(data.error);return;}
     lastReport=data;
-
     var risk=(data.overallRisk||'low').toLowerCase();
-    var banner=document.getElementById('riskBanner');
-    banner.className='risk-banner risk-'+risk;
+    var card=document.getElementById('riskCard');
+    card.className='risk-card risk-'+risk;
     document.getElementById('riskIcon').textContent=risk==='high'?'🚨':risk==='moderate'?'⚠️':'✅';
     document.getElementById('riskText').textContent=data.overallSummary||'';
-
-    var urgent=document.getElementById('urgentBanner');
-    if(data.urgentAction&&data.urgentAction.trim().length>2){
-      document.getElementById('urgentText').textContent=data.urgentAction;
-      urgent.style.display='block';
-    } else { urgent.style.display='none'; }
-
-    var html='';
-    var findings=data.findings||[];
-    for(var i=0;i<findings.length;i++){
-      var f=findings[i];
+    var urgent=document.getElementById('urgentCard');
+    if(data.urgentAction&&data.urgentAction.trim().length>2){document.getElementById('urgentText').textContent=data.urgentAction;urgent.style.display='block';}
+    else urgent.style.display='none';
+    var findings=document.getElementById('findings');
+    var fdata=data.findings||[];
+    findings.innerHTML=fdata.map(function(f){
       var sev=(f.severity||'green').toLowerCase();
-      var cat=f.category||'';
-      var actionClass=sev==='red'?'action-er':sev==='yellow'?'action-call':'action-monitor';
+      var chipClass='fc-'+(sev==='red'?'red':sev==='yellow'?'yellow':'green');
+      var actionClass='fa-'+(sev==='red'?'er':sev==='yellow'?'call':'monitor');
       var actionIcon=sev==='red'?'🚨':sev==='yellow'?'📞':'✓';
-      var chipClass='chip-'+(sev==='red'?'red':sev==='yellow'?'yellow':'green');
-      html+='<div class="finding-card '+sev+'">';
-      html+='<div class="finding-top">';
-      html+='<span class="finding-symptom">'+f.symptom+'</span>';
-      html+='<span class="chip '+chipClass+'">'+cat+'</span>';
-      if(f.drug) html+='<span class="finding-drug">likely from: '+f.drug+'</span>';
-      html+='</div>';
-      html+='<div class="finding-exp">'+f.explanation+'</div>';
-      html+='<div class="finding-action '+actionClass+'">'+actionIcon+' '+f.action+'</div>';
-      html+='</div>';
-    }
-    document.getElementById('findings').innerHTML=html||'<div style="color:var(--g400);font-size:14px">No specific findings — please describe your symptoms in more detail.</div>';
-
-    document.getElementById('disclaimerCard').textContent=data.disclaimer||'Always consult a healthcare provider for medical advice.';
+      return '<div class="finding-card '+sev+'"><div class="finding-inner"><div class="finding-top"><span class="finding-symptom">'+(f.symptom||'')+'</span><span class="finding-chip '+chipClass+'">'+(f.category||'')+'</span>'+(f.drug?'<span class="finding-drug">'+f.drug+'</span>':'')+'</div><div class="finding-exp">'+(f.explanation||'')+'</div><div class="finding-action '+actionClass+'">'+actionIcon+' '+(f.action||'')+'</div></div></div>';
+    }).join('');
+    document.getElementById('disclaimerCard').textContent=data.disclaimer||'Always consult a healthcare provider.';
     document.getElementById('spinner').style.display='none';
     document.getElementById('result').style.display='block';
     document.getElementById('checkBtn').disabled=false;
     document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
   })
-  .catch(function(err){showError('Could not reach the server. ('+err.message+')');});
+  .catch(function(err){showError('Could not reach server. ('+err.message+')');});
 }
-
 function copyReport(){
-  if(!lastReport.overallSummary) return;
-  var text='PILL TALK — SYMPTOM CHECK REPORT\n';
-  text+='Medications: '+(meds.length?meds.join(', '):'Not specified')+'\n';
-  text+='Symptoms: '+document.getElementById('symptomInput').value+'\n\n';
-  text+='OVERALL: '+lastReport.overallSummary+'\n\n';
-  if(lastReport.urgentAction) text+='URGENT: '+lastReport.urgentAction+'\n\n';
-  var findings=lastReport.findings||[];
-  for(var i=0;i<findings.length;i++){
-    var f=findings[i];
-    text+=f.symptom+' ['+f.severity.toUpperCase()+']\n';
-    text+=f.explanation+'\n';
-    text+='Action: '+f.action+'\n\n';
-  }
-  text+='---\n'+lastReport.disclaimer+'\nGenerated by Pill Talk';
+  var text='PILL TALK - SYMPTOM CHECK\nMedications: '+(meds.join(', ')||'none')+'\nSymptoms: '+document.getElementById('symptomInput').value+'\n\nSUMMARY: '+(lastReport.overallSummary||'');
   navigator.clipboard.writeText(text);
 }
-
-function clearAll(){
-  document.getElementById('symptomInput').value='';
-  document.getElementById('result').style.display='none';
-  document.getElementById('errorBox').style.display='none';
-}
-
-
-var selectedChips = [];
-function toggleChip(btn, symptom) {
-  var idx = selectedChips.indexOf(symptom);
-  if (idx === -1) {
-    selectedChips.push(symptom);
-    btn.classList.add('on');
-  } else {
-    selectedChips.splice(idx, 1);
-    btn.classList.remove('on');
-  }
-  // Update textarea
-  var ta = document.getElementById('symptomInput');
-  var manual = ta.value.replace(/^Selected symptoms:[^\n]*\n?/, '').trim();
-  var chipText = selectedChips.length ? 'Selected symptoms: ' + selectedChips.join(', ') : '';
-  ta.value = [chipText, manual].filter(Boolean).join('\n');
-}
-
-document.getElementById('medInput').onkeydown=function(e){if(e.key==='Enter')addMed()};
-// Auto-load from My Meds
-var savedMeds = JSON.parse(localStorage.getItem('pilltalk_meds') || '[]');
-savedMeds.forEach(function(m) { if (meds.indexOf(m) === -1) meds.push(m); });
+function clearAll(){document.getElementById('symptomInput').value='';document.getElementById('result').style.display='none';document.getElementById('errorBox').style.display='none';selectedChips=[];document.querySelectorAll('.sym-chip').forEach(function(b){b.classList.remove('on');});}
+document.getElementById('medInput').addEventListener('keydown',function(e){if(e.key==='Enter')addMed();});
 renderTags();
 </script>
 </body>

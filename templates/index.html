@@ -2,226 +2,457 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<link rel="icon" type="image/svg+xml" href="/icon.svg">
-<link rel="manifest" href="/manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Pill Talk">
-<meta name="theme-color" content="#059669">
-<link rel="apple-touch-icon" href="/icon.svg">
-
-
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Pill Talk — Look Up a Medication</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Pill Talk"/>
+<meta name="theme-color" content="#ffffff"/>
+<title>Pill Talk</title>
+<link rel="icon" type="image/svg+xml" href="/icon.svg"/>
+<link rel="manifest" href="/manifest.json"/>
+<link rel="apple-touch-icon" href="/icon.svg"/>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --teal:#059669;--teal-d:#047857;--teal-dd:#065f46;
-  --teal-50:#ecfdf5;--teal-100:#d1fae5;--teal-200:#a7f3d0;
+  --teal-50:#ecfdf5;--teal-100:#d1fae5;
   --g900:#111827;--g800:#1f2937;--g700:#374151;--g600:#4b5563;
   --g500:#6b7280;--g400:#9ca3af;--g300:#d1d5db;--g200:#e5e7eb;
-  --g100:#f3f4f6;--g50:#f9fafb;--white:#fff;
+  --g150:#eeeff1;--g100:#f3f4f6;--g50:#f9fafb;
+  --white:#fff;
   --red:#dc2626;--red-bg:#fef2f2;--red-b:#fecaca;
   --amber:#d97706;--amber-bg:#fffbeb;--amber-b:#fde68a;
   --green:#16a34a;--green-bg:#f0fdf4;--green-b:#bbf7d0;
   --blue:#2563eb;--blue-bg:#eff6ff;--blue-b:#bfdbfe;
   --purple:#7c3aed;--purple-bg:#f5f3ff;--purple-b:#ddd6fe;
-  --r:10px;--rl:14px;--rxl:20px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-top:env(safe-area-inset-top,0px);
+  --tab-height:83px;
 }
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--g50);color:var(--g900);-webkit-font-smoothing:antialiased;min-height:100vh}
-body.large{font-size:17px}
+html{height:100%;background:#fff}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;
+  background:var(--g50);
+  color:var(--g900);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  padding-bottom:calc(var(--tab-height) + var(--safe-bottom));
+}
 
+/* STATUS BAR SPACER */
+.status-bar{height:var(--safe-top);background:#fff}
 
-.install-banner{display:none;background:linear-gradient(135deg,#059669,#065f46);color:#fff;padding:12px 1.25rem;align-items:center;justify-content:space-between;gap:10px;font-size:13px;font-weight:500}
-.install-banner button{padding:6px 14px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:20px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
-.install-banner button:hover{background:rgba(255,255,255,.3)}
-.install-banner .dismiss{background:transparent;border:none;opacity:.6;font-size:18px;padding:2px 6px}
+/* TOP HEADER - iOS style */
+.app-header{
+  background:#fff;
+  border-bottom:0.5px solid var(--g200);
+  padding:12px 20px 12px;
+  position:sticky;
+  top:var(--safe-top);
+  z-index:50;
+}
+.app-header-inner{display:flex;align-items:center;justify-content:space-between}
+.app-title{font-size:17px;font-weight:700;letter-spacing:-.2px;color:var(--g900)}
+.header-logo{display:flex;align-items:center;gap:8px}
+.header-logo img{width:28px;height:28px;border-radius:7px}
+.header-actions{display:flex;gap:8px}
+.header-btn{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--g100);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:var(--g700);
+  transition:background .15s;
+}
+.header-btn:hover{background:var(--g200)}
+.header-btn.on{background:var(--teal-50);color:var(--teal)}
 
-/* NAV */
-nav{background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--g200);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.logo{font-size:17px;font-weight:800;text-decoration:none;color:var(--g900);display:flex;align-items:center;gap:9px;letter-spacing:-.3px}
-.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,#059669,#065f46);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;box-shadow:0 2px 4px rgba(5,150,105,.3);flex-shrink:0}
-.nav-links{display:flex;gap:2px}
-.nl{padding:6px 12px;font-size:13px;font-weight:500;color:var(--g500);text-decoration:none;border-radius:6px;transition:all .15s}
-.nl:hover{background:var(--g100);color:var(--g900)}
-.nl.on{background:var(--teal-50);color:var(--teal-dd);font-weight:600}
-@media(max-width:480px){.nl span{display:none}}
+/* MAIN SCROLL AREA */
+main{padding:16px 16px 8px}
 
-/* MAIN */
-main{max-width:760px;margin:0 auto;padding:2rem 1.25rem 5rem}
-
-/* SEARCH SECTION */
-.search-section{margin-bottom:1.25rem}
-.search-label{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:2px}
-.search-sub{font-size:13px;color:var(--g500);margin-bottom:1.25rem}
-.search-row{display:flex;gap:8px;margin-bottom:1rem}
-.search-row input{flex:1;padding:12px 16px;font-size:15px;font-family:inherit;border:1.5px solid var(--g300);border-radius:var(--r);background:#fff;color:var(--g900);outline:none;transition:border-color .15s,box-shadow .15s;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-.search-row input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(5,150,105,.12)}
-.search-row input::placeholder{color:var(--g400)}
-.btn-go{padding:12px 22px;background:var(--teal);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;box-shadow:0 2px 4px rgba(5,150,105,.25);white-space:nowrap}
-.btn-go:hover{background:var(--teal-d);box-shadow:0 4px 8px rgba(5,150,105,.3);transform:translateY(-1px)}
-.btn-go:active{transform:translateY(0)}
-.btn-go:disabled{background:var(--g400);box-shadow:none;cursor:not-allowed;transform:none}
-
+/* SEARCH CARD - iOS grouped style */
+.search-card{
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+}
+.search-hint{font-size:13px;color:var(--g500);margin-bottom:10px;font-weight:500}
+.search-row{display:flex;gap:8px;margin-bottom:12px;position:relative}
+.search-wrap{flex:1;position:relative}
+.search-input{
+  width:100%;
+  padding:12px 14px;
+  font-size:17px;
+  font-family:inherit;
+  border:1.5px solid var(--g200);
+  border-radius:12px;
+  background:var(--g50);
+  color:var(--g900);
+  outline:none;
+  -webkit-appearance:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+.search-input:focus{border-color:var(--teal);background:#fff;box-shadow:0 0 0 4px rgba(5,150,105,.08)}
+.search-input::placeholder{color:var(--g400)}
+.btn-search{
+  padding:0 20px;
+  height:48px;
+  background:var(--teal);
+  color:#fff;border:none;
+  border-radius:12px;
+  font-size:15px;font-weight:700;
+  cursor:pointer;font-family:inherit;
+  white-space:nowrap;
+  -webkit-appearance:none;
+  transition:background .15s,transform .1s;
+  box-shadow:0 2px 8px rgba(5,150,105,.3);
+}
+.btn-search:active{transform:scale(.97)}
+.btn-search:disabled{background:var(--g300);box-shadow:none}
 
 /* AUTOCOMPLETE */
-.search-wrap{position:relative}
-.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--teal);border-top:none;border-radius:0 0 var(--r) var(--r);box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:200;max-height:280px;overflow-y:auto;display:none;}
-.autocomplete-list.show{display:block}
-.ac-item{padding:10px 16px;font-size:14px;color:var(--g700);cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--g100);transition:background .1s}
+.autocomplete-list{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 8px 30px rgba(0,0,0,.15);
+  z-index:200;max-height:260px;overflow-y:auto;
+  display:none;
+  border:1px solid var(--g200);
+}
+.ac-item{
+  padding:12px 16px;font-size:15px;color:var(--g800);
+  cursor:pointer;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:0.5px solid var(--g100);
+  transition:background .1s;
+}
 .ac-item:last-child{border-bottom:none}
-.ac-item:hover,.ac-item.selected{background:var(--teal-50);color:var(--teal-dd)}
-.ac-item-name{font-weight:600;flex:1}
-.ac-item-type{font-size:11px;color:var(--g400);font-weight:500}
-.ac-match{color:var(--teal);font-weight:700}
-.search-row input.has-suggestions{border-radius:var(--r) var(--r) 0 0;border-bottom-color:var(--teal)}
+.ac-item:active{background:var(--g50)}
+.ac-item-name{font-weight:500}
+.ac-item-type{font-size:12px;color:var(--g400)}
 
-/* CONTROLS ROW */
-.controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.ctrl-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin-right:2px}
-.pill{padding:5px 14px;border:1.5px solid var(--g300);border-radius:20px;background:transparent;font-size:12px;font-weight:600;color:var(--g500);cursor:pointer;font-family:inherit;transition:all .15s}
-.pill:hover{border-color:var(--teal);color:var(--teal)}
-.pill.on{background:var(--teal);border-color:var(--teal);color:#fff}
-.divider-v{width:1px;height:20px;background:var(--g200);margin:0 4px}
-.toggle{padding:5px 12px;border:1.5px solid var(--g300);border-radius:20px;background:transparent;font-size:12px;font-weight:600;color:var(--g500);cursor:pointer;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
-.toggle:hover{border-color:var(--g400);color:var(--g700)}
-.toggle.on-purple{background:var(--purple-bg);border-color:var(--purple-b);color:var(--purple)}
-.toggle.on-blue{background:var(--blue-bg);border-color:var(--blue-b);color:var(--blue)}
-.toggle.on-teal{background:var(--teal-50);border-color:var(--teal-100);color:var(--teal-dd)}
+/* LEVEL PILLS - iOS segmented control style */
+.level-control{
+  display:flex;
+  background:var(--g150);
+  border-radius:9px;
+  padding:2px;
+  gap:2px;
+  margin-bottom:12px;
+}
+.level-seg{
+  flex:1;padding:7px 4px;
+  background:transparent;border:none;
+  border-radius:7px;
+  font-size:13px;font-weight:500;
+  color:var(--g600);cursor:pointer;font-family:inherit;
+  transition:all .2s;text-align:center;
+}
+.level-seg.on{
+  background:#fff;
+  color:var(--g900);font-weight:600;
+  box-shadow:0 1px 3px rgba(0,0,0,.15),0 1px 2px rgba(0,0,0,.1);
+}
+
+/* TOGGLES ROW */
+.toggles-row{display:flex;gap:8px;flex-wrap:wrap}
+.toggle-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 12px;
+  background:var(--g100);
+  border:none;border-radius:20px;
+  font-size:13px;font-weight:500;color:var(--g600);
+  cursor:pointer;font-family:inherit;
+  transition:all .15s;
+}
+.toggle-chip.on-purple{background:var(--purple-bg);color:var(--purple)}
+.toggle-chip.on-blue{background:var(--blue-bg);color:var(--blue)}
+.toggle-chip.on-teal{background:var(--teal-50);color:var(--teal-dd)}
 
 /* SPINNER */
 #spinner{display:none}
-.spin-wrap{display:flex;flex-direction:column;align-items:center;padding:5rem 0;gap:14px}
-.spin-ring{width:34px;height:34px;border:3px solid var(--g200);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite}
-.spin-txt{font-size:13px;color:var(--g500);font-weight:500}
+.spin-wrap{display:flex;flex-direction:column;align-items:center;padding:48px 0;gap:14px}
+.spin-ring{
+  width:36px;height:36px;
+  border:3px solid var(--g200);
+  border-top-color:var(--teal);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+}
 @keyframes spin{to{transform:rotate(360deg)}}
+.spin-txt{font-size:14px;color:var(--g500);font-weight:500}
 
 /* ERROR */
-.error-box{display:none;padding:12px 16px;background:var(--red-bg);border:1px solid var(--red-b);border-radius:var(--r);color:var(--red);font-size:13px;margin-bottom:1rem}
+.error-box{
+  display:none;padding:14px 16px;
+  background:var(--red-bg);border-radius:12px;
+  color:var(--red);font-size:14px;margin-bottom:16px;
+  border:1px solid var(--red-b);
+}
 
 /* RESULT */
 #result{display:none}
 
-/* DRUG HERO */
-.drug-hero{background:linear-gradient(135deg,#059669 0%,#065f46 100%);border-radius:var(--rl);padding:1.5rem 1.75rem;margin-bottom:1rem;color:#fff;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;box-shadow:0 8px 24px rgba(5,150,105,.25)}
-.hero-left{flex:1;min-width:0}
-.hero-name{font-size:24px;font-weight:800;letter-spacing:-.4px;line-height:1.2;margin-bottom:3px}
-.hero-condition{font-size:13px;opacity:.8;line-height:1.4}
-.hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
-.hero-badge{background:rgba(255,255,255,.18);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;backdrop-filter:blur(4px)}
-.hero-brand{background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);font-size:11px;padding:3px 9px;border-radius:20px}
+/* DRUG HERO - iOS large title style */
+.drug-hero{
+  background:linear-gradient(160deg,#059669 0%,#047857 60%,#065f46 100%);
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:12px;
+  color:#fff;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 4px 20px rgba(5,150,105,.3);
+}
+.drug-hero::before{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:120px;height:120px;
+  border-radius:50%;background:rgba(255,255,255,.07);
+}
+.drug-hero::after{
+  content:'';position:absolute;bottom:-20px;left:-10px;
+  width:80px;height:80px;
+  border-radius:50%;background:rgba(255,255,255,.05);
+}
+.drug-hero-name{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:4px;line-height:1.2}
+.drug-hero-condition{font-size:13px;opacity:.8;line-height:1.4;margin-bottom:12px}
+.drug-hero-badges{display:flex;gap:6px;flex-wrap:wrap}
+.hero-badge{
+  background:rgba(255,255,255,.2);
+  color:#fff;font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:20px;
+  backdrop-filter:blur(4px);
+}
 
 /* BANNERS */
-.banner{display:none;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r);font-size:13px;font-weight:500;margin-bottom:1rem}
+.banner{
+  display:none;align-items:flex-start;gap:10px;
+  padding:12px 16px;border-radius:12px;
+  font-size:13px;font-weight:500;margin-bottom:12px;
+  line-height:1.5;
+}
 .banner-teal{background:var(--teal-50);border:1px solid var(--teal-100);color:var(--teal-dd)}
 .banner-purple{background:var(--purple-bg);border:1px solid var(--purple-b);color:var(--purple)}
 
-/* TAB WRAPPER */
-.tab-wrapper{background:#fff;border:1px solid var(--g200);border-radius:var(--rl);box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden;margin-bottom:1rem}
-.tabs{display:flex;border-bottom:1px solid var(--g200);overflow-x:auto;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{padding:13px 18px;font-size:13px;font-weight:500;color:var(--g500);background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s}
-.tab:hover{color:var(--g800);background:var(--g50)}
-.tab.on{color:var(--teal-dd);border-bottom-color:var(--teal);font-weight:700;background:#fff}
-.tab-body{padding:1.5rem}
+/* iOS SEGMENTED TABS */
+.tabs-scroll{overflow-x:auto;scrollbar-width:none;margin-bottom:12px}
+.tabs-scroll::-webkit-scrollbar{display:none}
+.tabs-inner{display:flex;gap:0;border-bottom:0.5px solid var(--g200);min-width:max-content;width:100%}
+.tab{
+  padding:10px 16px;
+  font-size:14px;font-weight:500;
+  color:var(--g500);background:transparent;
+  border:none;border-bottom:2px solid transparent;
+  margin-bottom:-1px;cursor:pointer;font-family:inherit;
+  white-space:nowrap;transition:all .15s;
+}
+.tab:active{color:var(--g800)}
+.tab.on{color:var(--teal-dd);border-bottom-color:var(--teal);font-weight:700}
 .panel{display:none}
 .panel.on{display:block}
 
-/* INFO CARDS */
-.ic{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:14px 16px}
-.ic.tl{border-left:3px solid var(--teal)}
-.ic.bl{border-left:3px solid var(--blue)}
-.ic.am{border-left:3px solid #f59e0b}
-.ic.rd{border-left:3px solid #ef4444}
-.ic.pu{border-left:3px solid var(--purple)}
-.ic.gn{border-left:3px solid #22c55e}
-.ic.pu-bg{border-left:3px solid var(--purple);background:var(--purple-bg)}
-.ic-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);margin-bottom:8px}
-.ic-body{font-size:14px;color:var(--g700);line-height:1.7}
-.ic-body ul{padding-left:1.1rem}
-.ic-body li{margin-bottom:5px}
-.ic-body ol{padding-left:1.2rem}
-.ic-body ol li{margin-bottom:6px}
-body.large .ic-body{font-size:17px}
+/* iOS GROUPED CARDS */
+.info-group{
+  background:#fff;border-radius:16px;
+  overflow:hidden;margin-bottom:12px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
+}
+.info-row{
+  padding:14px 16px;
+  border-bottom:0.5px solid var(--g100);
+}
+.info-row:last-child{border-bottom:none}
+.row-label{
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.07em;
+  color:var(--g400);margin-bottom:6px;
+  display:flex;align-items:center;gap:5px;
+}
+.row-body{font-size:15px;color:var(--g800);line-height:1.65}
+.row-body ul{padding-left:1.1rem}
+.row-body li{margin-bottom:5px}
+.row-body ol{padding-left:1.2rem}
+.row-body ol li{margin-bottom:6px}
 
-/* SEV LEGEND */
-.sev-legend{display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+/* ACCENT COLORS on left border */
+.info-group.teal .info-row:first-child{border-left:3px solid var(--teal)}
+.info-group.blue .info-row:first-child{border-left:3px solid var(--blue)}
+.info-group.amber .info-row:first-child{border-left:3px solid #f59e0b}
+.info-group.red .info-row:first-child{border-left:3px solid #ef4444}
+.info-group.purple .info-row:first-child{border-left:3px solid var(--purple)}
+.info-group.green .info-row:first-child{border-left:3px solid #22c55e}
+
+/* SEVERITY */
+.sev-legend{
+  display:flex;gap:14px;margin-bottom:12px;
+  flex-wrap:wrap;padding:10px 16px;
+  background:#fff;border-radius:12px;
+  border:1px solid var(--g100);
+}
 .sev-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--g500)}
-.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sev-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .dg{background:#22c55e}.dy{background:#f59e0b}.dr{background:#ef4444}
 .sev-green{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin-right:4px;vertical-align:middle}
 .sev-yellow{display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-right:4px;vertical-align:middle}
 .sev-red{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;vertical-align:middle}
 
-
-/* INJECTION STEPS */
-.inj-step{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid var(--g200);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.inj-step:last-child{margin-bottom:0}
-.inj-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#059669,#065f46);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 6px rgba(5,150,105,.3)}
-.inj-step-body{flex:1;min-width:0}
-.inj-step-text{font-size:14px;color:var(--g700);line-height:1.65}
-.inj-step-icon{font-size:22px;margin-bottom:6px}
-.inj-step-warn{margin-top:8px;padding:6px 10px;background:var(--red-bg);border:1px solid var(--red-b);border-radius:6px;font-size:12px;color:var(--red);font-weight:500}
-.inj-step-tip{margin-top:8px;padding:6px 10px;background:var(--teal-50);border:1px solid var(--teal-100);border-radius:6px;font-size:12px;color:var(--teal-dd);font-weight:500}
-
-/* ACTION BAR */
-.action-bar{display:flex;gap:8px;flex-wrap:wrap;padding:1rem 1.5rem;border-top:1px solid var(--g200);background:var(--g50)}
-.act-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:#fff;border:1.5px solid var(--g300);border-radius:var(--r);font-size:12px;font-weight:600;color:var(--g600);cursor:pointer;font-family:inherit;transition:all .15s}
-.act-btn:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-50)}
-
-/* FOOTER */
-footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color:var(--g400);line-height:1.7;border-top:1px solid var(--g200);padding-top:1.5rem}
-
-@media(max-width:580px){
-  .nl span.full{display:none}
-  .nl{padding:6px 8px;font-size:16px}
-  nav{padding:0 .75rem}
-  .logo span{display:none}
+/* INJECT STEPS */
+.inj-step{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:14px 16px;
+  border-bottom:0.5px solid var(--g100);
 }
+.inj-step:last-child{border-bottom:none}
+.inj-num{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--teal);color:#fff;
+  font-size:13px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.inj-text{font-size:15px;color:var(--g800);line-height:1.55;flex:1}
+.inj-warn{margin-top:6px;padding:6px 10px;background:var(--red-bg);border-radius:8px;font-size:12px;color:var(--red);font-weight:500}
+.inj-tip{margin-top:6px;padding:6px 10px;background:var(--teal-50);border-radius:8px;font-size:12px;color:var(--teal-dd);font-weight:500}
+
+/* ACTION BUTTONS - iOS style */
+.action-strip{
+  display:flex;gap:8px;flex-wrap:wrap;
+  padding:16px;background:#fff;
+  border-top:0.5px solid var(--g100);
+  border-radius:0 0 16px 16px;
+}
+.action-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:8px 16px;background:var(--g50);
+  border:1px solid var(--g200);border-radius:10px;
+  font-size:13px;font-weight:600;color:var(--g700);
+  cursor:pointer;font-family:inherit;transition:all .15s;
+  -webkit-appearance:none;
+}
+.action-btn:active{background:var(--g100);transform:scale(.97)}
+
+/* ACCURACY NOTE */
+.accuracy-note{
+  font-size:11px;color:var(--g400);
+  padding:12px 16px;
+  background:#fff;border-top:0.5px solid var(--g100);
+  line-height:1.6;border-radius:0 0 16px 16px;
+}
+
+/* INSTALL BANNER */
+.install-banner{
+  display:none;
+  background:linear-gradient(135deg,var(--teal),var(--teal-dd));
+  color:#fff;padding:12px 16px;
+  align-items:center;justify-content:space-between;
+  gap:10px;font-size:13px;font-weight:500;
+  margin-bottom:12px;border-radius:12px;
+}
+.install-banner button{
+  padding:6px 14px;background:rgba(255,255,255,.2);
+  border:1px solid rgba(255,255,255,.35);border-radius:20px;
+  color:#fff;font-size:12px;font-weight:700;
+  cursor:pointer;font-family:inherit;white-space:nowrap;
+}
+.dismiss-btn{background:transparent!important;border:none!important;opacity:.6;font-size:18px;padding:2px 6px}
+
+/* BOTTOM TAB BAR - iOS native style */
+.tab-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-top:0.5px solid rgba(0,0,0,.12);
+  display:flex;
+  padding-bottom:var(--safe-bottom);
+  z-index:100;
+}
+.tab-item{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:8px 4px;
+  text-decoration:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  position:relative;
+  min-height:50px;
+}
+.tab-icon{font-size:22px;line-height:1;margin-bottom:3px;transition:transform .15s}
+.tab-label{font-size:10px;font-weight:500;color:var(--g400);letter-spacing:.01em}
+.tab-item.on .tab-label{color:var(--teal);font-weight:700}
+.tab-item.on .tab-icon{transform:scale(1.1)}
+.tab-dot{
+  position:absolute;top:6px;
+  width:5px;height:5px;border-radius:50%;
+  background:var(--teal);
+  display:none;
+}
+.tab-item.on .tab-dot{display:block}
+
+/* LARGE TEXT */
+body.large .row-body{font-size:18px}
+body.large .search-input{font-size:19px}
+
+/* NO SCROLLBAR */
+::-webkit-scrollbar{display:none}
+* {scrollbar-width:none}
 </style>
 </head>
 <body>
-<nav>
-  <a class="logo" href="/"><img src="/icon.svg" style="width:30px;height:30px;border-radius:8px;box-shadow:0 2px 4px rgba(5,150,105,.3)" alt="Pill Talk"/>Pill Talk</a>
-  <div class="nav-links">
-    <a class="nl on" href="/app">&#128138;<span class="full"> Look Up</span></a>
-    <a class="nl" href="/mymeds">&#128137;<span class="full"> My Meds</span></a>
-    <a class="nl" href="/symptoms">&#128308;<span class="full"> Symptoms</span></a>
-    <a class="nl" href="/tracker">&#128197;<span class="full"> Tracker</span></a>
-    <a class="nl" href="/medcard">&#128203;<span class="full"> Med Card</span></a>
-  </div>
-</nav>
 
-<div class="install-banner" id="installBanner">
-  <span>&#128247; Add Pill Talk to your home screen for quick access</span>
-  <div style="display:flex;gap:8px;align-items:center">
-    <button id="installBtn">Add to Home Screen</button>
-    <button class="dismiss" onclick="document.getElementById('installBanner').style.display='none'">&#10005;</button>
+<div class="status-bar"></div>
+
+<!-- TOP HEADER -->
+<div class="app-header">
+  <div class="app-header-inner">
+    <div class="header-logo">
+      <img src="/icon.svg" alt="Pill Talk"/>
+      <span class="app-title">Pill Talk</span>
+    </div>
+    <div class="header-actions">
+      <button class="header-btn" id="btnCaregiver" title="Caregiver Mode">&#128106;</button>
+      <button class="header-btn" id="btnSpanish" title="Español">&#127466;&#127480;</button>
+      <button class="header-btn" id="btnLarge" title="Large Text">&#128269;</button>
+    </div>
   </div>
 </div>
+
 <main>
-  <div class="search-section">
-    <div class="search-label">&#128138; Look up a medication</div>
-    <div class="search-sub">Brand or generic name — we know both</div>
-    <div class="search-wrap">
-      <div class="search-row">
-        <input type="text" id="drugInput" placeholder="e.g. Lipitor, metformin, Humira, Ozempic..." autocomplete="off" oninput="showSuggestions(this.value.trim())" onfocus="showSuggestions(this.value.trim())" onblur="hideSuggestions()"/>
-        <button class="btn-go" id="goBtn">Look Up</button>
-      </div>
-      <div class="autocomplete-list" id="acList"></div>
+  <!-- INSTALL BANNER -->
+  <div class="install-banner" id="installBanner">
+    <span>Add Pill Talk to your home screen</span>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button id="installBtn">Add</button>
+      <button class="dismiss-btn" onclick="document.getElementById('installBanner').style.display='none';localStorage.setItem('pt_install_dismissed','1')">&#10005;</button>
     </div>
-    <div class="controls">
-      <span class="ctrl-label">Level</span>
-      <button class="pill on" id="lv0">Simple</button>
-      <button class="pill" id="lv1">Standard</button>
-      <button class="pill" id="lv2">Clinical</button>
-      <div class="divider-v"></div>
-      <button class="toggle" id="btnCaregiver">&#128106; Caregiver</button>
-      <button class="toggle" id="btnSpanish">&#127466;&#127480; Espa&#241;ol</button>
-      <button class="toggle" id="btnLarge">&#128269; Large Text</button>
+  </div>
+
+  <!-- SEARCH CARD -->
+  <div class="search-card">
+    <div class="search-hint">Brand or generic name</div>
+    <div class="search-row">
+      <div class="search-wrap">
+        <input type="text" class="search-input" id="drugInput"
+          placeholder="e.g. Lipitor, metformin, Ozempic..."
+          autocomplete="off"
+          oninput="showSuggestions(this.value.trim())"
+          onfocus="showSuggestions(this.value.trim())"
+          onblur="hideSuggestions()"/>
+        <div class="autocomplete-list" id="acList"></div>
+      </div>
+      <button class="btn-search" id="goBtn">Search</button>
+    </div>
+
+    <!-- Segmented reading level control -->
+    <div class="level-control">
+      <button class="level-seg on" id="lv0">Simple</button>
+      <button class="level-seg" id="lv1">Standard</button>
+      <button class="level-seg" id="lv2">Clinical</button>
+    </div>
+
+    <div class="toggles-row">
+      <button class="toggle-chip" id="btnCaregiverToggle">&#128106; Caregiver</button>
+      <button class="toggle-chip" id="btnSpanishToggle">&#127466;&#127480; Espa&#241;ol</button>
     </div>
   </div>
 
@@ -230,149 +461,234 @@ footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color
   <div id="spinner">
     <div class="spin-wrap">
       <div class="spin-ring"></div>
-      <div class="spin-txt">Looking up medication info...</div>
+      <div class="spin-txt">Looking up medication...</div>
     </div>
   </div>
 
   <div id="result">
+    <!-- Drug Hero -->
     <div class="drug-hero">
-      <div class="hero-left">
-        <div class="hero-name" id="heroName"></div>
-        <div class="hero-condition" id="heroCondition"></div>
-      </div>
-      <div class="hero-right">
+      <div class="drug-hero-name" id="heroName"></div>
+      <div class="drug-hero-condition" id="heroCondition"></div>
+      <div class="drug-hero-badges">
         <div class="hero-badge" id="heroBadge"></div>
-        <div class="hero-brand" id="heroBrand" style="display:none">Brand name</div>
-        <div style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);font-size:10px;padding:3px 9px;border-radius:20px" id="heroVerified"></div>
+        <div class="hero-badge" id="heroBrand" style="display:none">Brand name</div>
+        <div class="hero-badge" id="heroVerified"></div>
       </div>
     </div>
 
-    <div class="banner banner-teal" id="brandBanner"><span>&#9432;</span><span id="brandBannerText"></span></div>
-    <div class="banner banner-purple" id="caregiverBanner"><span>&#128106;</span><span>Caregiver Mode — information framed for someone caring for a patient</span></div>
+    <div class="banner banner-teal" id="brandBanner">
+      <span>&#9432;</span><span id="brandBannerText"></span>
+    </div>
+    <div class="banner banner-purple" id="caregiverBanner">
+      <span>&#128106;</span><span>Caregiver Mode</span>
+    </div>
 
-    <div class="tab-wrapper">
-      <div class="tabs">
+    <!-- Tabs -->
+    <div class="tabs-scroll">
+      <div class="tabs-inner">
         <button class="tab on" onclick="showTab('overview')">Overview</button>
         <button class="tab" onclick="showTab('sideeffects')">Side Effects</button>
         <button class="tab" onclick="showTab('practical')">Practical</button>
         <button class="tab" id="injTab" onclick="showTab('injection')" style="display:none">&#128137; Inject</button>
-        <button class="tab" onclick="showTab('teachback')">Teach-Back</button>
         <button class="tab" onclick="showTab('savings')">&#128176; Savings</button>
+        <button class="tab" onclick="showTab('teachback')">Teach-Back</button>
         <button class="tab" id="cgTab" onclick="showTab('caregiver')" style="display:none">&#128106; Caregiver</button>
       </div>
+    </div>
 
-      <div class="tab-body">
-        <!-- OVERVIEW -->
-        <div class="panel on" id="panel-overview">
-          <div class="grid2" style="margin-bottom:12px">
-            <div class="ic bl"><div class="ic-label">&#127754; condition</div><div class="ic-body" id="condition"></div></div>
-            <div class="ic tl"><div class="ic-label">&#9883; how it works</div><div class="ic-body" id="what"></div></div>
-          </div>
-          <div class="ic tl" style="margin-bottom:12px"><div class="ic-label">&#9200; how to take it</div><div class="ic-body" id="how"></div></div>
-          <div class="ic gn"><div class="ic-label">&#128176; cost &amp; savings</div><div class="ic-body" id="cost"></div></div>
+    <!-- OVERVIEW -->
+    <div class="panel on" id="panel-overview">
+      <div class="info-group blue">
+        <div class="info-row">
+          <div class="row-label">&#127754; Condition treated</div>
+          <div class="row-body" id="condition"></div>
         </div>
-
-        <!-- SIDE EFFECTS -->
-        <div class="panel" id="panel-sideeffects">
-          <div class="sev-legend">
-            <div class="sev-item"><div class="dot dg"></div>Mild — monitor</div>
-            <div class="sev-item"><div class="dot dy"></div>Moderate — contact doctor</div>
-            <div class="sev-item"><div class="dot dr"></div>Serious — seek care now</div>
-          </div>
-          <div class="ic am" style="margin-bottom:12px"><div class="ic-label">&#9888; common side effects</div><div class="ic-body" id="side"></div></div>
-          <div class="ic rd"><div class="ic-label">&#128680; warning signs — seek medical attention</div><div class="ic-body" id="warn"></div></div>
-        </div>
-
-        <!-- PRACTICAL -->
-        <div class="panel" id="panel-practical">
-          <div class="ic am" style="margin-bottom:12px"><div class="ic-label">&#8987; missed dose</div><div class="ic-body" id="missedDose"></div></div>
-          <div class="ic am"><div class="ic-label">&#127829; food, alcohol &amp; interactions</div><div class="ic-body" id="foodAlcohol"></div></div>
-        </div>
-
-        <!-- INJECTION -->
-        <div class="panel" id="panel-injection">
-          <div id="inj-visual" style="display:none">
-            <div style="margin-bottom:1rem">
-              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);margin-bottom:4px">Administration type</div>
-              <div id="injType" style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--purple-bg);border:1px solid var(--purple-b);border-radius:20px;font-size:13px;font-weight:600;color:var(--purple)"></div>
-            </div>
-            <div id="injSiteCard" style="display:none;margin-bottom:1rem">
-              <div class="ic bl">
-                <div class="ic-label">&#127994; injection sites</div>
-                <div class="ic-body" id="injSite"></div>
-              </div>
-            </div>
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);margin-bottom:10px">Step-by-step instructions</div>
-            <div id="injSteps"></div>
-          </div>
-          <div class="ic pu" id="inj-fallback"><div class="ic-label">&#128137; administration guide</div><div class="ic-body" id="injection"></div></div>
-        </div>
-
-        <!-- TEACH-BACK -->
-        <div class="panel" id="panel-teachback">
-          <div class="ic pu" style="margin-bottom:12px"><div class="ic-label">&#127941; patient teach-back</div><div class="ic-body"><ol id="teachback" style="padding-left:1.2rem"></ol></div></div>
-          <div class="ic" style="border-left:3px solid var(--purple);display:none" id="cgTBCard"><div class="ic-label">&#128106; caregiver teach-back</div><div class="ic-body"><ol id="cgTeachback" style="padding-left:1.2rem"></ol></div></div>
-        </div>
-
-        <!-- SAVINGS -->
-        <div class="panel" id="panel-savings">
-          <div style="background:var(--green-bg);border:1px solid var(--green-b);border-radius:var(--r);padding:12px 16px;font-size:13px;color:var(--green);margin-bottom:1rem;line-height:1.6">
-            &#128161; Financial assistance is available for most medications. Programs listed here are drug-specific where possible, plus broad resources that help anyone.
-          </div>
-          <div class="ic gn" style="margin-bottom:12px">
-            <div class="ic-label">&#128176; cost &amp; generic availability</div>
-            <div class="ic-body" id="costFull"></div>
-          </div>
-          <div class="ic tl" style="margin-bottom:12px">
-            <div class="ic-label">&#127891; assistance programs for this medication</div>
-            <div class="ic-body" id="financialResources"></div>
-          </div>
-          <div class="ic bl">
-            <div class="ic-label">&#127758; broad resources — always available</div>
-            <div class="ic-body">
-              <ul style="padding-left:1.1rem">
-                <li style="margin-bottom:6px"><strong>GoodRx</strong> — goodrx.com — free coupons at most pharmacies, often 80%+ off</li>
-                <li style="margin-bottom:6px"><strong>NeedyMeds</strong> — needymeds.org — database of patient assistance programs by drug</li>
-                <li style="margin-bottom:6px"><strong>RxAssist</strong> — rxassist.org — manufacturer PAP directory with eligibility guides</li>
-                <li style="margin-bottom:6px"><strong>Partnership for Prescription Assistance</strong> — pparx.org — connects to 475+ assistance programs</li>
-                <li style="margin-bottom:6px"><strong>State Pharmaceutical Assistance Programs</strong> — many states offer help for seniors and low-income patients; search "[your state] SPAP"</li>
-                <li style="margin-bottom:6px"><strong>Medicare Extra Help</strong> — ssa.gov/extrahelp — subsidizes Part D costs for qualifying Medicare patients</li>
-                <li style="margin-bottom:6px"><strong>Community Health Centers</strong> — findahealthcenter.hrsa.gov — sliding scale fees, 340B drug pricing</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- CAREGIVER -->
-        <div class="panel" id="panel-caregiver">
-          <div class="ic pu-bg" style="margin-bottom:12px"><div class="ic-label">&#128106; caregiver overview</div><div class="ic-body" id="cgTips"></div></div>
-          <div class="grid2" style="margin-bottom:12px">
-            <div class="ic bl"><div class="ic-label">&#128203; what to monitor</div><div class="ic-body" id="cgMonitoring"></div></div>
-            <div class="ic tl"><div class="ic-label">&#9883; helping with administration</div><div class="ic-body" id="cgAdmin"></div></div>
-          </div>
-          <div class="ic rd" style="margin-bottom:12px"><div class="ic-label">&#128680; when to call a doctor or 911</div><div class="ic-body" id="cgWatchFor"></div></div>
-          <div class="ic" style="border-left:3px solid var(--purple)"><div class="ic-label">&#127941; caregiver teach-back</div><div class="ic-body"><ol id="cgTeachback2" style="padding-left:1.2rem"></ol></div></div>
+        <div class="info-row">
+          <div class="row-label">&#9883; How it works</div>
+          <div class="row-body" id="what"></div>
         </div>
       </div>
-
-      <div style="padding:10px 1.5rem;background:var(--g50);border-top:1px solid var(--g200);font-size:11px;color:var(--g400);line-height:1.6">
-        &#9432; AI-generated from clinical sources. Information reflects current prescribing guidelines but may not capture recent label changes. Always verify with your pharmacist, prescribing information, Lexicomp, or Micromedex. Last checked: <span id="lastChecked"></span>
-      </div>
-      <div class="action-bar">
-        <button class="act-btn" id="copyBtn">&#10232; Copy Notes</button>
-        <button class="act-btn" onclick="window.print()">&#9113; Print</button>
-        <button class="act-btn" id="saveBtn">&#43; Save to My Meds</button>
-        <button class="act-btn" id="shareBtn" onclick="shareLink()">&#128279; Share</button>
-        <button class="act-btn" onclick="clearAll()">&#8635; New Search</button>
+      <div class="info-group teal">
+        <div class="info-row">
+          <div class="row-label">&#9200; How to take it</div>
+          <div class="row-body" id="how"></div>
+        </div>
       </div>
     </div>
+
+    <!-- SIDE EFFECTS -->
+    <div class="panel" id="panel-sideeffects">
+      <div class="sev-legend">
+        <div class="sev-item"><div class="sev-dot dg"></div>Mild</div>
+        <div class="sev-item"><div class="sev-dot dy"></div>Moderate</div>
+        <div class="sev-item"><div class="sev-dot dr"></div>Serious</div>
+      </div>
+      <div class="info-group amber">
+        <div class="info-row">
+          <div class="row-label">&#9888; Common side effects</div>
+          <div class="row-body" id="side"></div>
+        </div>
+      </div>
+      <div class="info-group red">
+        <div class="info-row">
+          <div class="row-label">&#128680; Warning signs — seek care</div>
+          <div class="row-body" id="warn"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRACTICAL -->
+    <div class="panel" id="panel-practical">
+      <div class="info-group amber">
+        <div class="info-row">
+          <div class="row-label">&#8987; Missed dose</div>
+          <div class="row-body" id="missedDose"></div>
+        </div>
+        <div class="info-row">
+          <div class="row-label">&#127829; Food, alcohol &amp; interactions</div>
+          <div class="row-body" id="foodAlcohol"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INJECTION -->
+    <div class="panel" id="panel-injection">
+      <div class="info-group purple">
+        <div class="info-row" id="injTypeRow" style="display:none">
+          <div class="row-label">Administration type</div>
+          <div class="row-body" id="injType"></div>
+        </div>
+        <div class="info-row" id="injSiteRow" style="display:none">
+          <div class="row-label">&#127994; Injection sites</div>
+          <div class="row-body" id="injSite"></div>
+        </div>
+      </div>
+      <div class="info-group" style="border-left:3px solid var(--purple)">
+        <div id="injSteps"></div>
+        <div class="info-row" id="inj-fallback">
+          <div class="row-label">&#128137; Administration guide</div>
+          <div class="row-body" id="injection"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAVINGS -->
+    <div class="panel" id="panel-savings">
+      <div class="info-group green">
+        <div class="info-row">
+          <div class="row-label">&#128176; Cost &amp; generic availability</div>
+          <div class="row-body" id="cost"></div>
+        </div>
+      </div>
+      <div class="info-group" style="overflow:hidden;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+        <div class="info-row" style="background:#fff">
+          <div class="row-label">&#127891; Assistance programs for this drug</div>
+          <div class="row-body" id="financialResources"></div>
+        </div>
+        <div class="info-row" style="background:var(--g50)">
+          <div class="row-label">&#127758; Always available</div>
+          <div class="row-body">
+            <ul style="padding-left:1.1rem">
+              <li style="margin-bottom:6px"><strong>GoodRx</strong> — goodrx.com — free coupons, often 80%+ off</li>
+              <li style="margin-bottom:6px"><strong>NeedyMeds</strong> — needymeds.org — PAP database by drug</li>
+              <li style="margin-bottom:6px"><strong>RxAssist</strong> — rxassist.org — manufacturer assistance programs</li>
+              <li style="margin-bottom:6px"><strong>Partnership for Prescription Assistance</strong> — pparx.org</li>
+              <li style="margin-bottom:6px"><strong>Medicare Extra Help</strong> — ssa.gov/extrahelp</li>
+              <li><strong>Community Health Centers</strong> — findahealthcenter.hrsa.gov — 340B pricing</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEACH-BACK -->
+    <div class="panel" id="panel-teachback">
+      <div class="info-group purple">
+        <div class="info-row">
+          <div class="row-label">&#127941; Patient teach-back</div>
+          <div class="row-body"><ol id="teachback" style="padding-left:1.2rem"></ol></div>
+        </div>
+      </div>
+      <div class="info-group" id="cgTBCard" style="display:none;border-left:3px solid var(--purple);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+        <div class="info-row">
+          <div class="row-label">&#128106; Caregiver teach-back</div>
+          <div class="row-body"><ol id="cgTeachback" style="padding-left:1.2rem"></ol></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAREGIVER -->
+    <div class="panel" id="panel-caregiver">
+      <div class="info-group" style="background:var(--purple-bg);border-left:3px solid var(--purple);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+        <div class="info-row">
+          <div class="row-label">&#128106; Caregiver overview</div>
+          <div class="row-body" id="cgTips"></div>
+        </div>
+      </div>
+      <div class="info-group blue">
+        <div class="info-row">
+          <div class="row-label">&#128203; What to monitor</div>
+          <div class="row-body" id="cgMonitoring"></div>
+        </div>
+        <div class="info-row">
+          <div class="row-label">&#9883; Helping with administration</div>
+          <div class="row-body" id="cgAdmin"></div>
+        </div>
+      </div>
+      <div class="info-group red">
+        <div class="info-row">
+          <div class="row-label">&#128680; When to call a doctor or 911</div>
+          <div class="row-body" id="cgWatchFor"></div>
+        </div>
+      </div>
+      <div class="info-group purple">
+        <div class="info-row">
+          <div class="row-label">&#127941; Caregiver teach-back</div>
+          <div class="row-body"><ol id="cgTeachback2" style="padding-left:1.2rem"></ol></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTION STRIP -->
+    <div class="action-strip">
+      <button class="action-btn" id="copyBtn">&#10232; Copy</button>
+      <button class="action-btn" id="shareBtn">&#128279; Share</button>
+      <button class="action-btn" id="saveBtn">&#43; My Meds</button>
+      <button class="action-btn" onclick="clearAll()">&#8635; New</button>
+    </div>
+    <div class="accuracy-note" id="accuracyNote"></div>
   </div>
 </main>
 
-<footer>
-  AI-generated content. Always verify with Lexicomp, Micromedex, or prescribing information.
-  Not a substitute for professional clinical judgment. Built by Kathryn Bowman, PharmD Candidate — University of Kentucky College of Pharmacy.
-</footer>
+<!-- BOTTOM TAB BAR -->
+<nav class="tab-bar">
+  <a class="tab-item on" href="/app">
+    <div class="tab-dot"></div>
+    <div class="tab-icon">&#128138;</div>
+    <div class="tab-label">Look Up</div>
+  </a>
+  <a class="tab-item" href="/mymeds">
+    <div class="tab-dot"></div>
+    <div class="tab-icon">&#128137;</div>
+    <div class="tab-label">My Meds</div>
+  </a>
+  <a class="tab-item" href="/symptoms">
+    <div class="tab-dot"></div>
+    <div class="tab-icon">&#128308;</div>
+    <div class="tab-label">Symptoms</div>
+  </a>
+  <a class="tab-item" href="/tracker">
+    <div class="tab-dot"></div>
+    <div class="tab-icon">&#128197;</div>
+    <div class="tab-label">Tracker</div>
+  </a>
+  <a class="tab-item" href="/medcard">
+    <div class="tab-dot"></div>
+    <div class="tab-icon">&#128203;</div>
+    <div class="tab-label">Med Card</div>
+  </a>
+</nav>
 
 <script src="/pilltalk.js"></script>
 </body>

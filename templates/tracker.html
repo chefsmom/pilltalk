@@ -2,426 +2,200 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Pill Talk"/>
+<meta name="theme-color" content="#ffffff"/>
 <title>Dose Tracker — Pill Talk</title>
-<link rel="icon" type="image/svg+xml" href="/icon.svg">
-<link rel="manifest" href="/manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Pill Talk">
-<meta name="theme-color" content="#059669">
-<link rel="apple-touch-icon" href="/icon.svg">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/icon.svg"/>
+<link rel="manifest" href="/manifest.json"/>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --teal:#059669;--teal-d:#047857;--teal-dd:#065f46;--teal-50:#ecfdf5;--teal-100:#d1fae5;
-  --g900:#111827;--g800:#1f2937;--g700:#374151;--g600:#4b5563;--g500:#6b7280;--g400:#9ca3af;--g300:#d1d5db;--g200:#e5e7eb;--g100:#f3f4f6;--g50:#f9fafb;
-  --red:#dc2626;--red-bg:#fef2f2;--red-b:#fecaca;
-  --amber:#d97706;--amber-bg:#fffbeb;--amber-b:#fde68a;
+  --g900:#111827;--g800:#1f2937;--g700:#374151;--g600:#4b5563;--g500:#6b7280;
+  --g400:#9ca3af;--g300:#d1d5db;--g200:#e5e7eb;--g150:#eeeff1;--g100:#f3f4f6;--g50:#f9fafb;
+  --red:#dc2626;--red-bg:#fef2f2;--amber:#d97706;--amber-bg:#fffbeb;
   --green:#16a34a;--green-bg:#f0fdf4;--green-b:#bbf7d0;
-  --purple:#7c3aed;--purple-bg:#f5f3ff;--purple-b:#ddd6fe;
-  --r:10px;--rl:14px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);--safe-top:env(safe-area-inset-top,0px);
 }
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--g50);color:var(--g900);-webkit-font-smoothing:antialiased;min-height:100vh}
-nav{background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--g200);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.logo{font-size:17px;font-weight:800;text-decoration:none;color:var(--g900);display:flex;align-items:center;gap:9px}
-.logo-icon{width:30px;height:30px;border-radius:8px;box-shadow:0 2px 4px rgba(5,150,105,.3)}
-.nav-links{display:flex;gap:2px}
-.nl{padding:6px 12px;font-size:13px;font-weight:500;color:var(--g500);text-decoration:none;border-radius:6px;transition:all .15s;white-space:nowrap}
-.nl:hover{background:var(--g100);color:var(--g900)}
-.nl.on{background:var(--teal-50);color:var(--teal-dd);font-weight:600}
-main{max-width:760px;margin:0 auto;padding:2rem 1.25rem 5rem}
-.page-title{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:4px}
-.page-sub{font-size:13px;color:var(--g500);margin-bottom:1.5rem}
-
-/* TABS */
-.tab-row{display:flex;border-bottom:1px solid var(--g200);margin-bottom:1.5rem;gap:0}
-.ptab{padding:11px 18px;font-size:13px;font-weight:500;color:var(--g500);background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
-.ptab:hover{color:var(--g800)}
-.ptab.on{color:var(--teal-dd);border-bottom-color:var(--teal);font-weight:700}
-.panel{display:none}.panel.on{display:block}
-
-/* CARDS */
-.card{background:#fff;border:1px solid var(--g200);border-radius:var(--rl);box-shadow:0 2px 8px rgba(0,0,0,.05);padding:1.5rem;margin-bottom:1.25rem}
-.card-title{font-size:15px;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
-.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);margin-bottom:8px}
-
-/* TODAY */
-.today-date{font-size:13px;color:var(--g500);margin-bottom:1.25rem;font-weight:500}
-.dose-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);margin-bottom:8px}
-.dose-name{font-size:15px;font-weight:600}
-.dose-time{font-size:12px;color:var(--g400);margin-top:2px}
-.dose-btns{display:flex;gap:8px}
-.dose-btn{width:40px;height:40px;border-radius:50%;border:2px solid var(--g300);background:#fff;font-size:18px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
-.dose-btn:hover{border-color:var(--teal);background:var(--teal-50)}
-.dose-btn.taken{background:var(--teal);border-color:var(--teal);color:#fff}
-.dose-btn.skipped{background:var(--g200);border-color:var(--g300);color:var(--g500)}
-.empty-state{text-align:center;padding:2.5rem;color:var(--g400);font-size:14px;line-height:2}
-.empty-icon{font-size:32px;margin-bottom:8px}
-
-/* LOG SIDE EFFECT */
-input[type=text],select,textarea{width:100%;padding:10px 14px;font-size:14px;font-family:inherit;border:1.5px solid var(--g300);border-radius:var(--r);background:var(--g50);color:var(--g900);outline:none;transition:border-color .15s;margin-bottom:10px}
-input[type=text]:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(5,150,105,.1)}
-input[type=text]::placeholder,textarea::placeholder{color:var(--g400)}
-textarea{resize:vertical;min-height:70px}
-label{font-size:12px;font-weight:600;color:var(--g600);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:480px){.form-row{grid-template-columns:1fr}}
-.btn-primary{padding:11px 22px;background:var(--teal);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;box-shadow:0 2px 4px rgba(5,150,105,.2)}
-.btn-primary:hover{background:var(--teal-d)}
-.btn-ghost{padding:10px 18px;background:transparent;border:1.5px solid var(--g300);border-radius:var(--r);font-size:13px;font-weight:600;color:var(--g600);cursor:pointer;font-family:inherit;transition:all .15s}
-.btn-ghost:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-50)}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap}
-
-/* HISTORY */
-.history-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--g100)}
-.history-item:last-child{border-bottom:none}
-.history-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.hd-green{background:#22c55e}.hd-yellow{background:#f59e0b}.hd-red{background:#ef4444}.hd-gray{background:var(--g300)}.hd-purple{background:var(--purple)}
-.history-content{flex:1}
-.history-title{font-size:14px;font-weight:600;margin-bottom:2px}
-.history-meta{font-size:12px;color:var(--g400)}
-.history-note{font-size:13px;color:var(--g600);margin-top:4px;font-style:italic}
-.sev-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
-.sev-mild{background:var(--green-bg);color:var(--green)}
-.sev-moderate{background:var(--amber-bg);color:var(--amber)}
-.sev-severe{background:var(--red-bg);color:var(--red)}
-
-/* STREAK */
-.streak-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
-.streak-day{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-direction:column;gap:1px}
-.sd-taken{background:var(--teal);color:#fff}
-.sd-skipped{background:var(--g200);color:var(--g500)}
-.sd-missed{background:var(--red-bg);border:1px solid var(--red-b);color:var(--red)}
-.sd-future{background:var(--g100);color:var(--g300)}
-
-.success-toast{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--g900);color:#fff;padding:12px 20px;border-radius:var(--r);font-size:14px;font-weight:500;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.2)}
-
-footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color:var(--g400);line-height:1.7;border-top:1px solid var(--g200);padding-top:1.5rem}
-
-@media(max-width:580px){
-  .nl span.full{display:none}
-  .nl{padding:6px 8px;font-size:16px}
-  nav{padding:0 .75rem}
-  .logo span{display:none}
-}
+html{height:100%;background:#fff}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;background:var(--g50);color:var(--g900);-webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:calc(83px + var(--safe-bottom))}
+.status-bar{height:var(--safe-top);background:#fff}
+.app-header{background:#fff;border-bottom:0.5px solid var(--g200);padding:12px 20px;position:sticky;top:var(--safe-top);z-index:50;display:flex;align-items:center;justify-content:space-between}
+.app-title{font-size:17px;font-weight:700;letter-spacing:-.2px}
+.header-logo{display:flex;align-items:center;gap:8px}
+.header-logo img{width:28px;height:28px;border-radius:7px}
+.header-date{font-size:13px;color:var(--g500);font-weight:500}
+main{padding:16px 16px 8px}
+.card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card-pad{padding:16px}
+.dose-row{display:flex;align-items:center;padding:14px 16px;border-bottom:0.5px solid var(--g100)}
+.dose-row:last-child{border-bottom:none}
+.dose-check{width:26px;height:26px;border-radius:50%;border:2px solid var(--g300);cursor:pointer;flex-shrink:0;margin-right:12px;display:flex;align-items:center;justify-content:center;transition:all .2s;-webkit-appearance:none;background:#fff}
+.dose-check.taken{border-color:var(--teal);background:var(--teal)}
+.dose-check.taken::after{content:'✓';color:#fff;font-size:13px;font-weight:800}
+.dose-info{flex:1}
+.dose-name{font-size:15px;font-weight:600;margin-bottom:2px}
+.dose-time{font-size:12px;color:var(--g400)}
+.dose-badge{font-size:11px;padding:3px 8px;border-radius:20px;font-weight:600}
+.badge-taken{background:var(--green-bg);color:var(--green)}
+.badge-missed{background:var(--red-bg);color:var(--red)}
+.badge-pending{background:var(--g100);color:var(--g500)}
+input[type=text],input[type=time],select,textarea{width:100%;padding:12px 14px;font-size:15px;font-family:inherit;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g900);outline:none;-webkit-appearance:none;transition:border-color .15s;margin-bottom:8px}
+input[type=text]:focus,input[type=time]:focus,select:focus,textarea:focus{border-color:var(--teal);background:#fff;box-shadow:0 0 0 4px rgba(5,150,105,.08)}
+input::placeholder,textarea::placeholder{color:var(--g400)}
+textarea{resize:vertical;min-height:70px;line-height:1.5}
+.btn-primary{padding:13px;background:var(--teal);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;-webkit-appearance:none;box-shadow:0 2px 6px rgba(5,150,105,.25)}
+.btn-primary:active{transform:scale(.98)}
+.btn-ghost{padding:10px 16px;background:var(--g50);border:1px solid var(--g200);border-radius:10px;font-size:13px;font-weight:500;color:var(--g700);cursor:pointer;font-family:inherit;-webkit-appearance:none}
+.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin-bottom:10px}
+.progress-bar{height:6px;background:var(--g200);border-radius:3px;margin-bottom:6px;overflow:hidden}
+.progress-fill{height:100%;background:var(--teal);border-radius:3px;transition:width .4s}
+.progress-txt{font-size:12px;color:var(--g500);font-weight:500}
+.se-row{display:flex;align-items:flex-start;padding:12px 16px;border-bottom:0.5px solid var(--g100)}
+.se-row:last-child{border-bottom:none}
+.se-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;margin-right:10px;flex-shrink:0}
+.se-info{flex:1}
+.se-name{font-size:14px;font-weight:600;margin-bottom:2px}
+.se-detail{font-size:13px;color:var(--g500);line-height:1.5}
+.se-sev{font-size:11px;font-weight:700;padding:2px 7px;border-radius:20px}
+.se-mild{background:var(--green-bg);color:var(--green)}
+.se-mod{background:var(--amber-bg);color:var(--amber)}
+.se-sev-sev{background:var(--red-bg);color:var(--red)}
+.empty-state{text-align:center;padding:32px 16px;color:var(--g400)}
+.empty-icon{font-size:36px;margin-bottom:10px}
+.empty-txt{font-size:15px;font-weight:500;color:var(--g600);margin-bottom:4px}
+.empty-sub{font-size:13px}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:0.5px solid rgba(0,0,0,.12);display:flex;padding-bottom:var(--safe-bottom);z-index:100}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;text-decoration:none;cursor:pointer;min-height:50px}
+.tab-icon{font-size:22px;line-height:1;margin-bottom:3px;transition:transform .15s}
+.tab-label{font-size:10px;font-weight:500;color:var(--g400)}
+.tab-item.on .tab-label{color:var(--teal);font-weight:700}
+.tab-item.on .tab-icon{transform:scale(1.1)}
+::-webkit-scrollbar{display:none}*{scrollbar-width:none}
 </style>
 </head>
 <body>
-<nav>
-  <a class="logo" href="/"><img class="logo-icon" src="/icon.svg" alt="Pill Talk"/>Pill Talk</a>
-  <div class="nav-links">
-    <a class="nl" href="/app">&#128138;<span class="full"> Look Up</span></a>
-    <a class="nl" href="/mymeds">&#128137;<span class="full"> My Meds</span></a>
-    <a class="nl" href="/symptoms">&#128308;<span class="full"> Symptoms</span></a>
-    <a class="nl on" href="/tracker">&#128197;<span class="full"> Tracker</span></a>
-    <a class="nl" href="/medcard">&#128203;<span class="full"> Med Card</span></a>
+<div class="status-bar"></div>
+<div class="app-header">
+  <div class="header-logo">
+    <img src="/icon.svg" alt="Pill Talk"/>
+    <span class="app-title">Dose Tracker</span>
   </div>
-</nav>
-
+  <span class="header-date" id="todayDate"></span>
+</div>
 <main>
-  <div class="page-title">&#128197; Dose Tracker</div>
-  <div class="page-sub">Track your daily doses and log side effects. Share your history with your doctor or pharmacist.</div>
-
-  <div class="tab-row">
-    <button class="ptab on" onclick="showPanel('today')">Today</button>
-    <button class="ptab" onclick="showPanel('log')">Log Side Effect</button>
-    <button class="ptab" onclick="showPanel('history')">History</button>
-    <button class="ptab" onclick="showPanel('report')">Report</button>
-  </div>
-
-  <!-- TODAY -->
-  <div class="panel on" id="panel-today">
-    <div class="today-date" id="todayDate"></div>
-
+  <!-- Today's doses -->
+  <div class="card">
+    <div class="card-pad">
+      <div class="section-label">Today's doses</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-txt" id="progressTxt">0 of 0 taken</div>
+    </div>
     <div id="doseList"></div>
-
-    <div class="card" style="margin-top:1.25rem">
-      <div class="card-title" style="font-size:13px;color:var(--g500);font-weight:600;margin-bottom:.75rem">ADD MEDICATION TO TRACK</div>
-      <div style="display:flex;gap:8px">
-        <input type="text" id="newMedInput" placeholder="Medication name..." style="margin-bottom:0"/>
-        <button class="btn-primary" onclick="addTrackedMed()" style="white-space:nowrap;padding:10px 16px">+ Add</button>
-      </div>
-    </div>
   </div>
 
-  <!-- LOG SIDE EFFECT -->
-  <div class="panel" id="panel-log">
-    <div class="card">
-      <div class="card-title">Log a side effect or note</div>
-      <div class="form-row">
-        <div>
-          <label>Date</label>
-          <input type="date" id="logDate"/>
-        </div>
-        <div>
-          <label>Related medication</label>
-          <select id="logMed"></select>
-        </div>
-      </div>
-      <label>Symptom or side effect</label>
-      <input type="text" id="logSymptom" placeholder="e.g. nausea, headache, rash, dizziness..."/>
-      <label>Severity</label>
-      <select id="logSeverity">
-        <option value="mild">Mild — barely noticeable</option>
-        <option value="moderate">Moderate — affecting daily life</option>
-        <option value="severe">Severe — need medical attention</option>
+  <!-- Add dose -->
+  <div class="card card-pad">
+    <div class="section-label">Add medication</div>
+    <input type="text" id="doseNameInput" placeholder="Medication name"/>
+    <input type="time" id="doseTimeInput"/>
+    <select id="doseFreq">
+      <option value="daily">Once daily</option>
+      <option value="twice">Twice daily</option>
+      <option value="three">Three times daily</option>
+      <option value="asneeded">As needed</option>
+    </select>
+    <button class="btn-primary" onclick="addDose()">Add to tracker</button>
+  </div>
+
+  <!-- Side effect log -->
+  <div class="card">
+    <div class="card-pad">
+      <div class="section-label">Side effect log</div>
+      <input type="text" id="seSymptom" placeholder="Symptom (e.g. nausea, headache)"/>
+      <select id="seSeverity">
+        <option value="mild">Mild</option>
+        <option value="moderate">Moderate</option>
+        <option value="severe">Severe</option>
       </select>
-      <label>Notes (optional)</label>
-      <textarea id="logNotes" placeholder="Any additional details — when it started, what helped, etc."></textarea>
-      <div class="btn-row">
-        <button class="btn-primary" onclick="logEntry()">Save Entry</button>
-        <button class="btn-ghost" onclick="clearLogForm()">Clear</button>
-      </div>
+      <textarea id="seNotes" placeholder="Notes (optional)..."></textarea>
+      <button class="btn-primary" onclick="logSideEffect()">Log side effect</button>
     </div>
-  </div>
-
-  <!-- HISTORY -->
-  <div class="panel" id="panel-history">
-    <div class="card">
-      <div class="card-title">
-        <span>Recent entries</span>
-        <button class="btn-ghost" onclick="clearHistory()" style="font-size:12px;padding:5px 12px">Clear all</button>
-      </div>
-      <div id="historyList"></div>
-    </div>
-  </div>
-
-  <!-- REPORT -->
-  <div class="panel" id="panel-report">
-    <div class="card">
-      <div class="card-title">Printable report</div>
-      <p style="font-size:14px;color:var(--g600);margin-bottom:1.25rem;line-height:1.6">Generate a summary of your medication history and side effect log to share with your doctor or pharmacist at your next appointment.</p>
-      <div style="background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:1.25rem;margin-bottom:1.25rem" id="reportPreview"></div>
-      <div class="btn-row">
-        <button class="btn-primary" onclick="window.print()">&#9113; Print Report</button>
-        <button class="btn-ghost" onclick="copyReport()">&#10232; Copy Report</button>
-      </div>
-    </div>
+    <div id="seList"></div>
   </div>
 </main>
 
-<div class="success-toast" id="toast"></div>
-
-<footer>
-  Data is stored locally on your device only. AI-generated content. Not a substitute for professional medical advice.
-  Built by Kathryn Bowman, PharmD Candidate — University of Kentucky College of Pharmacy.
-</footer>
+<nav class="tab-bar">
+  <a class="tab-item" href="/app"><div class="tab-icon">&#128138;</div><div class="tab-label">Look Up</div></a>
+  <a class="tab-item" href="/mymeds"><div class="tab-icon">&#128137;</div><div class="tab-label">My Meds</div></a>
+  <a class="tab-item" href="/symptoms"><div class="tab-icon">&#128308;</div><div class="tab-label">Symptoms</div></a>
+  <a class="tab-item on" href="/tracker"><div class="tab-icon">&#128197;</div><div class="tab-label">Tracker</div></a>
+  <a class="tab-item" href="/medcard"><div class="tab-icon">&#128203;</div><div class="tab-label">Med Card</div></a>
+</nav>
 
 <script>
-var trackedMeds=JSON.parse(localStorage.getItem('pt_tracked_meds')||'[]');
-var doseLog=JSON.parse(localStorage.getItem('pt_dose_log')||'[]');
-var sideLog=JSON.parse(localStorage.getItem('pt_side_log')||'[]');
-
-function save(){
-  localStorage.setItem('pt_tracked_meds',JSON.stringify(trackedMeds));
-  localStorage.setItem('pt_dose_log',JSON.stringify(doseLog));
-  localStorage.setItem('pt_side_log',JSON.stringify(sideLog));
-}
-
-function today(){
-  return new Date().toISOString().split('T')[0];
-}
-
-function fmt(dateStr){
-  var d=new Date(dateStr+'T00:00:00');
-  return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-}
-
-function showPanel(name){
-  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on')});
-  document.querySelectorAll('.ptab').forEach(function(t){t.classList.remove('on')});
-  document.getElementById('panel-'+name).classList.add('on');
-  document.querySelectorAll('.ptab').forEach(function(t){
-    if(t.getAttribute('onclick')==="showPanel('"+name+"')") t.classList.add('on');
-  });
-  if(name==='history') renderHistory();
-  if(name==='report') renderReport();
-  if(name==='log') populateLogSelects();
-}
-
-function showToast(msg){
-  var t=document.getElementById('toast');
-  t.textContent=msg; t.style.display='block';
-  setTimeout(function(){t.style.display='none';},2500);
-}
-
-function addTrackedMed(){
-  var input=document.getElementById('newMedInput');
-  var val=input.value.trim();
-  if(!val) return;
-  if(trackedMeds.indexOf(val)===-1){trackedMeds.push(val);save();}
-  input.value='';
-  renderToday();
-  showToast('✓ '+val+' added to tracker');
-}
-
-function renderToday(){
-  var d=today();
-  document.getElementById('todayDate').textContent=fmt(d);
+var today=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+document.getElementById('todayDate').textContent=today;
+var todayKey=new Date().toISOString().slice(0,10);
+var doses=JSON.parse(localStorage.getItem('pt_doses')||'[]');
+var seLog=JSON.parse(localStorage.getItem('pt_selog')||'[]');
+var takenToday=JSON.parse(localStorage.getItem('pt_taken_'+todayKey)||'{}');
+function saveDoses(){localStorage.setItem('pt_doses',JSON.stringify(doses));}
+function saveSE(){localStorage.setItem('pt_selog',JSON.stringify(seLog));}
+function saveTaken(){localStorage.setItem('pt_taken_'+todayKey,JSON.stringify(takenToday));}
+function renderDoses(){
   var el=document.getElementById('doseList');
-  if(trackedMeds.length===0){
-    el.innerHTML='<div class="card"><div class="empty-state"><div class="empty-icon">&#128197;</div>No medications tracked yet.<br>Add your medications below to start logging doses.</div></div>';
-    return;
-  }
-  var html='';
-  for(var i=0;i<trackedMeds.length;i++){
-    var med=trackedMeds[i];
-    var key=d+'_'+med;
-    var existing=doseLog.find(function(e){return e.key===key});
-    var status=existing?existing.status:'none';
-    html+='<div class="dose-row">';
-    html+='<div><div class="dose-name">'+med+'</div><div class="dose-time">'+(status==='taken'?'&#10003; Taken today':status==='skipped'?'Skipped today':'Not yet logged')+'</div></div>';
-    html+='<div class="dose-btns">';
-    html+='<button class="dose-btn'+(status==='taken'?' taken':'')+'" title="Mark as taken" onclick="logDose(\''+med.replace(/'/g,"\\'")+'\'  ,\'taken\')">&#10003;</button>';
-    html+='<button class="dose-btn'+(status==='skipped'?' skipped':'')+'" title="Mark as skipped" onclick="logDose(\''+med.replace(/'/g,"\\'")+'\'  ,\'skipped\')">&#10005;</button>';
-    html+='</div></div>';
-  }
-  el.innerHTML=html;
+  if(!doses.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">&#128197;</div><div class="empty-txt">No medications tracked</div><div class="empty-sub">Add your first dose below</div></div>';updateProgress(0,0);return;}
+  var taken=doses.filter(function(d){return takenToday[d.id];}).length;
+  updateProgress(taken,doses.length);
+  el.innerHTML=doses.map(function(d){
+    var isTaken=!!takenToday[d.id];
+    var badge=isTaken?'<span class="dose-badge badge-taken">Taken</span>':'<span class="dose-badge badge-pending">Pending</span>';
+    return '<div class="dose-row"><button class="dose-check'+(isTaken?' taken':'')+'" onclick="toggleTaken(\''+d.id+'\')"></button><div class="dose-info"><div class="dose-name">'+d.name+'</div><div class="dose-time">'+d.time+(d.freq!=='asneeded'?' · '+d.freq:' · As needed')+'</div></div>'+badge+'<button onclick="removeDose(\''+d.id+'\')" style="background:none;border:none;color:var(--g400);font-size:18px;cursor:pointer;padding:4px 8px">&#10005;</button></div>';
+  }).join('');
 }
-
-function logDose(med,status){
-  var d=today();
-  var key=d+'_'+med;
-  var existing=doseLog.findIndex(function(e){return e.key===key});
-  var entry={key:key,date:d,med:med,status:status,time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})};
-  if(existing>=0) doseLog[existing]=entry;
-  else doseLog.push(entry);
-  save();
-  renderToday();
-  showToast(status==='taken'?'&#10003; Dose logged for '+med:'Skipped logged for '+med);
+function updateProgress(taken,total){
+  var pct=total?Math.round(taken/total*100):0;
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressTxt').textContent=taken+' of '+total+' taken today';
 }
-
-function populateLogSelects(){
-  document.getElementById('logDate').value=today();
-  var sel=document.getElementById('logMed');
-  var allMeds=Array.from(new Set(trackedMeds.concat(JSON.parse(localStorage.getItem('pilltalk_meds')||'[]'))));
-  sel.innerHTML='<option value="">Select medication...</option>'+allMeds.map(function(m){return '<option>'+m+'</option>';}).join('');
+function toggleTaken(id){takenToday[id]=!takenToday[id];saveTaken();renderDoses();}
+function addDose(){
+  var name=document.getElementById('doseNameInput').value.trim();
+  var time=document.getElementById('doseTimeInput').value;
+  if(!name)return;
+  var formatTime='';
+  if(time){var p=time.split(':');var h=parseInt(p[0]);var m=p[1];var ampm=h>=12?'PM':'AM';h=h%12||12;formatTime=h+':'+m+' '+ampm;}
+  doses.push({id:Date.now().toString(),name:name,time:formatTime||'No time set',freq:document.getElementById('doseFreq').value});
+  saveDoses();
+  document.getElementById('doseNameInput').value='';
+  document.getElementById('doseTimeInput').value='';
+  renderDoses();
 }
-
-function logEntry(){
-  var date=document.getElementById('logDate').value||today();
-  var med=document.getElementById('logMed').value;
-  var symptom=document.getElementById('logSymptom').value.trim();
-  var severity=document.getElementById('logSeverity').value;
-  var notes=document.getElementById('logNotes').value.trim();
-  if(!symptom){alert('Please enter a symptom or side effect.');return;}
-  sideLog.unshift({id:Date.now(),date:date,med:med,symptom:symptom,severity:severity,notes:notes});
-  save();
-  clearLogForm();
-  showToast('&#10003; Entry saved');
-  showPanel('history');
+function removeDose(id){doses=doses.filter(function(d){return d.id!==id;});delete takenToday[id];saveDoses();saveTaken();renderDoses();}
+function renderSE(){
+  var el=document.getElementById('seList');
+  if(!seLog.length){el.innerHTML='<div class="empty-state" style="padding:20px 16px"><div class="empty-icon">&#128203;</div><div class="empty-txt">No side effects logged</div></div>';return;}
+  var sevMap={mild:'dg se-mild',moderate:'dy se-mod',severe:'dr se-sev-sev'};
+  var dotMap={mild:'#22c55e',moderate:'#f59e0b',severe:'#ef4444'};
+  el.innerHTML=seLog.slice(-10).reverse().map(function(se){
+    return '<div class="se-row"><div class="se-dot" style="background:'+dotMap[se.sev]+'"></div><div class="se-info"><div class="se-name">'+se.symptom+' <span class="se-sev '+sevMap[se.sev]+'">'+se.sev+'</span></div><div class="se-detail">'+se.date+(se.notes?' — '+se.notes:'')+'</div></div><button onclick="removeSE(\''+se.id+'\')" style="background:none;border:none;color:var(--g400);font-size:16px;cursor:pointer">&#10005;</button></div>';
+  }).join('');
 }
-
-function clearLogForm(){
-  document.getElementById('logSymptom').value='';
-  document.getElementById('logNotes').value='';
-  document.getElementById('logSeverity').value='mild';
+function logSideEffect(){
+  var sym=document.getElementById('seSymptom').value.trim();
+  if(!sym)return;
+  seLog.push({id:Date.now().toString(),symptom:sym,sev:document.getElementById('seSeverity').value,notes:document.getElementById('seNotes').value.trim(),date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})});
+  saveSE();
+  document.getElementById('seSymptom').value='';
+  document.getElementById('seNotes').value='';
+  renderSE();
 }
-
-function renderHistory(){
-  var el=document.getElementById('historyList');
-  if(sideLog.length===0&&doseLog.length===0){
-    el.innerHTML='<div class="empty-state"><div class="empty-icon">&#128197;</div>No entries yet.<br>Log doses and side effects to see your history here.</div>';
-    return;
-  }
-  var combined=[];
-  sideLog.forEach(function(e){combined.push({type:'side',data:e,date:e.date,ts:e.id});});
-  doseLog.forEach(function(e){combined.push({type:'dose',data:e,date:e.date,ts:new Date(e.date).getTime()});});
-  combined.sort(function(a,b){return b.ts-a.ts});
-  var html='';
-  var shown=combined.slice(0,40);
-  for(var i=0;i<shown.length;i++){
-    var item=shown[i];
-    if(item.type==='side'){
-      var e=item.data;
-      var dotClass=e.severity==='severe'?'hd-red':e.severity==='moderate'?'hd-yellow':'hd-green';
-      html+='<div class="history-item">';
-      html+='<div class="history-dot '+dotClass+'" style="margin-top:6px"></div>';
-      html+='<div class="history-content">';
-      html+='<div class="history-title">'+e.symptom+' <span class="sev-badge sev-'+e.severity+'">'+e.severity+'</span></div>';
-      html+='<div class="history-meta">'+fmt(e.date)+(e.med?' &middot; '+e.med:'')+'</div>';
-      if(e.notes) html+='<div class="history-note">'+e.notes+'</div>';
-      html+='</div>';
-      html+='<button onclick="deleteEntry('+e.id+')" style="background:none;border:none;color:var(--g300);cursor:pointer;font-size:16px;padding:4px" title="Delete">&#10005;</button>';
-      html+='</div>';
-    } else {
-      var d=item.data;
-      var dotClass2=d.status==='taken'?'hd-green':'hd-gray';
-      html+='<div class="history-item">';
-      html+='<div class="history-dot '+dotClass2+'" style="margin-top:6px"></div>';
-      html+='<div class="history-content">';
-      html+='<div class="history-title" style="color:var(--g600)">'+(d.status==='taken'?'&#10003;':'&#10005;')+' '+d.med+' — '+(d.status==='taken'?'taken':'skipped')+'</div>';
-      html+='<div class="history-meta">'+fmt(d.date)+(d.time?' &middot; '+d.time:'')+'</div>';
-      html+='</div></div>';
-    }
-  }
-  el.innerHTML=html;
-}
-
-function deleteEntry(id){
-  sideLog=sideLog.filter(function(e){return e.id!==id});
-  save(); renderHistory();
-}
-
-function clearHistory(){
-  if(confirm('Clear all history? This cannot be undone.')) {
-    sideLog=[]; doseLog=[]; save(); renderHistory();
-  }
-}
-
-function renderReport(){
-  var el=document.getElementById('reportPreview');
-  var lines=['PILL TALK — MEDICATION REPORT','Generated: '+new Date().toLocaleDateString(),''];
-  lines.push('TRACKED MEDICATIONS');
-  if(trackedMeds.length) trackedMeds.forEach(function(m){lines.push('• '+m);});
-  else lines.push('None tracked');
-  lines.push('');
-  if(sideLog.length){
-    lines.push('SIDE EFFECT LOG (last 30 entries)');
-    sideLog.slice(0,30).forEach(function(e){
-      lines.push(fmt(e.date)+': '+e.symptom+' ['+e.severity+']'+(e.med?' — '+e.med:'')+(e.notes?' — '+e.notes:''));
-    });
-    lines.push('');
-  }
-  if(doseLog.length){
-    lines.push('DOSE LOG (last 30 entries)');
-    doseLog.slice(0,30).forEach(function(e){
-      lines.push(fmt(e.date)+': '+e.med+' — '+e.status+(e.time?' at '+e.time:''));
-    });
-  }
-  el.innerHTML='<pre style="font-size:12px;color:var(--g700);white-space:pre-wrap;line-height:1.7">'+lines.join('\n')+'</pre>';
-}
-
-function copyReport(){
-  var lines=['PILL TALK — MEDICATION REPORT','Generated: '+new Date().toLocaleDateString(),''];
-  lines.push('TRACKED MEDICATIONS');
-  if(trackedMeds.length) trackedMeds.forEach(function(m){lines.push('• '+m);}); else lines.push('None');
-  lines.push('');
-  if(sideLog.length){
-    lines.push('SIDE EFFECT LOG');
-    sideLog.slice(0,30).forEach(function(e){
-      lines.push(fmt(e.date)+': '+e.symptom+' ['+e.severity+']'+(e.med?' — '+e.med:'')+(e.notes?' — '+e.notes:''));
-    });
-    lines.push('');
-  }
-  if(doseLog.length){
-    lines.push('DOSE LOG');
-    doseLog.slice(0,30).forEach(function(e){
-      lines.push(fmt(e.date)+': '+e.med+' — '+e.status+(e.time?' at '+e.time:''));
-    });
-  }
-  navigator.clipboard.writeText(lines.join('\n'));
-  showToast('&#10232; Report copied');
-}
-
-// init
-document.getElementById('todayDate').textContent=fmt(today());
-renderToday();
+function removeSE(id){seLog=seLog.filter(function(s){return s.id!==id;});saveSE();renderSE();}
+renderDoses();renderSE();
 </script>
 </body>
 </html>
