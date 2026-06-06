@@ -1,4 +1,4 @@
-const CACHE = 'pilltalk-v1';
+const CACHE = 'pilltalk-v3';
 const OFFLINE_URL = '/offline';
 
 const PRECACHE = [
