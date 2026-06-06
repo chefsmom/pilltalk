@@ -8,6 +8,10 @@ API_KEY = os.environ.get("GEMINI_API_KEY", "")
 def landing():
     return send_from_directory('templates', 'landing.html')
 
+@app.route("/medcard")
+def medcard():
+    return send_from_directory("templates", "medcard.html")
+
 @app.route("/mymeds")
 def mymeds():
     return send_from_directory("templates", "mymeds.html")
@@ -55,6 +59,49 @@ def counsel():
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
             "temperature": 0.2,
+            "maxOutputTokens": 8192,
+            "responseMimeType": "application/json"
+        }
+    }).encode()
+
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY
+    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+
+    try:
+        with urllib.request.urlopen(req) as resp:
+            data = json.loads(resp.read())
+        text = data["candidates"][0]["content"]["parts"][0]["text"]
+        text = text.strip().replace("```json", "").replace("```", "").strip()
+        result = json.loads(text)
+        return jsonify(result)
+    except urllib.error.HTTPError as e:
+        err = json.loads(e.read())
+        return jsonify({"error": str(err)}), 502
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/translate", methods=["POST"])
+def translate():
+    if not API_KEY:
+        return jsonify({"error": "GEMINI_API_KEY not set."}), 500
+
+    body = request.get_json()
+    data = body.get("data", {})
+    
+    prompt = (
+        'You are a clinical pharmacist. Translate the following medication information from English to Spanish. '
+        'Use plain, conversational Spanish that is easy to understand for a general audience. '
+        'Preserve all medical accuracy. Keep bullet point formatting intact. '
+        'Respond ONLY with valid JSON using the exact same schema as the input, with all text values translated to Spanish. '
+        'Do not translate the keys, only the values. Here is the data to translate: '
+        + json.dumps(data)
+    )
+
+    payload = json.dumps({
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "temperature": 0.1,
             "maxOutputTokens": 8192,
             "responseMimeType": "application/json"
         }

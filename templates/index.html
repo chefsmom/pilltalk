@@ -153,6 +153,7 @@ footer { max-width: 760px; margin: 0 auto; padding: 0 1.5rem 2rem; font-size: 11
   <div class="nav-links">
     <a class="nav-link active" href="/app">Look Up Drug</a>
     <a class="nav-link" href="/mymeds">My Medications</a>
+    <a class="nav-link" href="/medcard">Med Card</a>
   </div>
 </nav>
 
@@ -178,6 +179,7 @@ footer { max-width: 760px; margin: 0 auto; padding: 0 1.5rem 2rem; font-size: 11
     <div class="tools-row">
       <button class="tool-toggle" id="btnCaregiver">&#128106; Caregiver Mode</button>
       <button class="tool-toggle" id="btnLarge">&#128269; Large Text</button>
+      <button class="tool-toggle" id="btnSpanish">&#127466;&#127480; Espa&ntilde;ol</button>
     </div>
   </div>
 
@@ -341,6 +343,8 @@ var caregiverMode = false;
 var largeText = false;
 var lastResult = {};
 var currentDrug = '';
+var spanishMode = false;
+var englishResult = {};
 
 var levels = [
   {id:'lv0', val:'simple and clear language — avoid medical jargon, explain any necessary technical words in plain terms, use short sentences, assume no medical background', label:'Simple'},
@@ -377,6 +381,17 @@ document.getElementById('btnCaregiver').onclick = function() {
   if (!caregiverMode) { showTab('overview'); }
 };
 
+document.getElementById('btnSpanish').onclick = function() {
+  spanishMode = !spanishMode;
+  this.classList.toggle('active', spanishMode);
+  this.innerHTML = spanishMode ? '&#127466;&#127480; Espa&#241;ol On' : '&#127466;&#127480; Espa&#241;ol';
+  if (spanishMode && lastResult.drugName) {
+    translateToSpanish();
+  } else if (!spanishMode && englishResult.drugName) {
+    lastResult = englishResult;
+    populateResult(lastResult);
+  }
+};
 document.getElementById('goBtn').onclick = generateCounseling;
 document.getElementById('copyBtn').onclick = copyNotes;
 document.getElementById('saveBtn').onclick = saveToMyMeds;
@@ -442,6 +457,8 @@ function generateCounseling() {
   .then(function(data) {
     if (data.error) { showError(data.error); return; }
     lastResult = data;
+    englishResult = data;
+    if (spanishMode) { translateToSpanish(); return; }
 
     var levelLabel = levels.filter(function(l){ return l.val === currentLevel; })[0];
     document.getElementById('drugName').textContent = data.drugName || drug;
@@ -501,6 +518,58 @@ function generateCounseling() {
     document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   })
   .catch(function(err) { showError('Could not reach the server. (' + err.message + ')'); });
+}
+
+function translateToSpanish() {
+  var btn = document.getElementById('btnSpanish');
+  btn.disabled = true;
+  btn.innerHTML = '&#127466;&#127480; Translating...';
+  fetch('/translate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data: englishResult })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.error) { alert('Translation error: ' + data.error); spanishMode = false; btn.classList.remove('active'); return; }
+    lastResult = data;
+    populateResult(data);
+    btn.disabled = false;
+    btn.innerHTML = '&#127466;&#127480; Espa&#241;ol On';
+  })
+  .catch(function(err) { alert('Translation failed: ' + err.message); btn.disabled = false; });
+}
+
+function populateResult(data) {
+  var levelLabel = levels.filter(function(l){ return l.val === currentLevel; })[0];
+  document.getElementById('drugName').textContent = data.drugName || currentDrug;
+  document.getElementById('drugHeroSub').textContent = data.condition ? data.condition.split('.')[0] : '';
+  document.getElementById('levelBadge').textContent = levelLabel ? levelLabel.label : '';
+  var brandBadge = document.getElementById('brandBadge');
+  brandBadge.style.display = data.isBrand ? 'block' : 'none';
+  var bn = document.getElementById('brandNote');
+  var bnt = document.getElementById('brandNoteText');
+  if (data.isBrand && data.brandNote) { bnt.textContent = data.brandNote; bn.style.display = 'flex'; } else { bn.style.display = 'none'; }
+  document.getElementById('condition').innerHTML = toBullets(data.condition);
+  document.getElementById('what').innerHTML = toBullets(data.what);
+  document.getElementById('how').innerHTML = toBullets(data.how);
+  document.getElementById('cost').innerHTML = toBullets(data.cost);
+  document.getElementById('side').innerHTML = toBullets(data.side);
+  document.getElementById('warn').innerHTML = toBullets(data.warn);
+  document.getElementById('missedDose').innerHTML = toBullets(data.missedDose);
+  document.getElementById('foodAlcohol').innerHTML = toBullets(data.foodAlcohol);
+  var injTab = document.getElementById('injTab');
+  if (data.injection && data.injection.trim().length > 5) { document.getElementById('injection').innerHTML = toBullets(data.injection); injTab.style.display = 'block'; } else { injTab.style.display = 'none'; }
+  var qs = Array.isArray(data.teachback) ? data.teachback : [String(data.teachback)];
+  document.getElementById('teachback').innerHTML = qs.map(function(q){ return '<li>' + q + '</li>'; }).join('');
+  var cqs = Array.isArray(data.caregiverTeachback) ? data.caregiverTeachback : [String(data.caregiverTeachback || '')];
+  var cqHtml = cqs.map(function(q){ return '<li>' + q + '</li>'; }).join('');
+  document.getElementById('caregiverTeachback').innerHTML = cqHtml;
+  document.getElementById('caregiverTeachback2').innerHTML = cqHtml;
+  document.getElementById('caregiverTips').innerHTML = toBullets(data.caregiverTips);
+  document.getElementById('caregiverMonitoring').innerHTML = toBullets(data.caregiverMonitoring);
+  document.getElementById('caregiverAdmin').innerHTML = toBullets(data.caregiverAdmin);
+  document.getElementById('caregiverWatchFor').innerHTML = toBullets(data.caregiverWatchFor);
 }
 
 function saveToMyMeds() {
