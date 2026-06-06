@@ -3,237 +3,326 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Pill Talk</title>
+<title>Pill Talk — Look Up a Medication</title>
+<meta name="description" content="Plain-language medication education. Built by a pharmacist." />
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #f5f4f1; --surface: #fff; --border: #e4e2dc;
-  --teal: #0d7a5f; --teal-light: #e8f5f1;
-  --red: #c0392b; --red-light: #fdecea;
-  --amber: #b35c00; --amber-light: #fef4e8;
-  --blue: #1a56a0; --blue-light: #eaf1fb;
-  --purple: #7c3aed; --purple-light: #f3f0ff;
-  --green: #166534; --green-light: #dcfce7;
-  --text: #1a1917; --muted: #888; --faint: #bbb;
-  --fs: 16px;
+  --teal: #0d7a5f; --teal-dark: #0a5c47; --teal-mid: #b8e0d6; --teal-light: #e8f5f1;
+  --red: #c0392b; --red-light: #fdecea; --red-mid: #fca5a5;
+  --amber: #92400e; --amber-light: #fef3c7; --amber-mid: #fcd34d;
+  --green: #166534; --green-light: #dcfce7; --green-mid: #86efac;
+  --blue: #1e40af; --blue-light: #eff6ff; --blue-mid: #93c5fd;
+  --purple: #6d28d9; --purple-light: #f5f3ff; --purple-mid: #c4b5fd;
+  --text: #111827; --text2: #374151; --muted: #6b7280; --faint: #9ca3af; --xfaint: #d1d5db;
+  --bg: #f9fafb; --surface: #ffffff; --surface2: #f3f4f6;
+  --border: #e5e7eb; --border2: #d1d5db;
+  --radius: 12px; --radius-sm: 8px; --radius-lg: 16px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
 }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem; font-size: var(--fs); }
-body.large { --fs: 20px; }
-.wrap { max-width: 740px; margin: 0 auto; }
+html { scroll-behavior: smooth; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
 
-/* header */
-.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px; }
-.logo { display: flex; align-items: center; gap: 10px; }
-.logo h1 { font-size: 22px; font-weight: 700; }
-.logo-sub { font-size: 12px; color: var(--muted); }
-.header-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-button.tool { padding: 5px 12px; border: 1.5px solid var(--border); border-radius: 20px; background: transparent; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; }
-button.tool:hover, button.tool.active { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
-button.tool.caregiver.active { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
+/* NAV */
+nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow); }
+.nav-logo { font-size: 17px; font-weight: 800; text-decoration: none; color: var(--text); display: flex; align-items: center; gap: 8px; letter-spacing: -0.3px; }
+.nav-logo-icon { background: var(--teal); color: white; width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+.nav-links { display: flex; gap: 4px; }
+.nav-link { padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; border-radius: var(--radius-sm); transition: all .15s; }
+.nav-link:hover { background: var(--surface2); color: var(--text); }
+.nav-link.active { background: var(--teal-light); color: var(--teal); }
 
-/* search */
-.row { display: flex; gap: 8px; margin-bottom: 10px; }
-input[type=text] { flex: 1; padding: 11px 14px; font-size: var(--fs); font-family: inherit; border: 1.5px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); outline: none; }
-input[type=text]:focus { border-color: var(--teal); }
+/* MAIN */
+main { max-width: 760px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+/* SEARCH CARD */
+.search-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md); }
+.search-title { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 4px; }
+.search-sub { font-size: 14px; color: var(--muted); margin-bottom: 1.5rem; }
+.search-row { display: flex; gap: 8px; margin-bottom: 1.25rem; }
+input[type=text] { flex: 1; padding: 12px 16px; font-size: 15px; font-family: inherit; border: 1.5px solid var(--border2); border-radius: var(--radius-sm); background: var(--bg); color: var(--text); outline: none; transition: border-color .15s, box-shadow .15s; }
+input[type=text]:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(13,122,95,0.1); }
 input[type=text]::placeholder { color: var(--faint); }
-button.go { padding: 11px 22px; background: var(--teal); color: #fff; border: none; border-radius: 8px; font-size: var(--fs); font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
-button.go:hover { background: #0a6550; }
-button.go:disabled { background: #aaa; cursor: not-allowed; }
+button.go { padding: 12px 24px; background: var(--teal); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; transition: background .15s, transform .1s; }
+button.go:hover { background: var(--teal-dark); }
+button.go:active { transform: scale(0.98); }
+button.go:disabled { background: var(--faint); cursor: not-allowed; transform: none; }
 
-/* levels */
-.levels { display: flex; gap: 6px; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
-.levels span { font-size: 12px; color: var(--muted); }
-button.lv { padding: 4px 12px; border: 1.5px solid var(--border); border-radius: 20px; background: transparent; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; }
-button.lv.active { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
+/* LEVELS */
+.levels-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.levels-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.level-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+button.lv { padding: 5px 14px; border: 1.5px solid var(--border2); border-radius: 20px; background: transparent; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; transition: all .15s; }
+button.lv:hover { border-color: var(--teal); color: var(--teal); }
+button.lv.active { background: var(--teal); border-color: var(--teal); color: white; font-weight: 600; }
 
-/* error / spinner */
-.error { display: none; padding: 12px 16px; background: var(--red-light); border-radius: 8px; color: var(--red); font-size: 14px; margin-bottom: 1rem; }
-.spinner { display: none; text-align: center; padding: 3rem 0; color: var(--muted); font-size: 14px; }
-.ring { width: 30px; height: 30px; border: 3px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
+/* TOOLS ROW */
+.tools-row { display: flex; gap: 8px; margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border); flex-wrap: wrap; }
+button.tool-toggle { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border: 1.5px solid var(--border2); border-radius: 20px; background: transparent; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; transition: all .15s; }
+button.tool-toggle:hover { border-color: var(--teal); color: var(--teal); }
+button.tool-toggle.active { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
+button.tool-toggle.active-large { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+
+/* ERROR */
+.error-box { display: none; padding: 14px 18px; background: var(--red-light); border: 1px solid var(--red-mid); border-radius: var(--radius-sm); color: var(--red); font-size: 14px; margin-bottom: 1.25rem; display: none; align-items: center; gap: 10px; }
+
+/* SPINNER */
+.spinner { display: none; }
+.spinner-inner { display: flex; flex-direction: column; align-items: center; padding: 4rem 0; gap: 16px; }
+.spinner-ring { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin .7s linear infinite; }
+.spinner-text { font-size: 14px; color: var(--muted); }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* result */
+/* RESULT */
 #result { display: none; }
-.drug-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
-.drug-name { font-size: 24px; font-weight: 700; }
-.tag { font-size: 11px; padding: 3px 9px; background: var(--blue-light); color: var(--blue); border-radius: 20px; }
-.brand-note { display: none; padding: 10px 14px; background: var(--teal-light); border-left: 3px solid var(--teal); font-size: 13px; color: #0a6550; margin-bottom: 1rem; border-radius: 0 6px 6px 0; }
-.caregiver-banner { display: none; padding: 10px 14px; background: var(--purple-light); border-left: 3px solid var(--purple); font-size: 13px; color: var(--purple); margin-bottom: 1rem; border-radius: 0 6px 6px 0; }
 
-/* tabs */
-.tabs { display: flex; gap: 4px; margin-bottom: 1.25rem; flex-wrap: wrap; border-bottom: 2px solid var(--border); padding-bottom: 0; }
-button.tab { padding: 8px 14px; border: none; border-bottom: 3px solid transparent; background: transparent; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; margin-bottom: -2px; }
-button.tab:hover { color: var(--teal); }
-button.tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+/* DRUG HERO */
+.drug-hero { background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%); border-radius: var(--radius-lg); padding: 1.75rem 2rem; margin-bottom: 1.25rem; color: white; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: var(--shadow-md); }
+.drug-hero-left { flex: 1; }
+.drug-hero-name { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; line-height: 1.2; }
+.drug-hero-sub { font-size: 13px; opacity: 0.8; }
+.drug-hero-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.level-badge { background: rgba(255,255,255,0.2); color: white; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; backdrop-filter: blur(4px); }
+.brand-badge { background: rgba(255,255,255,0.15); color: white; font-size: 11px; padding: 4px 10px; border-radius: 20px; }
+
+/* BRAND NOTE */
+.brand-note { display: none; background: var(--teal-light); border: 1px solid var(--teal-mid); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: var(--teal-dark); margin-bottom: 1.25rem; display: none; align-items: center; gap: 8px; }
+.caregiver-banner { display: none; background: var(--purple-light); border: 1px solid var(--purple-mid); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: var(--purple); margin-bottom: 1.25rem; display: none; align-items: center; gap: 8px; }
+
+/* TABS */
+.tabs-wrapper { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 1.25rem; }
+.tabs-header { display: flex; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+.tabs-header::-webkit-scrollbar { display: none; }
+button.tab { padding: 14px 18px; border: none; background: transparent; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; white-space: nowrap; border-bottom: 2.5px solid transparent; margin-bottom: -1px; transition: all .15s; }
+button.tab:hover { color: var(--text); background: var(--bg); }
+button.tab.active { color: var(--teal); border-bottom-color: var(--teal); font-weight: 600; background: var(--surface); }
+.tab-body { padding: 1.5rem; }
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
-/* cards */
+/* CARDS */
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-@media(max-width:520px){ .grid2 { grid-template-columns: 1fr; } }
-.card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
-.card.what  { border-top: 3px solid var(--teal); }
-.card.cond  { border-top: 3px solid var(--blue); }
-.card.how   { border-top: 3px solid var(--blue); }
-.card.miss  { border-top: 3px solid var(--amber); }
-.card.food  { border-top: 3px solid var(--amber); }
-.card.side  { border-top: 3px solid var(--amber); }
-.card.warn  { border-top: 3px solid var(--red); }
-.card.inj   { border-top: 3px solid var(--purple); }
-.card.cost  { border-top: 3px solid var(--green); }
-.card.tb    { border-top: 3px solid var(--purple); }
-.clabel { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-bottom: 8px; }
-.cbody { font-size: var(--fs); line-height: 1.7; }
-.cbody ul { padding-left: 1.2rem; }
-.cbody ol { padding-left: 1.2rem; }
-.cbody li { margin-bottom: 6px; }
+@media(max-width:540px){ .grid2 { grid-template-columns: 1fr; } }
+.info-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.info-card.accent-teal { border-left: 3px solid var(--teal); }
+.info-card.accent-blue { border-left: 3px solid #3b82f6; }
+.info-card.accent-amber { border-left: 3px solid #f59e0b; }
+.info-card.accent-red { border-left: 3px solid #ef4444; }
+.info-card.accent-purple { border-left: 3px solid var(--purple); }
+.info-card.accent-green { border-left: 3px solid #22c55e; }
+.card-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+.card-body { font-size: 14px; color: var(--text2); line-height: 1.7; }
+.card-body ul { padding-left: 1.1rem; }
+.card-body ol { padding-left: 1.2rem; }
+.card-body li { margin-bottom: 5px; }
 
-/* severity badges */
-.sev-green { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #22c55e; margin-right: 5px; vertical-align: middle; }
-.sev-yellow { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; margin-right: 5px; vertical-align: middle; }
-.sev-red { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #ef4444; margin-right: 5px; vertical-align: middle; }
+/* SEVERITY LEGEND */
+.sev-legend { display: flex; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+.sev-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.sev-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.sg { background: #22c55e; } .sy { background: #f59e0b; } .sr { background: #ef4444; }
 
-/* actions */
-.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1.5rem; }
-button.sec { padding: 8px 16px; background: transparent; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; font-family: inherit; }
-button.sec:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
+/* INLINE SEV DOTS */
+.sev-green { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #22c55e; margin-right: 5px; vertical-align: middle; }
+.sev-yellow { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #f59e0b; margin-right: 5px; vertical-align: middle; }
+.sev-red { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #ef4444; margin-right: 5px; vertical-align: middle; }
 
-footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 11px; color: var(--faint); line-height: 1.6; }
+/* ACTIONS */
+.result-actions { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 1rem; border-top: 1px solid var(--border); margin-top: .5rem; }
+button.action-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: transparent; border: 1.5px solid var(--border2); border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; transition: all .15s; }
+button.action-btn:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
+
+/* LARGE TEXT */
+body.large { font-size: 18px; }
+body.large .drug-hero-name { font-size: 30px; }
+body.large .card-body { font-size: 17px; }
+body.large input[type=text] { font-size: 17px; }
+
+/* FOOTER */
+footer { max-width: 760px; margin: 0 auto; padding: 0 1.5rem 2rem; font-size: 11px; color: var(--faint); line-height: 1.6; }
 </style>
 </head>
 <body>
-<nav style="background:#fff;border-bottom:1px solid #e4e2dc;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:52px;margin-bottom:0;">
-  <a href="/" style="font-size:16px;font-weight:700;text-decoration:none;color:#1a1917;"><div class="wrap">#128138; Pill Talk</a>
-  <div style="display:flex;gap:6px;">
-    <a href="/app" style="padding:6px 12px;font-size:13px;font-weight:500;color:#0d7a5f;background:#e8f5f1;border-radius:6px;text-decoration:none;">Look Up Drug</a>
-    <a href="/mymeds" style="padding:6px 12px;font-size:13px;font-weight:500;color:#6b6860;text-decoration:none;border-radius:6px;">My Medications</a>
+
+<nav>
+  <a class="nav-logo" href="/">
+    <div class="nav-logo-icon">&#9883;</div>
+    Pill Talk
+  </a>
+  <div class="nav-links">
+    <a class="nav-link active" href="/app">Look Up Drug</a>
+    <a class="nav-link" href="/mymeds">My Medications</a>
   </div>
 </nav>
-<div class="wrap">
 
-  <div class="header">
-    <div class="logo">
-      <div>
-        <h1>&#128138; Pill Talk</h1>
-        <div class="logo-sub">plain-language medication education</div>
+<main>
+  <div class="search-card">
+    <div class="search-title">&#128138; Look up a medication</div>
+    <div class="search-sub">Enter a brand or generic name to get plain-language information about any drug.</div>
+
+    <div class="search-row">
+      <input type="text" id="drugInput" placeholder="e.g. Lipitor, metformin, Humira, Ozempic..." />
+      <button class="go" id="goBtn">Look Up</button>
+    </div>
+
+    <div class="levels-row">
+      <span class="levels-label">Level</span>
+      <div class="level-pills">
+        <button class="lv active" id="lv0">Simple</button>
+        <button class="lv" id="lv1">Standard</button>
+        <button class="lv" id="lv2">Clinical</button>
       </div>
     </div>
-    <div class="header-tools">
-      <button class="tool" id="btnLarge" title="Large text">&#128269; Large Text</button>
-      <button class="tool caregiver" id="btnCaregiver">&#128106; Caregiver Mode</button>
+
+    <div class="tools-row">
+      <button class="tool-toggle" id="btnCaregiver">&#128106; Caregiver Mode</button>
+      <button class="tool-toggle" id="btnLarge">&#128269; Large Text</button>
     </div>
   </div>
 
-  <div class="row">
-    <input type="text" id="drugInput" placeholder="Brand or generic name (e.g. Lipitor, metformin, Humira...)" />
-    <button class="go" id="goBtn">Look Up</button>
-  </div>
-
-  <div class="levels">
-    <span>Reading level:</span>
-    <button class="lv active" id="lv0">Simple</button>
-    <button class="lv" id="lv1">Standard</button>
-    <button class="lv" id="lv2">Clinical</button>
-  </div>
-
-  <div class="error" id="errorBox"></div>
+  <div class="error-box" id="errorBox" style="display:none;"></div>
 
   <div class="spinner" id="spinner">
-    <div class="ring"></div>
-    Looking up medication info...
+    <div class="spinner-inner">
+      <div class="spinner-ring"></div>
+      <div class="spinner-text">Looking up medication info...</div>
+    </div>
   </div>
 
   <div id="result">
-    <div class="drug-header">
-      <div class="drug-name" id="drugName"></div>
-      <div class="tag" id="levelTag"></div>
-    </div>
-    <div class="brand-note" id="brandNote"></div>
-    <div class="caregiver-banner" id="caregiverBanner">&#128106; Caregiver Mode — information is framed for someone caring for a patient</div>
-
-    <div class="tabs">
-      <button class="tab active" onclick="showTab('overview')">Overview</button>
-      <button class="tab" onclick="showTab('sideeffects')">Side Effects</button>
-      <button class="tab" onclick="showTab('practical')">Practical</button>
-      <button class="tab" id="injTab" onclick="showTab('injection')" style="display:none">&#128137; How to Inject</button>
-      <button class="tab" onclick="showTab('teachback')">Teach-Back</button>
-    </div>
-
-    <!-- OVERVIEW TAB -->
-    <div class="tab-panel active" id="tab-overview">
-      <div class="grid2">
-        <div class="card cond"><div class="clabel">&#127754; condition</div><div class="cbody" id="condition"></div></div>
-        <div class="card what"><div class="clabel">&#9883; how it works</div><div class="cbody" id="what"></div></div>
+    <div class="drug-hero">
+      <div class="drug-hero-left">
+        <div class="drug-hero-name" id="drugName"></div>
+        <div class="drug-hero-sub" id="drugHeroSub"></div>
       </div>
-      <div class="card how"><div class="clabel">&#9200; how to take it</div><div class="cbody" id="how"></div></div>
-      <div class="card cost"><div class="clabel">&#128176; cost &amp; savings</div><div class="cbody" id="cost"></div></div>
-    </div>
-
-    <!-- SIDE EFFECTS TAB -->
-    <div class="tab-panel" id="tab-sideeffects">
-      <div style="display:flex;gap:12px;font-size:12px;color:var(--muted);margin-bottom:12px;flex-wrap:wrap;">
-        <span><span class="sev-green"></span>mild — monitor</span>
-        <span><span class="sev-yellow"></span>moderate — contact doctor</span>
-        <span><span class="sev-red"></span>serious — seek care</span>
-      </div>
-      <div class="card side"><div class="clabel">common side effects</div><div class="cbody" id="side"></div></div>
-      <div class="card warn"><div class="clabel">&#128680; warning signs — seek medical attention</div><div class="cbody" id="warn"></div></div>
-    </div>
-
-    <!-- PRACTICAL TAB -->
-    <div class="tab-panel" id="tab-practical">
-      <div class="card miss"><div class="clabel">&#8987; missed dose</div><div class="cbody" id="missedDose"></div></div>
-      <div class="card food"><div class="clabel">&#127829; food, alcohol &amp; interactions</div><div class="cbody" id="foodAlcohol"></div></div>
-    </div>
-
-    <!-- INJECTION TAB -->
-    <div class="tab-panel" id="tab-injection">
-      <div class="card inj"><div class="clabel">&#128137; administration guide</div><div class="cbody" id="injection"></div></div>
-    </div>
-
-    <!-- TEACH-BACK TAB -->
-    <div class="tab-panel" id="tab-teachback">
-      <div class="card tb" id="patientTBCard">
-        <div class="clabel">&#127941; patient teach-back questions</div>
-        <div class="cbody"><ol id="teachback"></ol></div>
-      </div>
-      <div class="card tb" id="caregiverTBCard" style="display:none; border-top-color: var(--purple);">
-        <div class="clabel">&#128106; caregiver teach-back questions</div>
-        <div class="cbody"><ol id="caregiverTeachback"></ol></div>
+      <div class="drug-hero-right">
+        <div class="level-badge" id="levelBadge"></div>
+        <div class="brand-badge" id="brandBadge" style="display:none">Brand name</div>
       </div>
     </div>
 
-    <div class="actions">
-      <button class="sec" id="copyBtn">&#10232; Copy Notes</button>
-      <button class="sec" onclick="window.print()">&#9113; Print</button>
-      <button class="sec" onclick="clearAll()">&#8635; New Drug</button>
+    <div class="brand-note" id="brandNote" style="display:none;">
+      <span>&#9432;</span><span id="brandNoteText"></span>
+    </div>
+    <div class="caregiver-banner" id="caregiverBanner" style="display:none;">
+      <span>&#128106;</span><span>Caregiver Mode — information is framed for someone caring for a patient</span>
+    </div>
+
+    <div class="tabs-wrapper">
+      <div class="tabs-header">
+        <button class="tab active" onclick="showTab('overview')">Overview</button>
+        <button class="tab" onclick="showTab('sideeffects')">Side Effects</button>
+        <button class="tab" onclick="showTab('practical')">Practical</button>
+        <button class="tab" id="injTab" onclick="showTab('injection')" style="display:none;">&#128137; How to Inject</button>
+        <button class="tab" onclick="showTab('teachback')">Teach-Back</button>
+      </div>
+
+      <div class="tab-body">
+        <!-- OVERVIEW -->
+        <div class="tab-panel active" id="tab-overview">
+          <div class="grid2">
+            <div class="info-card accent-blue">
+              <div class="card-label">&#127754; condition</div>
+              <div class="card-body" id="condition"></div>
+            </div>
+            <div class="info-card accent-teal">
+              <div class="card-label">&#9883; how it works</div>
+              <div class="card-body" id="what"></div>
+            </div>
+          </div>
+          <div class="info-card accent-teal" style="margin-bottom:12px;">
+            <div class="card-label">&#9200; how to take it</div>
+            <div class="card-body" id="how"></div>
+          </div>
+          <div class="info-card accent-green">
+            <div class="card-label">&#128176; cost &amp; savings</div>
+            <div class="card-body" id="cost"></div>
+          </div>
+        </div>
+
+        <!-- SIDE EFFECTS -->
+        <div class="tab-panel" id="tab-sideeffects">
+          <div class="sev-legend">
+            <div class="sev-item"><div class="sev-dot sg"></div> Mild — monitor</div>
+            <div class="sev-item"><div class="sev-dot sy"></div> Moderate — contact doctor</div>
+            <div class="sev-item"><div class="sev-dot sr"></div> Serious — seek care now</div>
+          </div>
+          <div class="info-card accent-amber" style="margin-bottom:12px;">
+            <div class="card-label">&#9888; common side effects</div>
+            <div class="card-body" id="side"></div>
+          </div>
+          <div class="info-card accent-red">
+            <div class="card-label">&#128680; warning signs — seek medical attention</div>
+            <div class="card-body" id="warn"></div>
+          </div>
+        </div>
+
+        <!-- PRACTICAL -->
+        <div class="tab-panel" id="tab-practical">
+          <div class="info-card accent-amber" style="margin-bottom:12px;">
+            <div class="card-label">&#8987; missed dose</div>
+            <div class="card-body" id="missedDose"></div>
+          </div>
+          <div class="info-card accent-amber">
+            <div class="card-label">&#127829; food, alcohol &amp; interactions</div>
+            <div class="card-body" id="foodAlcohol"></div>
+          </div>
+        </div>
+
+        <!-- INJECTION -->
+        <div class="tab-panel" id="tab-injection">
+          <div class="info-card accent-purple">
+            <div class="card-label">&#128137; step-by-step administration</div>
+            <div class="card-body" id="injection"></div>
+          </div>
+        </div>
+
+        <!-- TEACH-BACK -->
+        <div class="tab-panel" id="tab-teachback">
+          <div class="info-card accent-purple" style="margin-bottom:12px;">
+            <div class="card-label">&#127941; patient teach-back questions</div>
+            <div class="card-body"><ol id="teachback"></ol></div>
+          </div>
+          <div class="info-card" id="caregiverTBCard" style="display:none; border-left: 3px solid var(--purple);">
+            <div class="card-label">&#128106; caregiver teach-back questions</div>
+            <div class="card-body"><ol id="caregiverTeachback"></ol></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button class="action-btn" id="copyBtn">&#10232; Copy Notes</button>
+        <button class="action-btn" onclick="window.print()">&#9113; Print</button>
+        <button class="action-btn" id="saveBtn">&#43; Save to My Meds</button>
+        <button class="action-btn" onclick="clearAll()">&#8635; New Search</button>
+      </div>
     </div>
   </div>
+</main>
 
-  <footer>
-    AI-generated content. Always verify with Lexicomp, Micromedex, or prescribing information.
-    Not a substitute for professional clinical judgment. For use as a counseling aid only.
-  </footer>
-</div>
+<footer>
+  AI-generated content. Always verify with Lexicomp, Micromedex, or prescribing information.
+  Not a substitute for professional clinical judgment. Built by Katie Bowman, PharmD Candidate.
+</footer>
 
 <script>
 var currentLevel = 'simple and clear language — avoid medical jargon, explain any necessary technical words in plain terms, use short sentences, assume no medical background';
 var caregiverMode = false;
 var largeText = false;
 var lastResult = {};
-var currentTab = 'overview';
+var currentDrug = '';
 
-// level buttons
 var levels = [
-  {id:'lv0', val:'simple and clear language — avoid medical jargon, explain any necessary technical words in plain terms, use short sentences, assume no medical background'},
-  {id:'lv1', val:'standard adult reading level'},
-  {id:'lv2', val:'clinical professional level with medical terminology'}
+  {id:'lv0', val:'simple and clear language — avoid medical jargon, explain any necessary technical words in plain terms, use short sentences, assume no medical background', label:'Simple'},
+  {id:'lv1', val:'standard adult reading level', label:'Standard'},
+  {id:'lv2', val:'clinical professional level with medical terminology', label:'Clinical'}
 ];
+
 for (var i = 0; i < levels.length; i++) {
   (function(lv) {
     document.getElementById(lv.id).onclick = function() {
-      var btns = document.querySelectorAll('.lv');
-      for (var j = 0; j < btns.length; j++) btns[j].classList.remove('active');
+      document.querySelectorAll('.lv').forEach(function(b){ b.classList.remove('active'); });
       this.classList.add('active');
       currentLevel = lv.val;
     };
@@ -243,43 +332,36 @@ for (var i = 0; i < levels.length; i++) {
 document.getElementById('btnLarge').onclick = function() {
   largeText = !largeText;
   document.body.classList.toggle('large', largeText);
-  this.classList.toggle('active', largeText);
+  this.classList.toggle('active-large', largeText);
+  this.textContent = largeText ? '&#128269; Large Text On' : '&#128269; Large Text';
+  this.innerHTML = largeText ? '&#128269; Large Text On' : '&#128269; Large Text';
 };
 
 document.getElementById('btnCaregiver').onclick = function() {
   caregiverMode = !caregiverMode;
   this.classList.toggle('active', caregiverMode);
-  var banner = document.getElementById('caregiverBanner');
-  banner.style.display = caregiverMode ? 'block' : 'none';
-  var ctb = document.getElementById('caregiverTBCard');
-  ctb.style.display = caregiverMode ? 'block' : 'none';
+  document.getElementById('caregiverBanner').style.display = caregiverMode ? 'flex' : 'none';
+  document.getElementById('caregiverTBCard').style.display = caregiverMode && lastResult.caregiverTeachback ? 'block' : 'none';
 };
 
 document.getElementById('goBtn').onclick = generateCounseling;
 document.getElementById('copyBtn').onclick = copyNotes;
-document.getElementById('drugInput').onkeydown = function(e) {
-  if (e.key === 'Enter') generateCounseling();
-};
+document.getElementById('saveBtn').onclick = saveToMyMeds;
+document.getElementById('drugInput').onkeydown = function(e) { if (e.key === 'Enter') generateCounseling(); };
 
 function showTab(name) {
-  var panels = document.querySelectorAll('.tab-panel');
-  for (var i = 0; i < panels.length; i++) panels[i].classList.remove('active');
-  var tabs = document.querySelectorAll('.tab');
-  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
   document.getElementById('tab-' + name).classList.add('active');
-  currentTab = name;
-  var allTabs = document.querySelectorAll('.tab');
-  for (var i = 0; i < allTabs.length; i++) {
-    if (allTabs[i].getAttribute('onclick') === "showTab('" + name + "')") {
-      allTabs[i].classList.add('active');
-    }
-  }
+  document.querySelectorAll('.tab').forEach(function(t){
+    if (t.getAttribute('onclick') === "showTab('" + name + "')") t.classList.add('active');
+  });
 }
 
 function showError(msg) {
   var el = document.getElementById('errorBox');
   el.textContent = msg;
-  el.style.display = 'block';
+  el.style.display = 'flex';
   document.getElementById('spinner').style.display = 'none';
   document.getElementById('result').style.display = 'none';
   document.getElementById('goBtn').disabled = false;
@@ -294,27 +376,24 @@ function toBullets(val) {
     var line = lines[i].replace(/^[-*•]\s*/, '').trim();
     if (line) cleaned.push(line);
   }
+  function colorize(t) {
+    t = t.replace(/\[green\]/gi, '<span class="sev-green"></span>');
+    t = t.replace(/\[yellow\]/gi, '<span class="sev-yellow"></span>');
+    t = t.replace(/\[red\]/gi, '<span class="sev-red"></span>');
+    return t;
+  }
   if (cleaned.length > 1) {
     var html = '<ul>';
-    for (var j = 0; j < cleaned.length; j++) {
-      var item = cleaned[j];
-      item = item.replace(/\[green\]/gi, '<span class="sev-green"></span>');
-      item = item.replace(/\[yellow\]/gi, '<span class="sev-yellow"></span>');
-      item = item.replace(/\[red\]/gi, '<span class="sev-red"></span>');
-      html += '<li>' + item + '</li>';
-    }
-    html += '</ul>';
-    return html;
+    for (var j = 0; j < cleaned.length; j++) html += '<li>' + colorize(cleaned[j]) + '</li>';
+    return html + '</ul>';
   }
-  var out = s.replace(/\[green\]/gi, '<span class="sev-green"></span>');
-  out = out.replace(/\[yellow\]/gi, '<span class="sev-yellow"></span>');
-  out = out.replace(/\[red\]/gi, '<span class="sev-red"></span>');
-  return '<p style="margin:0">' + out + '</p>';
+  return '<p style="margin:0">' + colorize(s) + '</p>';
 }
 
 function generateCounseling() {
   var drug = document.getElementById('drugInput').value.trim();
   if (!drug) return;
+  currentDrug = drug;
 
   document.getElementById('errorBox').style.display = 'none';
   document.getElementById('result').style.display = 'none';
@@ -326,21 +405,29 @@ function generateCounseling() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ drug: drug, level: currentLevel })
   })
-  .then(function(resp) { return resp.json(); })
+  .then(function(r) { return r.json(); })
   .then(function(data) {
     if (data.error) { showError(data.error); return; }
     lastResult = data;
 
+    var levelLabel = levels.filter(function(l){ return l.val === currentLevel; })[0];
     document.getElementById('drugName').textContent = data.drugName || drug;
-    document.getElementById('levelTag').textContent = currentLevel.split(',')[0];
+    document.getElementById('drugHeroSub').textContent = data.condition ? data.condition.split('.')[0] : '';
+    document.getElementById('levelBadge').textContent = levelLabel ? levelLabel.label : '';
+
+    var brandBadge = document.getElementById('brandBadge');
+    brandBadge.style.display = data.isBrand ? 'block' : 'none';
 
     var bn = document.getElementById('brandNote');
+    var bnt = document.getElementById('brandNoteText');
     if (data.isBrand && data.brandNote) {
-      bn.textContent = data.brandNote;
-      bn.style.display = 'block';
+      bnt.textContent = data.brandNote;
+      bn.style.display = 'flex';
     } else {
       bn.style.display = 'none';
     }
+
+    document.getElementById('caregiverBanner').style.display = caregiverMode ? 'flex' : 'none';
 
     document.getElementById('condition').innerHTML = toBullets(data.condition);
     document.getElementById('what').innerHTML = toBullets(data.what);
@@ -351,47 +438,51 @@ function generateCounseling() {
     document.getElementById('missedDose').innerHTML = toBullets(data.missedDose);
     document.getElementById('foodAlcohol').innerHTML = toBullets(data.foodAlcohol);
 
-    // injection tab
     var injTab = document.getElementById('injTab');
     if (data.injection && data.injection.trim().length > 5) {
       document.getElementById('injection').innerHTML = toBullets(data.injection);
-      injTab.style.display = 'inline-block';
+      injTab.style.display = 'block';
     } else {
       injTab.style.display = 'none';
     }
 
-    // teach-back
     var tb = document.getElementById('teachback');
     var qs = Array.isArray(data.teachback) ? data.teachback : [String(data.teachback)];
-    var tbHtml = '';
-    for (var i = 0; i < qs.length; i++) tbHtml += '<li>' + qs[i] + '</li>';
-    tb.innerHTML = tbHtml;
+    tb.innerHTML = qs.map(function(q){ return '<li>' + q + '</li>'; }).join('');
 
     var ctb = document.getElementById('caregiverTeachback');
     var cqs = Array.isArray(data.caregiverTeachback) ? data.caregiverTeachback : [String(data.caregiverTeachback || '')];
-    var ctbHtml = '';
-    for (var i = 0; i < cqs.length; i++) ctbHtml += '<li>' + cqs[i] + '</li>';
-    ctb.innerHTML = ctbHtml;
-
+    ctb.innerHTML = cqs.map(function(q){ return '<li>' + q + '</li>'; }).join('');
     document.getElementById('caregiverTBCard').style.display = caregiverMode ? 'block' : 'none';
-    document.getElementById('caregiverBanner').style.display = caregiverMode ? 'block' : 'none';
 
     showTab('overview');
     document.getElementById('spinner').style.display = 'none';
     document.getElementById('result').style.display = 'block';
     document.getElementById('goBtn').disabled = false;
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   })
-  .catch(function(err) {
-    showError('Could not reach the server. (' + err.message + ')');
-  });
+  .catch(function(err) { showError('Could not reach the server. (' + err.message + ')'); });
+}
+
+function saveToMyMeds() {
+  if (!currentDrug) return;
+  var meds = JSON.parse(localStorage.getItem('pilltalk_meds') || '[]');
+  var name = lastResult.drugName || currentDrug;
+  if (meds.indexOf(name) === -1) {
+    meds.push(name);
+    localStorage.setItem('pilltalk_meds', JSON.stringify(meds));
+    document.getElementById('saveBtn').textContent = '✓ Saved!';
+    setTimeout(function(){ document.getElementById('saveBtn').innerHTML = '&#43; Save to My Meds'; }, 2000);
+  } else {
+    document.getElementById('saveBtn').textContent = 'Already saved';
+    setTimeout(function(){ document.getElementById('saveBtn').innerHTML = '&#43; Save to My Meds'; }, 2000);
+  }
 }
 
 function copyNotes() {
   if (!lastResult.drugName) return;
   var r = lastResult;
   var qs = Array.isArray(r.teachback) ? r.teachback : [r.teachback];
-  var qtext = '';
-  for (var i = 0; i < qs.length; i++) qtext += (i+1) + '. ' + qs[i] + '\n';
   var text = 'PILL TALK — ' + r.drugName + '\n' +
     (r.brandNote ? r.brandNote + '\n' : '') +
     '\nCONDITION\n' + r.condition +
@@ -399,11 +490,11 @@ function copyNotes() {
     '\n\nHOW TO TAKE IT\n' + r.how +
     '\n\nMISSED DOSE\n' + r.missedDose +
     '\n\nFOOD & ALCOHOL\n' + r.foodAlcohol +
-    '\n\nCOMMON SIDE EFFECTS\n' + r.side +
+    '\n\nSIDE EFFECTS\n' + r.side +
     '\n\nWATCH FOR\n' + r.warn +
     '\n\nCOST & SAVINGS\n' + r.cost +
-    '\n\nTEACH-BACK QUESTIONS\n' + qtext +
-    '\n---\nGenerated by Pill Talk · Always verify with clinical references';
+    '\n\nTEACH-BACK\n' + qs.map(function(q,i){ return (i+1)+'. '+q; }).join('\n') +
+    '\n\n---\nGenerated by Pill Talk · Always verify with clinical references';
   navigator.clipboard.writeText(text);
 }
 
@@ -411,7 +502,17 @@ function clearAll() {
   document.getElementById('drugInput').value = '';
   document.getElementById('result').style.display = 'none';
   document.getElementById('errorBox').style.display = 'none';
+  currentDrug = '';
+  lastResult = {};
   document.getElementById('drugInput').focus();
+}
+
+// Auto-populate from URL param
+var urlParams = new URLSearchParams(window.location.search);
+var drugParam = urlParams.get('drug');
+if (drugParam) {
+  document.getElementById('drugInput').value = drugParam;
+  generateCounseling();
 }
 </script>
 </body>
