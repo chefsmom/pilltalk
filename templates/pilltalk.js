@@ -48,12 +48,13 @@ document.getElementById('copyBtn').onclick=copyNotes;
 document.getElementById('saveBtn').onclick=saveToMyMeds;
 
 function showTab(name){
-  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on')});
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on')});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
   var panel=document.getElementById('panel-'+name);
   if(panel) panel.classList.add('on');
   document.querySelectorAll('.tab').forEach(function(t){
-    if(t.getAttribute('onclick')==="showTab('"+name+"')") t.classList.add('on');
+    var oc=t.getAttribute('onclick')||'';
+    if(oc.indexOf(name)>-1) t.classList.add('on');
   });
 }
 
