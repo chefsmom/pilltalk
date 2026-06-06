@@ -1,413 +1,695 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Pill Talk"/>
+<meta name="theme-color" content="#ffffff"/>
 <title>Pill Talk</title>
+<link rel="icon" type="image/svg+xml" href="/icon.svg"/>
+<link rel="manifest" href="/manifest.json"/>
+<link rel="apple-touch-icon" href="/icon.svg"/>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg: #f5f4f1; --surface: #fff; --border: #e4e2dc;
-  --teal: #0d7a5f; --teal-light: #e8f5f1;
-  --red: #c0392b; --red-light: #fdecea;
-  --amber: #b35c00; --amber-light: #fef4e8;
-  --blue: #1a56a0; --blue-light: #eaf1fb;
-  --purple: #7c3aed; --purple-light: #f3f0ff;
-  --green: #166534; --green-light: #dcfce7;
-  --text: #1a1917; --muted: #888; --faint: #bbb;
-  --fs: 16px;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --teal:#059669;--teal-d:#047857;--teal-dd:#065f46;
+  --teal-50:#ecfdf5;--teal-100:#d1fae5;
+  --g900:#111827;--g800:#1f2937;--g700:#374151;--g600:#4b5563;
+  --g500:#6b7280;--g400:#9ca3af;--g300:#d1d5db;--g200:#e5e7eb;
+  --g150:#eeeff1;--g100:#f3f4f6;--g50:#f9fafb;
+  --white:#fff;
+  --red:#dc2626;--red-bg:#fef2f2;--red-b:#fecaca;
+  --amber:#d97706;--amber-bg:#fffbeb;--amber-b:#fde68a;
+  --green:#16a34a;--green-bg:#f0fdf4;--green-b:#bbf7d0;
+  --blue:#2563eb;--blue-bg:#eff6ff;--blue-b:#bfdbfe;
+  --purple:#7c3aed;--purple-bg:#f5f3ff;--purple-b:#ddd6fe;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-top:env(safe-area-inset-top,0px);
+  --tab-height:83px;
 }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem; font-size: var(--fs); }
-body.large { --fs: 20px; }
-.wrap { max-width: 740px; margin: 0 auto; }
+html{height:100%;background:#fff}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;
+  background:var(--g50);
+  color:var(--g900);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  padding-bottom:calc(var(--tab-height) + var(--safe-bottom));
+}
 
-/* header */
-.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px; }
-.logo { display: flex; align-items: center; gap: 10px; }
-.logo h1 { font-size: 22px; font-weight: 700; }
-.logo-sub { font-size: 12px; color: var(--muted); }
-.header-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-button.tool { padding: 5px 12px; border: 1.5px solid var(--border); border-radius: 20px; background: transparent; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; }
-button.tool:hover, button.tool.active { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
-button.tool.caregiver.active { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
+/* STATUS BAR SPACER */
+.status-bar{height:var(--safe-top);background:#fff}
 
-/* search */
-.row { display: flex; gap: 8px; margin-bottom: 10px; }
-input[type=text] { flex: 1; padding: 11px 14px; font-size: var(--fs); font-family: inherit; border: 1.5px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); outline: none; }
-input[type=text]:focus { border-color: var(--teal); }
-input[type=text]::placeholder { color: var(--faint); }
-button.go { padding: 11px 22px; background: var(--teal); color: #fff; border: none; border-radius: 8px; font-size: var(--fs); font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
-button.go:hover { background: #0a6550; }
-button.go:disabled { background: #aaa; cursor: not-allowed; }
+/* TOP HEADER - iOS style */
+.app-header{
+  background:#fff;
+  border-bottom:0.5px solid var(--g200);
+  padding:12px 20px 12px;
+  position:sticky;
+  top:var(--safe-top);
+  z-index:50;
+}
+.app-header-inner{display:flex;align-items:center;justify-content:space-between}
+.app-title{font-size:17px;font-weight:700;letter-spacing:-.2px;color:var(--g900)}
+.header-logo{display:flex;align-items:center;gap:8px}
+.header-logo img{width:28px;height:28px;border-radius:7px}
+.header-actions{display:flex;gap:8px}
+.header-btn{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--g100);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:var(--g700);
+  transition:background .15s;
+}
+.header-btn:hover{background:var(--g200)}
+.header-btn.on{background:var(--teal-50);color:var(--teal)}
 
-/* levels */
-.levels { display: flex; gap: 6px; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
-.levels span { font-size: 12px; color: var(--muted); }
-button.lv { padding: 4px 12px; border: 1.5px solid var(--border); border-radius: 20px; background: transparent; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; }
-button.lv.active { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
+/* MAIN SCROLL AREA */
+main{padding:16px 16px 8px}
 
-/* error / spinner */
-.error { display: none; padding: 12px 16px; background: var(--red-light); border-radius: 8px; color: var(--red); font-size: 14px; margin-bottom: 1rem; }
-.spinner { display: none; text-align: center; padding: 3rem 0; color: var(--muted); font-size: 14px; }
-.ring { width: 30px; height: 30px; border: 3px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
-@keyframes spin { to { transform: rotate(360deg); } }
+/* SEARCH CARD - iOS grouped style */
+.search-card{
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+}
+.search-hint{font-size:13px;color:var(--g500);margin-bottom:10px;font-weight:500}
+.search-row{display:flex;gap:8px;margin-bottom:12px;position:relative}
+.search-wrap{flex:1;position:relative}
+.search-input{
+  width:100%;
+  padding:12px 14px;
+  font-size:17px;
+  font-family:inherit;
+  border:1.5px solid var(--g200);
+  border-radius:12px;
+  background:var(--g50);
+  color:var(--g900);
+  outline:none;
+  -webkit-appearance:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+.search-input:focus{border-color:var(--teal);background:#fff;box-shadow:0 0 0 4px rgba(5,150,105,.08)}
+.search-input::placeholder{color:var(--g400)}
+.btn-search{
+  padding:0 20px;
+  height:48px;
+  background:var(--teal);
+  color:#fff;border:none;
+  border-radius:12px;
+  font-size:15px;font-weight:700;
+  cursor:pointer;font-family:inherit;
+  white-space:nowrap;
+  -webkit-appearance:none;
+  transition:background .15s,transform .1s;
+  box-shadow:0 2px 8px rgba(5,150,105,.3);
+}
+.btn-search:active{transform:scale(.97)}
+.btn-search:disabled{background:var(--g300);box-shadow:none}
 
-/* result */
-#result { display: none; }
-.drug-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
-.drug-name { font-size: 24px; font-weight: 700; }
-.tag { font-size: 11px; padding: 3px 9px; background: var(--blue-light); color: var(--blue); border-radius: 20px; }
-.brand-note { display: none; padding: 10px 14px; background: var(--teal-light); border-left: 3px solid var(--teal); font-size: 13px; color: #0a6550; margin-bottom: 1rem; border-radius: 0 6px 6px 0; }
-.caregiver-banner { display: none; padding: 10px 14px; background: var(--purple-light); border-left: 3px solid var(--purple); font-size: 13px; color: var(--purple); margin-bottom: 1rem; border-radius: 0 6px 6px 0; }
+/* AUTOCOMPLETE */
+.autocomplete-list{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 8px 30px rgba(0,0,0,.15);
+  z-index:200;max-height:260px;overflow-y:auto;
+  display:none;
+  border:1px solid var(--g200);
+}
+.ac-item{
+  padding:12px 16px;font-size:15px;color:var(--g800);
+  cursor:pointer;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:0.5px solid var(--g100);
+  transition:background .1s;
+}
+.ac-item:last-child{border-bottom:none}
+.ac-item:active{background:var(--g50)}
+.ac-item-name{font-weight:500}
+.ac-item-type{font-size:12px;color:var(--g400)}
 
-/* tabs */
-.tabs { display: flex; gap: 4px; margin-bottom: 1.25rem; flex-wrap: wrap; border-bottom: 2px solid var(--border); padding-bottom: 0; }
-button.tab { padding: 8px 14px; border: none; border-bottom: 3px solid transparent; background: transparent; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; margin-bottom: -2px; }
-button.tab:hover { color: var(--teal); }
-button.tab.active { color: var(--teal); border-bottom-color: var(--teal); }
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
+/* LEVEL PILLS - iOS segmented control style */
+.level-control{
+  display:flex;
+  background:var(--g150);
+  border-radius:9px;
+  padding:2px;
+  gap:2px;
+  margin-bottom:12px;
+}
+.level-seg{
+  flex:1;padding:7px 4px;
+  background:transparent;border:none;
+  border-radius:7px;
+  font-size:13px;font-weight:500;
+  color:var(--g600);cursor:pointer;font-family:inherit;
+  transition:all .2s;text-align:center;
+}
+.level-seg.on{
+  background:#fff;
+  color:var(--g900);font-weight:600;
+  box-shadow:0 1px 3px rgba(0,0,0,.15),0 1px 2px rgba(0,0,0,.1);
+}
 
-/* cards */
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-@media(max-width:520px){ .grid2 { grid-template-columns: 1fr; } }
-.card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
-.card.what  { border-top: 3px solid var(--teal); }
-.card.cond  { border-top: 3px solid var(--blue); }
-.card.how   { border-top: 3px solid var(--blue); }
-.card.miss  { border-top: 3px solid var(--amber); }
-.card.food  { border-top: 3px solid var(--amber); }
-.card.side  { border-top: 3px solid var(--amber); }
-.card.warn  { border-top: 3px solid var(--red); }
-.card.inj   { border-top: 3px solid var(--purple); }
-.card.cost  { border-top: 3px solid var(--green); }
-.card.tb    { border-top: 3px solid var(--purple); }
-.clabel { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-bottom: 8px; }
-.cbody { font-size: var(--fs); line-height: 1.7; }
-.cbody ul { padding-left: 1.2rem; }
-.cbody ol { padding-left: 1.2rem; }
-.cbody li { margin-bottom: 6px; }
+/* TOGGLES ROW */
+.toggles-row{display:flex;gap:8px;flex-wrap:wrap}
+.toggle-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 12px;
+  background:var(--g100);
+  border:none;border-radius:20px;
+  font-size:13px;font-weight:500;color:var(--g600);
+  cursor:pointer;font-family:inherit;
+  transition:all .15s;
+}
+.toggle-chip.on-purple{background:var(--purple-bg);color:var(--purple)}
+.toggle-chip.on-blue{background:var(--blue-bg);color:var(--blue)}
+.toggle-chip.on-teal{background:var(--teal-50);color:var(--teal-dd)}
 
-/* severity badges */
-.sev-green { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #22c55e; margin-right: 5px; vertical-align: middle; }
-.sev-yellow { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; margin-right: 5px; vertical-align: middle; }
-.sev-red { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #ef4444; margin-right: 5px; vertical-align: middle; }
+/* SPINNER */
+#spinner{display:none}
+.spin-wrap{display:flex;flex-direction:column;align-items:center;padding:48px 0;gap:14px}
+.spin-ring{
+  width:36px;height:36px;
+  border:3px solid var(--g200);
+  border-top-color:var(--teal);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin-txt{font-size:14px;color:var(--g500);font-weight:500}
 
-/* actions */
-.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1.5rem; }
-button.sec { padding: 8px 16px; background: transparent; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; font-family: inherit; }
-button.sec:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
+/* ERROR */
+.error-box{
+  display:none;padding:14px 16px;
+  background:var(--red-bg);border-radius:12px;
+  color:var(--red);font-size:14px;margin-bottom:16px;
+  border:1px solid var(--red-b);
+}
 
-footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 11px; color: var(--faint); line-height: 1.6; }
+/* RESULT */
+#result{display:none}
+
+/* DRUG HERO - iOS large title style */
+.drug-hero{
+  background:linear-gradient(160deg,#059669 0%,#047857 60%,#065f46 100%);
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:12px;
+  color:#fff;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 4px 20px rgba(5,150,105,.3);
+}
+.drug-hero::before{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:120px;height:120px;
+  border-radius:50%;background:rgba(255,255,255,.07);
+}
+.drug-hero::after{
+  content:'';position:absolute;bottom:-20px;left:-10px;
+  width:80px;height:80px;
+  border-radius:50%;background:rgba(255,255,255,.05);
+}
+.drug-hero-name{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:4px;line-height:1.2}
+.drug-hero-condition{font-size:13px;opacity:.8;line-height:1.4;margin-bottom:12px}
+.drug-hero-badges{display:flex;gap:6px;flex-wrap:wrap}
+.hero-badge{
+  background:rgba(255,255,255,.2);
+  color:#fff;font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:20px;
+  backdrop-filter:blur(4px);
+}
+
+/* BANNERS */
+.banner{
+  display:none;align-items:flex-start;gap:10px;
+  padding:12px 16px;border-radius:12px;
+  font-size:13px;font-weight:500;margin-bottom:12px;
+  line-height:1.5;
+}
+.banner-teal{background:var(--teal-50);border:1px solid var(--teal-100);color:var(--teal-dd)}
+.banner-purple{background:var(--purple-bg);border:1px solid var(--purple-b);color:var(--purple)}
+
+/* iOS SEGMENTED TABS */
+.tabs-scroll{overflow-x:auto;scrollbar-width:none;margin-bottom:12px}
+.tabs-scroll::-webkit-scrollbar{display:none}
+.tabs-inner{display:flex;gap:0;border-bottom:0.5px solid var(--g200);min-width:max-content;width:100%}
+.tab{
+  padding:10px 16px;
+  font-size:14px;font-weight:500;
+  color:var(--g500);background:transparent;
+  border:none;border-bottom:2px solid transparent;
+  margin-bottom:-1px;cursor:pointer;font-family:inherit;
+  white-space:nowrap;transition:all .15s;
+}
+.tab:active{color:var(--g800)}
+.tab.on{color:var(--teal-dd);border-bottom-color:var(--teal);font-weight:700}
+.panel{display:none}
+.panel.on{display:block}
+
+/* iOS GROUPED CARDS */
+.info-group{
+  background:#fff;border-radius:16px;
+  overflow:hidden;margin-bottom:12px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
+}
+.info-row{
+  padding:14px 16px;
+  border-bottom:0.5px solid var(--g100);
+}
+.info-row:last-child{border-bottom:none}
+.row-label{
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.07em;
+  color:var(--g400);margin-bottom:6px;
+  display:flex;align-items:center;gap:5px;
+}
+.row-body{font-size:15px;color:var(--g800);line-height:1.65}
+.row-body ul{padding-left:1.1rem}
+.row-body li{margin-bottom:5px}
+.row-body ol{padding-left:1.2rem}
+.row-body ol li{margin-bottom:6px}
+
+/* ACCENT COLORS on left border */
+.info-group.teal .info-row:first-child{border-left:3px solid var(--teal)}
+.info-group.blue .info-row:first-child{border-left:3px solid var(--blue)}
+.info-group.amber .info-row:first-child{border-left:3px solid #f59e0b}
+.info-group.red .info-row:first-child{border-left:3px solid #ef4444}
+.info-group.purple .info-row:first-child{border-left:3px solid var(--purple)}
+.info-group.green .info-row:first-child{border-left:3px solid #22c55e}
+
+/* SEVERITY */
+.sev-legend{
+  display:flex;gap:14px;margin-bottom:12px;
+  flex-wrap:wrap;padding:10px 16px;
+  background:#fff;border-radius:12px;
+  border:1px solid var(--g100);
+}
+.sev-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--g500)}
+.sev-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dg{background:#22c55e}.dy{background:#f59e0b}.dr{background:#ef4444}
+.sev-green{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin-right:4px;vertical-align:middle}
+.sev-yellow{display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-right:4px;vertical-align:middle}
+.sev-red{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;vertical-align:middle}
+
+/* INJECT STEPS */
+.inj-step{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:14px 16px;
+  border-bottom:0.5px solid var(--g100);
+}
+.inj-step:last-child{border-bottom:none}
+.inj-num{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--teal);color:#fff;
+  font-size:13px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.inj-text{font-size:15px;color:var(--g800);line-height:1.55;flex:1}
+.inj-warn{margin-top:6px;padding:6px 10px;background:var(--red-bg);border-radius:8px;font-size:12px;color:var(--red);font-weight:500}
+.inj-tip{margin-top:6px;padding:6px 10px;background:var(--teal-50);border-radius:8px;font-size:12px;color:var(--teal-dd);font-weight:500}
+
+/* ACTION BUTTONS - iOS style */
+.action-strip{
+  display:flex;gap:8px;flex-wrap:wrap;
+  padding:16px;background:#fff;
+  border-top:0.5px solid var(--g100);
+  border-radius:0 0 16px 16px;
+}
+.action-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:8px 16px;background:var(--g50);
+  border:1px solid var(--g200);border-radius:10px;
+  font-size:13px;font-weight:600;color:var(--g700);
+  cursor:pointer;font-family:inherit;transition:all .15s;
+  -webkit-appearance:none;
+}
+.action-btn:active{background:var(--g100);transform:scale(.97)}
+
+/* ACCURACY NOTE */
+.accuracy-note{
+  font-size:11px;color:var(--g400);
+  padding:12px 16px;
+  background:#fff;border-top:0.5px solid var(--g100);
+  line-height:1.6;border-radius:0 0 16px 16px;
+}
+
+/* INSTALL BANNER */
+.install-banner{
+  display:none;
+  background:linear-gradient(135deg,var(--teal),var(--teal-dd));
+  color:#fff;padding:12px 16px;
+  align-items:center;justify-content:space-between;
+  gap:10px;font-size:13px;font-weight:500;
+  margin-bottom:12px;border-radius:12px;
+}
+.install-banner button{
+  padding:6px 14px;background:rgba(255,255,255,.2);
+  border:1px solid rgba(255,255,255,.35);border-radius:20px;
+  color:#fff;font-size:12px;font-weight:700;
+  cursor:pointer;font-family:inherit;white-space:nowrap;
+}
+.dismiss-btn{background:transparent!important;border:none!important;opacity:.6;font-size:18px;padding:2px 6px}
+
+/* BOTTOM TAB BAR - iOS native style */
+.tab-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-top:0.5px solid rgba(0,0,0,.12);
+  display:flex;
+  padding-bottom:var(--safe-bottom);
+  z-index:100;
+}
+.tab-item{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:8px 4px;
+  text-decoration:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  position:relative;
+  min-height:50px;
+}
+.tab-icon{font-size:22px;line-height:1;margin-bottom:3px;transition:transform .15s}
+.tab-label{font-size:10px;font-weight:500;color:var(--g400);letter-spacing:.01em}
+.tab-item.on .tab-label{color:var(--teal);font-weight:700}
+.tab-item.on .tab-icon{transform:scale(1.1)}
+.tab-dot{
+  position:absolute;top:6px;
+  width:5px;height:5px;border-radius:50%;
+  background:var(--teal);
+  display:none;
+}
+.tab-item.on .tab-dot{display:block}
+
+/* LARGE TEXT */
+body.large .row-body{font-size:18px}
+body.large .search-input{font-size:19px}
+
+/* NO SCROLLBAR */
+::-webkit-scrollbar{display:none}
+* {scrollbar-width:none}
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <div class="header">
-    <div class="logo">
-      <div>
-        <h1>&#128138; Pill Talk</h1>
-        <div class="logo-sub">plain-language medication education</div>
+<div class="status-bar"></div>
+
+<!-- TOP HEADER -->
+<div class="app-header">
+  <div class="app-header-inner">
+    <div class="header-logo">
+      <img src="/icon.svg" alt="Pill Talk"/>
+      <span class="app-title">Pill Talk</span>
+    </div>
+    <div class="header-actions">
+      <button class="header-btn" id="btnCaregiver" title="Caregiver Mode">&#128106;</button>
+      <button class="header-btn" id="btnSpanish" title="Español">&#127466;&#127480;</button>
+      <button class="header-btn" id="btnLarge" title="Large Text">&#128269;</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <!-- INSTALL BANNER -->
+  <div class="install-banner" id="installBanner">
+    <span>Add Pill Talk to your home screen</span>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button id="installBtn">Add</button>
+      <button class="dismiss-btn" onclick="document.getElementById('installBanner').style.display='none';localStorage.setItem('pt_install_dismissed','1')">&#10005;</button>
+    </div>
+  </div>
+
+  <!-- SEARCH CARD -->
+  <div class="search-card">
+    <div class="search-hint">Brand or generic name</div>
+    <div class="search-row">
+      <div class="search-wrap">
+        <input type="text" class="search-input" id="drugInput"
+          placeholder="e.g. Lipitor, metformin, Ozempic..."
+          autocomplete="off"
+          oninput="showSuggestions(this.value.trim())"
+          onfocus="showSuggestions(this.value.trim())"
+          onblur="hideSuggestions()"/>
+        <div class="autocomplete-list" id="acList"></div>
       </div>
+      <button class="btn-search" id="goBtn">Search</button>
     </div>
-    <div class="header-tools">
-      <button class="tool" id="btnLarge" title="Large text">&#128269; Large Text</button>
-      <button class="tool caregiver" id="btnCaregiver">&#128106; Caregiver Mode</button>
+
+    <!-- Segmented reading level control -->
+    <div class="level-control">
+      <button class="level-seg on" id="lv0">Simple</button>
+      <button class="level-seg" id="lv1">Standard</button>
+      <button class="level-seg" id="lv2">Clinical</button>
+    </div>
+
+    <div class="toggles-row">
+      <button class="toggle-chip" id="btnCaregiverToggle">&#128106; Caregiver</button>
+      <button class="toggle-chip" id="btnSpanishToggle">&#127466;&#127480; Espa&#241;ol</button>
     </div>
   </div>
 
-  <div class="row">
-    <input type="text" id="drugInput" placeholder="Brand or generic name (e.g. Lipitor, metformin, Humira...)" />
-    <button class="go" id="goBtn">Look Up</button>
-  </div>
+  <div class="error-box" id="errorBox"></div>
 
-  <div class="levels">
-    <span>Reading level:</span>
-    <button class="lv active" id="lv0">Simple</button>
-    <button class="lv" id="lv1">6th grade</button>
-    <button class="lv" id="lv2">standard</button>
-    <button class="lv" id="lv3">clinical</button>
-  </div>
-
-  <div class="error" id="errorBox"></div>
-
-  <div class="spinner" id="spinner">
-    <div class="ring"></div>
-    Looking up medication info...
+  <div id="spinner">
+    <div class="spin-wrap">
+      <div class="spin-ring"></div>
+      <div class="spin-txt">Looking up medication...</div>
+    </div>
   </div>
 
   <div id="result">
-    <div class="drug-header">
-      <div class="drug-name" id="drugName"></div>
-      <div class="tag" id="levelTag"></div>
-    </div>
-    <div class="brand-note" id="brandNote"></div>
-    <div class="caregiver-banner" id="caregiverBanner">&#128106; Caregiver Mode — information is framed for someone caring for a patient</div>
-
-    <div class="tabs">
-      <button class="tab active" onclick="showTab('overview')">Overview</button>
-      <button class="tab" onclick="showTab('sideeffects')">Side Effects</button>
-      <button class="tab" onclick="showTab('practical')">Practical</button>
-      <button class="tab" id="injTab" onclick="showTab('injection')" style="display:none">&#128137; How to Inject</button>
-      <button class="tab" onclick="showTab('teachback')">Teach-Back</button>
-    </div>
-
-    <!-- OVERVIEW TAB -->
-    <div class="tab-panel active" id="tab-overview">
-      <div class="grid2">
-        <div class="card cond"><div class="clabel">&#127754; condition</div><div class="cbody" id="condition"></div></div>
-        <div class="card what"><div class="clabel">&#9883; how it works</div><div class="cbody" id="what"></div></div>
-      </div>
-      <div class="card how"><div class="clabel">&#9200; how to take it</div><div class="cbody" id="how"></div></div>
-      <div class="card cost"><div class="clabel">&#128176; cost &amp; savings</div><div class="cbody" id="cost"></div></div>
-    </div>
-
-    <!-- SIDE EFFECTS TAB -->
-    <div class="tab-panel" id="tab-sideeffects">
-      <div style="display:flex;gap:12px;font-size:12px;color:var(--muted);margin-bottom:12px;flex-wrap:wrap;">
-        <span><span class="sev-green"></span>mild — monitor</span>
-        <span><span class="sev-yellow"></span>moderate — contact doctor</span>
-        <span><span class="sev-red"></span>serious — seek care</span>
-      </div>
-      <div class="card side"><div class="clabel">common side effects</div><div class="cbody" id="side"></div></div>
-      <div class="card warn"><div class="clabel">&#128680; warning signs — seek medical attention</div><div class="cbody" id="warn"></div></div>
-    </div>
-
-    <!-- PRACTICAL TAB -->
-    <div class="tab-panel" id="tab-practical">
-      <div class="card miss"><div class="clabel">&#8987; missed dose</div><div class="cbody" id="missedDose"></div></div>
-      <div class="card food"><div class="clabel">&#127829; food, alcohol &amp; interactions</div><div class="cbody" id="foodAlcohol"></div></div>
-    </div>
-
-    <!-- INJECTION TAB -->
-    <div class="tab-panel" id="tab-injection">
-      <div class="card inj"><div class="clabel">&#128137; administration guide</div><div class="cbody" id="injection"></div></div>
-    </div>
-
-    <!-- TEACH-BACK TAB -->
-    <div class="tab-panel" id="tab-teachback">
-      <div class="card tb" id="patientTBCard">
-        <div class="clabel">&#127941; patient teach-back questions</div>
-        <div class="cbody"><ol id="teachback"></ol></div>
-      </div>
-      <div class="card tb" id="caregiverTBCard" style="display:none; border-top-color: var(--purple);">
-        <div class="clabel">&#128106; caregiver teach-back questions</div>
-        <div class="cbody"><ol id="caregiverTeachback"></ol></div>
+    <!-- Drug Hero -->
+    <div class="drug-hero">
+      <div class="drug-hero-name" id="heroName"></div>
+      <div class="drug-hero-condition" id="heroCondition"></div>
+      <div class="drug-hero-badges">
+        <div class="hero-badge" id="heroBadge"></div>
+        <div class="hero-badge" id="heroBrand" style="display:none">Brand name</div>
+        <div class="hero-badge" id="heroVerified"></div>
       </div>
     </div>
 
-    <div class="actions">
-      <button class="sec" id="copyBtn">&#10232; Copy Notes</button>
-      <button class="sec" onclick="window.print()">&#9113; Print</button>
-      <button class="sec" onclick="clearAll()">&#8635; New Drug</button>
+    <div class="banner banner-teal" id="brandBanner">
+      <span>&#9432;</span><span id="brandBannerText"></span>
     </div>
+    <div class="banner banner-purple" id="caregiverBanner">
+      <span>&#128106;</span><span>Caregiver Mode</span>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-scroll">
+      <div class="tabs-inner">
+        <button class="tab on" onclick="showTab('overview')">Overview</button>
+        <button class="tab" onclick="showTab('sideeffects')">Side Effects</button>
+        <button class="tab" onclick="showTab('practical')">Practical</button>
+        <button class="tab" id="injTab" onclick="showTab('injection')" style="display:none">&#128137; Inject</button>
+        <button class="tab" onclick="showTab('savings')">&#128176; Savings</button>
+        <button class="tab" onclick="showTab('teachback')">Teach-Back</button>
+        <button class="tab" id="cgTab" onclick="showTab('caregiver')" style="display:none">&#128106; Caregiver</button>
+      </div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="panel on" id="panel-overview">
+      <div class="info-group blue">
+        <div class="info-row">
+          <div class="row-label">&#127754; Condition treated</div>
+          <div class="row-body" id="condition"></div>
+        </div>
+        <div class="info-row">
+          <div class="row-label">&#9883; How it works</div>
+          <div class="row-body" id="what"></div>
+        </div>
+      </div>
+      <div class="info-group teal">
+        <div class="info-row">
+          <div class="row-label">&#9200; How to take it</div>
+          <div class="row-body" id="how"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDE EFFECTS -->
+    <div class="panel" id="panel-sideeffects">
+      <div class="sev-legend">
+        <div class="sev-item"><div class="sev-dot dg"></div>Mild</div>
+        <div class="sev-item"><div class="sev-dot dy"></div>Moderate</div>
+        <div class="sev-item"><div class="sev-dot dr"></div>Serious</div>
+      </div>
+      <div class="info-group amber">
+        <div class="info-row">
+          <div class="row-label">&#9888; Common side effects</div>
+          <div class="row-body" id="side"></div>
+        </div>
+      </div>
+      <div class="info-group red">
+        <div class="info-row">
+          <div class="row-label">&#128680; Warning signs — seek care</div>
+          <div class="row-body" id="warn"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRACTICAL -->
+    <div class="panel" id="panel-practical">
+      <div class="info-group amber">
+        <div class="info-row">
+          <div class="row-label">&#8987; Missed dose</div>
+          <div class="row-body" id="missedDose"></div>
+        </div>
+        <div class="info-row">
+          <div class="row-label">&#127829; Food, alcohol &amp; interactions</div>
+          <div class="row-body" id="foodAlcohol"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INJECTION -->
+    <div class="panel" id="panel-injection">
+      <div class="info-group purple">
+        <div class="info-row" id="injTypeRow" style="display:none">
+          <div class="row-label">Administration type</div>
+          <div class="row-body" id="injType"></div>
+        </div>
+        <div class="info-row" id="injSiteCard" style="display:none"><div class="info-row" id="injSiteRow" style="display:none">
+          <div class="row-label">&#127994; Injection sites</div>
+          <div class="row-body" id="injSite"></div>
+        </div>
+      </div>
+      <div class="info-group" style="border-left:3px solid var(--purple)">
+        <div id="inj-visual"><div id="injSteps"></div></div>
+        <div class="info-row" id="inj-fallback">
+          <div class="row-label">&#128137; Administration guide</div>
+          <div class="row-body" id="injection"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAVINGS -->
+    <div class="panel" id="panel-savings">
+      <div class="info-group green">
+        <div class="info-row">
+          <div class="row-label">&#128176; Cost &amp; generic availability</div>
+          <div class="row-body" id="cost"></div><div id="costFull" style="display:none"></div>
+        </div>
+      </div>
+      <div class="info-group" style="overflow:hidden;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+        <div class="info-row" style="background:#fff">
+          <div class="row-label">&#127891; Assistance programs for this drug</div>
+          <div class="row-body" id="financialResources"></div>
+        </div>
+        <div class="info-row" style="background:var(--g50)">
+          <div class="row-label">&#127758; Always available</div>
+          <div class="row-body">
+            <ul style="padding-left:1.1rem">
+              <li style="margin-bottom:6px"><strong>GoodRx</strong> — goodrx.com — free coupons, often 80%+ off</li>
+              <li style="margin-bottom:6px"><strong>NeedyMeds</strong> — needymeds.org — PAP database by drug</li>
+              <li style="margin-bottom:6px"><strong>RxAssist</strong> — rxassist.org — manufacturer assistance programs</li>
+              <li style="margin-bottom:6px"><strong>Partnership for Prescription Assistance</strong> — pparx.org</li>
+              <li style="margin-bottom:6px"><strong>Medicare Extra Help</strong> — ssa.gov/extrahelp</li>
+              <li><strong>Community Health Centers</strong> — findahealthcenter.hrsa.gov — 340B pricing</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEACH-BACK -->
+    <div class="panel" id="panel-teachback">
+      <div class="info-group purple">
+        <div class="info-row">
+          <div class="row-label">&#127941; Patient teach-back</div>
+          <div class="row-body"><ol id="teachback" style="padding-left:1.2rem"></ol></div>
+        </div>
+      </div>
+      <div class="info-group" id="cgTBCard" style="display:none;border-left:3px solid var(--purple);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+        <div class="info-row">
+          <div class="row-label">&#128106; Caregiver teach-back</div>
+          <div class="row-body"><ol id="cgTeachback" style="padding-left:1.2rem"></ol></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAREGIVER -->
+    <div class="panel" id="panel-caregiver">
+      <div class="info-group" style="background:var(--purple-bg);border-left:3px solid var(--purple);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+        <div class="info-row">
+          <div class="row-label">&#128106; Caregiver overview</div>
+          <div class="row-body" id="cgTips"></div>
+        </div>
+      </div>
+      <div class="info-group blue">
+        <div class="info-row">
+          <div class="row-label">&#128203; What to monitor</div>
+          <div class="row-body" id="cgMonitoring"></div>
+        </div>
+        <div class="info-row">
+          <div class="row-label">&#9883; Helping with administration</div>
+          <div class="row-body" id="cgAdmin"></div>
+        </div>
+      </div>
+      <div class="info-group red">
+        <div class="info-row">
+          <div class="row-label">&#128680; When to call a doctor or 911</div>
+          <div class="row-body" id="cgWatchFor"></div>
+        </div>
+      </div>
+      <div class="info-group purple">
+        <div class="info-row">
+          <div class="row-label">&#127941; Caregiver teach-back</div>
+          <div class="row-body"><ol id="cgTeachback2" style="padding-left:1.2rem"></ol></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTION STRIP -->
+    <div class="action-strip">
+      <button class="action-btn" id="copyBtn">&#10232; Copy</button>
+      <button class="action-btn" id="shareBtn">&#128279; Share</button>
+      <button class="action-btn" id="saveBtn">&#43; My Meds</button>
+      <button class="action-btn" onclick="clearAll()">&#8635; New</button>
+    </div>
+    <div class="accuracy-note" id="accuracyNote">AI-generated from clinical sources. Always verify with your pharmacist or prescribing information. Last checked: <span id="lastChecked"></span></div>
   </div>
+</main>
 
-  <footer>
-    AI-generated content. Always verify with Lexicomp, Micromedex, or prescribing information.
-    Not a substitute for professional clinical judgment. For use as a counseling aid only.
-  </footer>
-</div>
+<!-- BOTTOM TAB BAR -->
+<nav class="tab-bar">
+  <a class="tab-item on" href="/app">
+    <div class="tab-dot"></div>
+    <div class="tab-icon">&#128138;</div>
+    <div class="tab-label">Look Up</div>
+  </a>
+  <a class="tab-item" href="/mymeds">
+    <div class="tab-dot"></div>
+    <div class="tab-icon">&#128137;</div>
+    <div class="tab-label">My Meds</div>
+  </a>
+  <a class="tab-item" href="/symptoms">
+    <div class="tab-dot"></div>
+    <div class="tab-icon">&#128308;</div>
+    <div class="tab-label">Symptoms</div>
+  </a>
+  <a class="tab-item" href="/tracker">
+    <div class="tab-dot"></div>
+    <div class="tab-icon">&#128197;</div>
+    <div class="tab-label">Tracker</div>
+  </a>
+  <a class="tab-item" href="/medcard">
+    <div class="tab-dot"></div>
+    <div class="tab-icon">&#128203;</div>
+    <div class="tab-label">Med Card</div>
+  </a>
+</nav>
 
-<script>
-var currentLevel = 'simple and clear language — avoid medical jargon, explain any necessary technical words in plain terms, use short sentences, assume no medical background';
-var caregiverMode = false;
-var largeText = false;
-var lastResult = {};
-var currentTab = 'overview';
-
-// level buttons
-var levels = [
-  {id:'lv0', val:'simple and clear language — avoid medical jargon, explain any necessary technical words in plain terms, use short sentences, assume no medical background'},
-  {id:'lv1', val:'6th grade reading level'},
-  {id:'lv2', val:'standard adult reading level'},
-  {id:'lv3', val:'clinical professional level with medical terminology'}
-];
-for (var i = 0; i < levels.length; i++) {
-  (function(lv) {
-    document.getElementById(lv.id).onclick = function() {
-      var btns = document.querySelectorAll('.lv');
-      for (var j = 0; j < btns.length; j++) btns[j].classList.remove('active');
-      this.classList.add('active');
-      currentLevel = lv.val;
-    };
-  })(levels[i]);
-}
-
-document.getElementById('btnLarge').onclick = function() {
-  largeText = !largeText;
-  document.body.classList.toggle('large', largeText);
-  this.classList.toggle('active', largeText);
-};
-
-document.getElementById('btnCaregiver').onclick = function() {
-  caregiverMode = !caregiverMode;
-  this.classList.toggle('active', caregiverMode);
-  var banner = document.getElementById('caregiverBanner');
-  banner.style.display = caregiverMode ? 'block' : 'none';
-  var ctb = document.getElementById('caregiverTBCard');
-  ctb.style.display = caregiverMode ? 'block' : 'none';
-};
-
-document.getElementById('goBtn').onclick = generateCounseling;
-document.getElementById('copyBtn').onclick = copyNotes;
-document.getElementById('drugInput').onkeydown = function(e) {
-  if (e.key === 'Enter') generateCounseling();
-};
-
-function showTab(name) {
-  var panels = document.querySelectorAll('.tab-panel');
-  for (var i = 0; i < panels.length; i++) panels[i].classList.remove('active');
-  var tabs = document.querySelectorAll('.tab');
-  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
-  document.getElementById('tab-' + name).classList.add('active');
-  currentTab = name;
-  var allTabs = document.querySelectorAll('.tab');
-  for (var i = 0; i < allTabs.length; i++) {
-    if (allTabs[i].getAttribute('onclick') === "showTab('" + name + "')") {
-      allTabs[i].classList.add('active');
-    }
-  }
-}
-
-function showError(msg) {
-  var el = document.getElementById('errorBox');
-  el.textContent = msg;
-  el.style.display = 'block';
-  document.getElementById('spinner').style.display = 'none';
-  document.getElementById('result').style.display = 'none';
-  document.getElementById('goBtn').disabled = false;
-}
-
-function toBullets(val) {
-  if (!val) return '';
-  var s = Array.isArray(val) ? val.join('\n') : String(val);
-  var lines = s.split('\n');
-  var cleaned = [];
-  for (var i = 0; i < lines.length; i++) {
-    var line = lines[i].replace(/^[-*•]\s*/, '').trim();
-    if (line) cleaned.push(line);
-  }
-  if (cleaned.length > 1) {
-    var html = '<ul>';
-    for (var j = 0; j < cleaned.length; j++) {
-      var item = cleaned[j];
-      item = item.replace(/\[green\]/gi, '<span class="sev-green"></span>');
-      item = item.replace(/\[yellow\]/gi, '<span class="sev-yellow"></span>');
-      item = item.replace(/\[red\]/gi, '<span class="sev-red"></span>');
-      html += '<li>' + item + '</li>';
-    }
-    html += '</ul>';
-    return html;
-  }
-  var out = s.replace(/\[green\]/gi, '<span class="sev-green"></span>');
-  out = out.replace(/\[yellow\]/gi, '<span class="sev-yellow"></span>');
-  out = out.replace(/\[red\]/gi, '<span class="sev-red"></span>');
-  return '<p style="margin:0">' + out + '</p>';
-}
-
-function generateCounseling() {
-  var drug = document.getElementById('drugInput').value.trim();
-  if (!drug) return;
-
-  document.getElementById('errorBox').style.display = 'none';
-  document.getElementById('result').style.display = 'none';
-  document.getElementById('spinner').style.display = 'block';
-  document.getElementById('goBtn').disabled = true;
-
-  fetch('/counsel', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ drug: drug, level: currentLevel })
-  })
-  .then(function(resp) { return resp.json(); })
-  .then(function(data) {
-    if (data.error) { showError(data.error); return; }
-    lastResult = data;
-
-    document.getElementById('drugName').textContent = data.drugName || drug;
-    document.getElementById('levelTag').textContent = currentLevel.split(',')[0];
-
-    var bn = document.getElementById('brandNote');
-    if (data.isBrand && data.brandNote) {
-      bn.textContent = data.brandNote;
-      bn.style.display = 'block';
-    } else {
-      bn.style.display = 'none';
-    }
-
-    document.getElementById('condition').innerHTML = toBullets(data.condition);
-    document.getElementById('what').innerHTML = toBullets(data.what);
-    document.getElementById('how').innerHTML = toBullets(data.how);
-    document.getElementById('cost').innerHTML = toBullets(data.cost);
-    document.getElementById('side').innerHTML = toBullets(data.side);
-    document.getElementById('warn').innerHTML = toBullets(data.warn);
-    document.getElementById('missedDose').innerHTML = toBullets(data.missedDose);
-    document.getElementById('foodAlcohol').innerHTML = toBullets(data.foodAlcohol);
-
-    // injection tab
-    var injTab = document.getElementById('injTab');
-    if (data.injection && data.injection.trim().length > 5) {
-      document.getElementById('injection').innerHTML = toBullets(data.injection);
-      injTab.style.display = 'inline-block';
-    } else {
-      injTab.style.display = 'none';
-    }
-
-    // teach-back
-    var tb = document.getElementById('teachback');
-    var qs = Array.isArray(data.teachback) ? data.teachback : [String(data.teachback)];
-    var tbHtml = '';
-    for (var i = 0; i < qs.length; i++) tbHtml += '<li>' + qs[i] + '</li>';
-    tb.innerHTML = tbHtml;
-
-    var ctb = document.getElementById('caregiverTeachback');
-    var cqs = Array.isArray(data.caregiverTeachback) ? data.caregiverTeachback : [String(data.caregiverTeachback || '')];
-    var ctbHtml = '';
-    for (var i = 0; i < cqs.length; i++) ctbHtml += '<li>' + cqs[i] + '</li>';
-    ctb.innerHTML = ctbHtml;
-
-    document.getElementById('caregiverTBCard').style.display = caregiverMode ? 'block' : 'none';
-    document.getElementById('caregiverBanner').style.display = caregiverMode ? 'block' : 'none';
-
-    showTab('overview');
-    document.getElementById('spinner').style.display = 'none';
-    document.getElementById('result').style.display = 'block';
-    document.getElementById('goBtn').disabled = false;
-  })
-  .catch(function(err) {
-    showError('Could not reach the server. (' + err.message + ')');
-  });
-}
-
-function copyNotes() {
-  if (!lastResult.drugName) return;
-  var r = lastResult;
-  var qs = Array.isArray(r.teachback) ? r.teachback : [r.teachback];
-  var qtext = '';
-  for (var i = 0; i < qs.length; i++) qtext += (i+1) + '. ' + qs[i] + '\n';
-  var text = 'PILL TALK — ' + r.drugName + '\n' +
-    (r.brandNote ? r.brandNote + '\n' : '') +
-    '\nCONDITION\n' + r.condition +
-    '\n\nHOW IT WORKS\n' + r.what +
-    '\n\nHOW TO TAKE IT\n' + r.how +
-    '\n\nMISSED DOSE\n' + r.missedDose +
-    '\n\nFOOD & ALCOHOL\n' + r.foodAlcohol +
-    '\n\nCOMMON SIDE EFFECTS\n' + r.side +
-    '\n\nWATCH FOR\n' + r.warn +
-    '\n\nCOST & SAVINGS\n' + r.cost +
-    '\n\nTEACH-BACK QUESTIONS\n' + qtext +
-    '\n---\nGenerated by Pill Talk · Always verify with clinical references';
-  navigator.clipboard.writeText(text);
-}
-
-function clearAll() {
-  document.getElementById('drugInput').value = '';
-  document.getElementById('result').style.display = 'none';
-  document.getElementById('errorBox').style.display = 'none';
-  document.getElementById('drugInput').focus();
-}
-</script>
+<script src="/pilltalk.js"></script>
 </body>
 </html>

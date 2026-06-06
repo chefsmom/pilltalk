@@ -6,6 +6,11 @@ API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
 @app.route("/")
 def landing():
+    from flask import redirect
+    return redirect("/app")
+
+@app.route("/landing")
+def landing_page():
     return send_from_directory("templates", "landing.html")
 
 @app.route("/app")
@@ -28,9 +33,9 @@ def symptoms():
 def tracker():
     return send_from_directory("templates", "tracker.html")
 
-@app.route("/app.js")
-def appjs():
-    return send_from_directory("templates", "app.js", mimetype="application/javascript")
+@app.route("/pilltalk.js")
+def pilltalkjs():
+    return send_from_directory("templates", "pilltalk.js", mimetype="application/javascript")
 
 @app.route("/icon.svg")
 def icon():
