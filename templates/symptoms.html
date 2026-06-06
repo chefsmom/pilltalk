@@ -353,15 +353,5 @@ var savedMeds = JSON.parse(localStorage.getItem('pilltalk_meds') || '[]');
 savedMeds.forEach(function(m) { if (meds.indexOf(m) === -1) meds.push(m); });
 renderTags();
 </script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js').catch(function(e) {
-      console.log('SW registration failed:', e);
-    });
-  });
-}
-</script>
 </body>
 </html>

@@ -858,15 +858,5 @@ var params=new URLSearchParams(window.location.search);
 var dp=params.get('drug');
 if(dp){document.getElementById('drugInput').value=dp;generateCounseling();}
 </script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js').catch(function(e) {
-      console.log('SW registration failed:', e);
-    });
-  });
-}
-</script>
 </body>
 </html>

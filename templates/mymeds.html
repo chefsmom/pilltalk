@@ -359,15 +359,5 @@ var drugParam = urlParams.get('drug');
 if (drugParam && meds.indexOf(drugParam) === -1) { meds.push(drugParam); saveMeds(); }
 renderMeds();
 </script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js').catch(function(e) {
-      console.log('SW registration failed:', e);
-    });
-  });
-}
-</script>
 </body>
 </html>
