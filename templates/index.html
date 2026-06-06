@@ -6,62 +6,126 @@
 <title>Pill Talk</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f4f1; color: #1a1917; min-height: 100vh; padding: 2rem 1rem; }
-.wrap { max-width: 700px; margin: 0 auto; }
-h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
-.sub { font-size: 13px; color: #888; margin-bottom: 2rem; }
+:root {
+  --bg: #f5f4f1; --surface: #fff; --border: #e4e2dc;
+  --teal: #0d7a5f; --teal-light: #e8f5f1;
+  --red: #c0392b; --red-light: #fdecea;
+  --amber: #b35c00; --amber-light: #fef4e8;
+  --blue: #1a56a0; --blue-light: #eaf1fb;
+  --purple: #7c3aed; --purple-light: #f3f0ff;
+  --green: #166534; --green-light: #dcfce7;
+  --text: #1a1917; --muted: #888; --faint: #bbb;
+  --fs: 16px;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem; font-size: var(--fs); }
+body.large { --fs: 20px; }
+.wrap { max-width: 740px; margin: 0 auto; }
+
+/* header */
+.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px; }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo h1 { font-size: 22px; font-weight: 700; }
+.logo-sub { font-size: 12px; color: var(--muted); }
+.header-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+button.tool { padding: 5px 12px; border: 1.5px solid var(--border); border-radius: 20px; background: transparent; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; }
+button.tool:hover, button.tool.active { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
+button.tool.caregiver.active { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
+
+/* search */
 .row { display: flex; gap: 8px; margin-bottom: 10px; }
-input { flex: 1; padding: 11px 14px; font-size: 15px; font-family: inherit; border: 1.5px solid #ddd; border-radius: 8px; background: #fff; color: #1a1917; outline: none; }
-input:focus { border-color: #0d7a5f; }
-input::placeholder { color: #bbb; }
-button.go { padding: 11px 22px; background: #0d7a5f; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; }
+input[type=text] { flex: 1; padding: 11px 14px; font-size: var(--fs); font-family: inherit; border: 1.5px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); outline: none; }
+input[type=text]:focus { border-color: var(--teal); }
+input[type=text]::placeholder { color: var(--faint); }
+button.go { padding: 11px 22px; background: var(--teal); color: #fff; border: none; border-radius: 8px; font-size: var(--fs); font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
 button.go:hover { background: #0a6550; }
 button.go:disabled { background: #aaa; cursor: not-allowed; }
-.levels { display: flex; gap: 6px; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; }
-.levels span { font-size: 12px; color: #888; }
-button.lv { padding: 4px 12px; border: 1.5px solid #ddd; border-radius: 20px; background: transparent; font-size: 12px; font-weight: 500; color: #888; cursor: pointer; font-family: inherit; }
-button.lv.active { background: #e8f5f1; border-color: #0d7a5f; color: #0d7a5f; }
-.error { display: none; padding: 12px 16px; background: #fdecea; border-radius: 8px; color: #c0392b; font-size: 13px; margin-bottom: 1rem; }
-.spinner { display: none; text-align: center; padding: 3rem 0; color: #888; font-size: 14px; }
-.ring { width: 28px; height: 28px; border: 2.5px solid #ddd; border-top-color: #0d7a5f; border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
+
+/* levels */
+.levels { display: flex; gap: 6px; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.levels span { font-size: 12px; color: var(--muted); }
+button.lv { padding: 4px 12px; border: 1.5px solid var(--border); border-radius: 20px; background: transparent; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; }
+button.lv.active { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
+
+/* error / spinner */
+.error { display: none; padding: 12px 16px; background: var(--red-light); border-radius: 8px; color: var(--red); font-size: 14px; margin-bottom: 1rem; }
+.spinner { display: none; text-align: center; padding: 3rem 0; color: var(--muted); font-size: 14px; }
+.ring { width: 30px; height: 30px; border: 3px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* result */
 #result { display: none; }
-.drug-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 2px solid #e4e2dc; }
-.drug-name { font-size: 22px; font-weight: 600; }
-.tag { font-size: 11px; padding: 3px 9px; background: #eaf1fb; color: #1a56a0; border-radius: 20px; }
-.brand-note { display: none; padding: 10px 14px; background: #e8f5f1; border-left: 3px solid #0d7a5f; font-size: 13px; color: #0a6550; margin-bottom: 1.25rem; border-radius: 0 6px 6px 0; }
+.drug-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.drug-name { font-size: 24px; font-weight: 700; }
+.tag { font-size: 11px; padding: 3px 9px; background: var(--blue-light); color: var(--blue); border-radius: 20px; }
+.brand-note { display: none; padding: 10px 14px; background: var(--teal-light); border-left: 3px solid var(--teal); font-size: 13px; color: #0a6550; margin-bottom: 1rem; border-radius: 0 6px 6px 0; }
+.caregiver-banner { display: none; padding: 10px 14px; background: var(--purple-light); border-left: 3px solid var(--purple); font-size: 13px; color: var(--purple); margin-bottom: 1rem; border-radius: 0 6px 6px 0; }
+
+/* tabs */
+.tabs { display: flex; gap: 4px; margin-bottom: 1.25rem; flex-wrap: wrap; border-bottom: 2px solid var(--border); padding-bottom: 0; }
+button.tab { padding: 8px 14px; border: none; border-bottom: 3px solid transparent; background: transparent; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; margin-bottom: -2px; }
+button.tab:hover { color: var(--teal); }
+button.tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* cards */
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-@media(max-width:500px){ .grid2 { grid-template-columns: 1fr; } }
-.card { background: #fff; border: 1.5px solid #e4e2dc; border-radius: 10px; padding: 14px 16px; }
-.card.what { border-top: 3px solid #0d7a5f; }
-.card.how  { border-top: 3px solid #1a56a0; }
-.card.side { border-top: 3px solid #b35c00; }
-.card.warn { border-top: 3px solid #c0392b; }
-.card.tb   { border-top: 3px solid #7c3aed; margin-bottom: 1.5rem; }
-.clabel { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: #aaa; margin-bottom: 8px; }
-.cbody { font-size: 14px; line-height: 1.65; }
-.cbody ul { padding-left: 1.1rem; }
-.cbody li { margin-bottom: 5px; }
+@media(max-width:520px){ .grid2 { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+.card.what  { border-top: 3px solid var(--teal); }
+.card.cond  { border-top: 3px solid var(--blue); }
+.card.how   { border-top: 3px solid var(--blue); }
+.card.miss  { border-top: 3px solid var(--amber); }
+.card.food  { border-top: 3px solid var(--amber); }
+.card.side  { border-top: 3px solid var(--amber); }
+.card.warn  { border-top: 3px solid var(--red); }
+.card.inj   { border-top: 3px solid var(--purple); }
+.card.cost  { border-top: 3px solid var(--green); }
+.card.tb    { border-top: 3px solid var(--purple); }
+.clabel { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-bottom: 8px; }
+.cbody { font-size: var(--fs); line-height: 1.7; }
+.cbody ul { padding-left: 1.2rem; }
 .cbody ol { padding-left: 1.2rem; }
-.actions { display: flex; gap: 8px; flex-wrap: wrap; }
-button.sec { padding: 8px 16px; background: transparent; border: 1.5px solid #ddd; border-radius: 8px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; font-family: inherit; }
-button.sec:hover { border-color: #0d7a5f; color: #0d7a5f; background: #e8f5f1; }
-footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #e4e2dc; font-size: 11px; color: #aaa; line-height: 1.6; }
+.cbody li { margin-bottom: 6px; }
+
+/* severity badges */
+.sev-green { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #22c55e; margin-right: 5px; vertical-align: middle; }
+.sev-yellow { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; margin-right: 5px; vertical-align: middle; }
+.sev-red { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #ef4444; margin-right: 5px; vertical-align: middle; }
+
+/* actions */
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1.5rem; }
+button.sec { padding: 8px 16px; background: transparent; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; font-family: inherit; }
+button.sec:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
+
+footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 11px; color: var(--faint); line-height: 1.6; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>&#128138; Pill Talk</h1>
-  <p class="sub">plain-language medication education &middot; brand &amp; generic &middot; adjustable reading level</p>
+
+  <div class="header">
+    <div class="logo">
+      <div>
+        <h1>&#128138; Pill Talk</h1>
+        <div class="logo-sub">plain-language medication education</div>
+      </div>
+    </div>
+    <div class="header-tools">
+      <button class="tool" id="btnLarge" title="Large text">&#128269; Large Text</button>
+      <button class="tool caregiver" id="btnCaregiver">&#128106; Caregiver Mode</button>
+    </div>
+  </div>
 
   <div class="row">
-    <input type="text" id="drugInput" placeholder="Brand or generic name (e.g. Lipitor, metformin, Eliquis...)" />
-    <button class="go" id="goBtn">Counsel</button>
+    <input type="text" id="drugInput" placeholder="Brand or generic name (e.g. Lipitor, metformin, Humira...)" />
+    <button class="go" id="goBtn">Look Up</button>
   </div>
 
   <div class="levels">
     <span>Reading level:</span>
-    <button class="lv active" id="lv1">6th grade</button>
+    <button class="lv active" id="lv0">Like I'm 5</button>
+    <button class="lv" id="lv1">6th grade</button>
     <button class="lv" id="lv2">standard</button>
     <button class="lv" id="lv3">clinical</button>
   </div>
@@ -79,48 +143,132 @@ footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #e4e2dc; f
       <div class="tag" id="levelTag"></div>
     </div>
     <div class="brand-note" id="brandNote"></div>
-    <div class="grid2">
-      <div class="card what"><div class="clabel">what it is</div><div class="cbody" id="what"></div></div>
-      <div class="card how"><div class="clabel">how to take it</div><div class="cbody" id="how"></div></div>
+    <div class="caregiver-banner" id="caregiverBanner">&#128106; Caregiver Mode — information is framed for someone caring for a patient</div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('overview')">Overview</button>
+      <button class="tab" onclick="showTab('sideeffects')">Side Effects</button>
+      <button class="tab" onclick="showTab('practical')">Practical</button>
+      <button class="tab" id="injTab" onclick="showTab('injection')" style="display:none">&#128137; How to Inject</button>
+      <button class="tab" onclick="showTab('teachback')">Teach-Back</button>
     </div>
-    <div class="grid2">
+
+    <!-- OVERVIEW TAB -->
+    <div class="tab-panel active" id="tab-overview">
+      <div class="grid2">
+        <div class="card cond"><div class="clabel">&#127754; condition</div><div class="cbody" id="condition"></div></div>
+        <div class="card what"><div class="clabel">&#9883; how it works</div><div class="cbody" id="what"></div></div>
+      </div>
+      <div class="card how"><div class="clabel">&#9200; how to take it</div><div class="cbody" id="how"></div></div>
+      <div class="card cost"><div class="clabel">&#128176; cost &amp; savings</div><div class="cbody" id="cost"></div></div>
+    </div>
+
+    <!-- SIDE EFFECTS TAB -->
+    <div class="tab-panel" id="tab-sideeffects">
+      <div style="display:flex;gap:12px;font-size:12px;color:var(--muted);margin-bottom:12px;flex-wrap:wrap;">
+        <span><span class="sev-green"></span>mild — monitor</span>
+        <span><span class="sev-yellow"></span>moderate — contact doctor</span>
+        <span><span class="sev-red"></span>serious — seek care</span>
+      </div>
       <div class="card side"><div class="clabel">common side effects</div><div class="cbody" id="side"></div></div>
-      <div class="card warn"><div class="clabel">watch for</div><div class="cbody" id="warn"></div></div>
+      <div class="card warn"><div class="clabel">&#128680; warning signs — seek medical attention</div><div class="cbody" id="warn"></div></div>
     </div>
-    <div class="card tb">
-      <div class="clabel">teach-back questions</div>
-      <div class="cbody"><ol id="teachback"></ol></div>
+
+    <!-- PRACTICAL TAB -->
+    <div class="tab-panel" id="tab-practical">
+      <div class="card miss"><div class="clabel">&#8987; missed dose</div><div class="cbody" id="missedDose"></div></div>
+      <div class="card food"><div class="clabel">&#127829; food, alcohol &amp; interactions</div><div class="cbody" id="foodAlcohol"></div></div>
     </div>
+
+    <!-- INJECTION TAB -->
+    <div class="tab-panel" id="tab-injection">
+      <div class="card inj"><div class="clabel">&#128137; administration guide</div><div class="cbody" id="injection"></div></div>
+    </div>
+
+    <!-- TEACH-BACK TAB -->
+    <div class="tab-panel" id="tab-teachback">
+      <div class="card tb" id="patientTBCard">
+        <div class="clabel">&#127941; patient teach-back questions</div>
+        <div class="cbody"><ol id="teachback"></ol></div>
+      </div>
+      <div class="card tb" id="caregiverTBCard" style="display:none; border-top-color: var(--purple);">
+        <div class="clabel">&#128106; caregiver teach-back questions</div>
+        <div class="cbody"><ol id="caregiverTeachback"></ol></div>
+      </div>
+    </div>
+
     <div class="actions">
-      <button class="sec" id="copyBtn">Copy notes</button>
-      <button class="sec" onclick="clearAll()">New drug</button>
+      <button class="sec" id="copyBtn">&#10232; Copy Notes</button>
+      <button class="sec" onclick="window.print()">&#9113; Print</button>
+      <button class="sec" onclick="clearAll()">&#8635; New Drug</button>
     </div>
   </div>
 
   <footer>
     AI-generated content. Always verify with Lexicomp, Micromedex, or prescribing information.
-    Not a substitute for professional clinical judgment.
+    Not a substitute for professional clinical judgment. For use as a counseling aid only.
   </footer>
 </div>
 
 <script>
-var currentLevel = '6th grade';
+var currentLevel = 'like you are 5 years old, use very simple words and short sentences';
+var caregiverMode = false;
+var largeText = false;
 var lastResult = {};
+var currentTab = 'overview';
 
-document.getElementById('lv1').onclick = function() { setLevel(this, '6th grade'); };
-document.getElementById('lv2').onclick = function() { setLevel(this, 'standard'); };
-document.getElementById('lv3').onclick = function() { setLevel(this, 'clinical professional'); };
+// level buttons
+var levels = [
+  {id:'lv0', val:'like you are 5 years old, use very simple words and short sentences'},
+  {id:'lv1', val:'6th grade reading level'},
+  {id:'lv2', val:'standard adult reading level'},
+  {id:'lv3', val:'clinical professional level with medical terminology'}
+];
+for (var i = 0; i < levels.length; i++) {
+  (function(lv) {
+    document.getElementById(lv.id).onclick = function() {
+      var btns = document.querySelectorAll('.lv');
+      for (var j = 0; j < btns.length; j++) btns[j].classList.remove('active');
+      this.classList.add('active');
+      currentLevel = lv.val;
+    };
+  })(levels[i]);
+}
+
+document.getElementById('btnLarge').onclick = function() {
+  largeText = !largeText;
+  document.body.classList.toggle('large', largeText);
+  this.classList.toggle('active', largeText);
+};
+
+document.getElementById('btnCaregiver').onclick = function() {
+  caregiverMode = !caregiverMode;
+  this.classList.toggle('active', caregiverMode);
+  var banner = document.getElementById('caregiverBanner');
+  banner.style.display = caregiverMode ? 'block' : 'none';
+  var ctb = document.getElementById('caregiverTBCard');
+  ctb.style.display = caregiverMode ? 'block' : 'none';
+};
+
 document.getElementById('goBtn').onclick = generateCounseling;
 document.getElementById('copyBtn').onclick = copyNotes;
 document.getElementById('drugInput').onkeydown = function(e) {
   if (e.key === 'Enter') generateCounseling();
 };
 
-function setLevel(btn, level) {
-  var btns = document.querySelectorAll('.lv');
-  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
-  btn.classList.add('active');
-  currentLevel = level;
+function showTab(name) {
+  var panels = document.querySelectorAll('.tab-panel');
+  for (var i = 0; i < panels.length; i++) panels[i].classList.remove('active');
+  var tabs = document.querySelectorAll('.tab');
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  currentTab = name;
+  var allTabs = document.querySelectorAll('.tab');
+  for (var i = 0; i < allTabs.length; i++) {
+    if (allTabs[i].getAttribute('onclick') === "showTab('" + name + "')") {
+      allTabs[i].classList.add('active');
+    }
+  }
 }
 
 function showError(msg) {
@@ -133,13 +281,8 @@ function showError(msg) {
 }
 
 function toBullets(val) {
-  var s;
   if (!val) return '';
-  if (Array.isArray(val)) {
-    s = val.join('\n');
-  } else {
-    s = String(val);
-  }
+  var s = Array.isArray(val) ? val.join('\n') : String(val);
   var lines = s.split('\n');
   var cleaned = [];
   for (var i = 0; i < lines.length; i++) {
@@ -148,11 +291,20 @@ function toBullets(val) {
   }
   if (cleaned.length > 1) {
     var html = '<ul>';
-    for (var j = 0; j < cleaned.length; j++) html += '<li>' + cleaned[j] + '</li>';
+    for (var j = 0; j < cleaned.length; j++) {
+      var item = cleaned[j];
+      item = item.replace(/\[green\]/gi, '<span class="sev-green"></span>');
+      item = item.replace(/\[yellow\]/gi, '<span class="sev-yellow"></span>');
+      item = item.replace(/\[red\]/gi, '<span class="sev-red"></span>');
+      html += '<li>' + item + '</li>';
+    }
     html += '</ul>';
     return html;
   }
-  return '<p style="margin:0">' + s + '</p>';
+  var out = s.replace(/\[green\]/gi, '<span class="sev-green"></span>');
+  out = out.replace(/\[yellow\]/gi, '<span class="sev-yellow"></span>');
+  out = out.replace(/\[red\]/gi, '<span class="sev-red"></span>');
+  return '<p style="margin:0">' + out + '</p>';
 }
 
 function generateCounseling() {
@@ -172,10 +324,10 @@ function generateCounseling() {
   .then(function(resp) { return resp.json(); })
   .then(function(data) {
     if (data.error) { showError(data.error); return; }
-
     lastResult = data;
+
     document.getElementById('drugName').textContent = data.drugName || drug;
-    document.getElementById('levelTag').textContent = currentLevel;
+    document.getElementById('levelTag').textContent = currentLevel.split(',')[0];
 
     var bn = document.getElementById('brandNote');
     if (data.isBrand && data.brandNote) {
@@ -185,17 +337,41 @@ function generateCounseling() {
       bn.style.display = 'none';
     }
 
+    document.getElementById('condition').innerHTML = toBullets(data.condition);
     document.getElementById('what').innerHTML = toBullets(data.what);
     document.getElementById('how').innerHTML = toBullets(data.how);
+    document.getElementById('cost').innerHTML = toBullets(data.cost);
     document.getElementById('side').innerHTML = toBullets(data.side);
     document.getElementById('warn').innerHTML = toBullets(data.warn);
+    document.getElementById('missedDose').innerHTML = toBullets(data.missedDose);
+    document.getElementById('foodAlcohol').innerHTML = toBullets(data.foodAlcohol);
 
+    // injection tab
+    var injTab = document.getElementById('injTab');
+    if (data.injection && data.injection.trim().length > 5) {
+      document.getElementById('injection').innerHTML = toBullets(data.injection);
+      injTab.style.display = 'inline-block';
+    } else {
+      injTab.style.display = 'none';
+    }
+
+    // teach-back
     var tb = document.getElementById('teachback');
     var qs = Array.isArray(data.teachback) ? data.teachback : [String(data.teachback)];
     var tbHtml = '';
     for (var i = 0; i < qs.length; i++) tbHtml += '<li>' + qs[i] + '</li>';
     tb.innerHTML = tbHtml;
 
+    var ctb = document.getElementById('caregiverTeachback');
+    var cqs = Array.isArray(data.caregiverTeachback) ? data.caregiverTeachback : [String(data.caregiverTeachback || '')];
+    var ctbHtml = '';
+    for (var i = 0; i < cqs.length; i++) ctbHtml += '<li>' + cqs[i] + '</li>';
+    ctb.innerHTML = ctbHtml;
+
+    document.getElementById('caregiverTBCard').style.display = caregiverMode ? 'block' : 'none';
+    document.getElementById('caregiverBanner').style.display = caregiverMode ? 'block' : 'none';
+
+    showTab('overview');
     document.getElementById('spinner').style.display = 'none';
     document.getElementById('result').style.display = 'block';
     document.getElementById('goBtn').disabled = false;
@@ -213,10 +389,14 @@ function copyNotes() {
   for (var i = 0; i < qs.length; i++) qtext += (i+1) + '. ' + qs[i] + '\n';
   var text = 'PILL TALK — ' + r.drugName + '\n' +
     (r.brandNote ? r.brandNote + '\n' : '') +
-    '\nWHAT IT IS\n' + r.what +
+    '\nCONDITION\n' + r.condition +
+    '\n\nHOW IT WORKS\n' + r.what +
     '\n\nHOW TO TAKE IT\n' + r.how +
+    '\n\nMISSED DOSE\n' + r.missedDose +
+    '\n\nFOOD & ALCOHOL\n' + r.foodAlcohol +
     '\n\nCOMMON SIDE EFFECTS\n' + r.side +
     '\n\nWATCH FOR\n' + r.warn +
+    '\n\nCOST & SAVINGS\n' + r.cost +
     '\n\nTEACH-BACK QUESTIONS\n' + qtext +
     '\n---\nGenerated by Pill Talk · Always verify with clinical references';
   navigator.clipboard.writeText(text);
