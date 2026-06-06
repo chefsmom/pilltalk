@@ -16,6 +16,10 @@ def index():
 def mymeds():
     return send_from_directory('templates', 'mymeds.html')
 
+@app.route("/icon.svg")
+def icon():
+    return send_from_directory("templates", "icon.svg", mimetype="image/svg+xml")
+
 @app.route("/medcard")
 def medcard():
     return send_from_directory('templates', 'medcard.html')
