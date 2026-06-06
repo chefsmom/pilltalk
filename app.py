@@ -32,6 +32,10 @@ def tracker():
 def appjs():
     return send_from_directory("templates", "app.js", mimetype="application/javascript")
 
+@app.route("/pilltalk.js")
+def pilltalkjs():
+    return send_from_directory("templates", "pilltalk.js", mimetype="application/javascript")
+
 @app.route("/icon.svg")
 def icon():
     return send_from_directory("templates", "icon.svg", mimetype="image/svg+xml")
