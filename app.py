@@ -149,6 +149,65 @@ def translate():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@app.route("/symptoms")
+def symptoms():
+    return send_from_directory("templates", "symptoms.html")
+
+@app.route("/tracker")
+def tracker():
+    return send_from_directory("templates", "tracker.html")
+
+@app.route("/check-symptoms", methods=["POST"])
+def check_symptoms():
+    if not API_KEY:
+        return jsonify({"error": "GEMINI_API_KEY not set."}), 500
+    body = request.get_json()
+    drugs = body.get("drugs", [])
+    symptoms = body.get("symptoms", "").strip()
+    level = body.get("level", "simple and clear language").strip()
+    if not symptoms:
+        return jsonify({"error": "Please describe your symptoms."}), 400
+
+    prompt = (
+        'You are a clinical pharmacist. A patient is taking these medications: ' + (", ".join(drugs) if drugs else "unknown medications") + '. '
+        'They are experiencing these symptoms: "' + symptoms + '". '
+        'Analyze whether each symptom is likely a known drug side effect, a possible drug interaction, or something requiring medical attention. '
+        'Use ' + level + ' reading level. '
+        'Respond ONLY with valid JSON: '
+        '{'
+        '"overallRisk": "low, moderate, or high",'
+        '"overallSummary": "1-2 sentence plain language summary of what is likely going on",'
+        '"findings": ['
+        '  {"symptom": "symptom name", "severity": "green, yellow, or red", '
+        '   "category": "known side effect, possible interaction, unrelated, or seek care", '
+        '   "explanation": "plain language explanation of why this symptom is occurring", '
+        '   "action": "specific action to take: monitor at home / call your doctor / go to ER now",'
+        '   "drug": "which drug is most likely causing this, or empty string"}'
+        '],'
+        '"urgentAction": "if any symptom is red/seek care, what to do immediately — else empty string",'
+        '"disclaimer": "one sentence reminder to always consult a healthcare provider"'
+        '}'
+    )
+
+    payload = json.dumps({
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 4096, "responseMimeType": "application/json"}
+    }).encode()
+
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY
+    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req) as resp:
+            data = json.loads(resp.read())
+        text = data["candidates"][0]["content"]["parts"][0]["text"]
+        text = text.strip().replace("```json", "").replace("```", "").strip()
+        return jsonify(json.loads(text))
+    except urllib.error.HTTPError as e:
+        return jsonify({"error": json.loads(e.read()).get("error", {}).get("message", str(e))}), 502
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == "__main__":
     if not API_KEY:
         print("GEMINI_API_KEY not set.")
