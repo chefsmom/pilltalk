@@ -187,6 +187,22 @@ def translate():
         return jsonify({"error": str(e)}), 500
 
 
+
+@app.route("/manifest.json")
+def manifest():
+    return send_from_directory("templates", "manifest.json", mimetype="application/manifest+json")
+
+@app.route("/sw.js")
+def service_worker():
+    response = send_from_directory("templates", "sw.js", mimetype="application/javascript")
+    response.headers["Service-Worker-Allowed"] = "/"
+    response.headers["Cache-Control"] = "no-cache"
+    return response
+
+@app.route("/offline")
+def offline():
+    return send_from_directory("templates", "404.html")
+
 @app.route("/share/<drug>")
 def share_drug(drug):
     from flask import redirect

@@ -1,0 +1,41 @@
+{
+  "name": "Pill Talk",
+  "short_name": "Pill Talk",
+  "description": "Plain-language medication education. Drug lookup, interaction checker, symptom checker, and dose tracker.",
+  "start_url": "/app",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f9fafb",
+  "theme_color": "#059669",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Look Up Drug",
+      "url": "/app",
+      "description": "Look up a medication"
+    },
+    {
+      "name": "Symptom Checker",
+      "url": "/symptoms",
+      "description": "Check your symptoms"
+    },
+    {
+      "name": "My Medications",
+      "url": "/mymeds",
+      "description": "View and check your medications"
+    },
+    {
+      "name": "Dose Tracker",
+      "url": "/tracker",
+      "description": "Track your daily doses"
+    }
+  ],
+  "categories": ["health", "medical", "lifestyle"]
+}
