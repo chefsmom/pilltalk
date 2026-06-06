@@ -441,6 +441,7 @@ body.large .search-input{font-size:19px}
         <div class="autocomplete-list" id="acList"></div>
       </div>
       <button class="btn-search" id="goBtn">Search</button>
+      <button class="btn-search" id="voiceBtn" onclick="startVoice()" style="background:var(--g100);color:var(--g700);box-shadow:none;padding:0 14px" title="Speak drug name">&#127908;</button>
     </div>
 
     <!-- Segmented reading level control -->
@@ -469,6 +470,7 @@ body.large .search-input{font-size:19px}
     <!-- Drug Hero -->
     <div class="drug-hero">
       <div class="drug-hero-name" id="heroName"></div>
+      <div class="drug-hero-pronounce" id="heroPronounce" style="font-size:14px;opacity:.75;margin-bottom:4px;font-style:italic;letter-spacing:.03em"></div>
       <div class="drug-hero-condition" id="heroCondition"></div>
       <div class="drug-hero-badges">
         <div class="hero-badge" id="heroBadge"></div>
@@ -652,6 +654,7 @@ body.large .search-input{font-size:19px}
 
     <!-- ACTION STRIP -->
     <div class="action-strip">
+      <button class="action-btn" id="readBtn" onclick="readAloud()">&#128266; Read</button>
       <button class="action-btn" id="copyBtn">&#10232; Copy</button>
       <button class="action-btn" id="shareBtn">&#128279; Share</button>
       <button class="action-btn" id="saveBtn">&#43; My Meds</button>
