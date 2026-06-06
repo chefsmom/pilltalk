@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Pill Talk — Look Up a Medication</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -127,6 +129,17 @@ body.large .ic-body{font-size:17px}
 .sev-yellow{display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-right:4px;vertical-align:middle}
 .sev-red{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;vertical-align:middle}
 
+
+/* INJECTION STEPS */
+.inj-step{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid var(--g200);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.inj-step:last-child{margin-bottom:0}
+.inj-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#059669,#065f46);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 6px rgba(5,150,105,.3)}
+.inj-step-body{flex:1;min-width:0}
+.inj-step-text{font-size:14px;color:var(--g700);line-height:1.65}
+.inj-step-icon{font-size:22px;margin-bottom:6px}
+.inj-step-warn{margin-top:8px;padding:6px 10px;background:var(--red-bg);border:1px solid var(--red-b);border-radius:6px;font-size:12px;color:var(--red);font-weight:500}
+.inj-step-tip{margin-top:8px;padding:6px 10px;background:var(--teal-50);border:1px solid var(--teal-100);border-radius:6px;font-size:12px;color:var(--teal-dd);font-weight:500}
+
 /* ACTION BAR */
 .action-bar{display:flex;gap:8px;flex-wrap:wrap;padding:1rem 1.5rem;border-top:1px solid var(--g200);background:var(--g50)}
 .act-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:#fff;border:1.5px solid var(--g300);border-radius:var(--r);font-size:12px;font-weight:600;color:var(--g600);cursor:pointer;font-family:inherit;transition:all .15s}
@@ -138,7 +151,7 @@ footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color
 </head>
 <body>
 <nav>
-  <a class="logo" href="/"><div class="logo-icon">&#9883;</div>Pill Talk</a>
+  <a class="logo" href="/"><img src="/icon.svg" style="width:30px;height:30px;border-radius:8px;box-shadow:0 2px 4px rgba(5,150,105,.3)" alt="Pill Talk"/>Pill Talk</a>
   <div class="nav-links">
     <a class="nl on" href="/app"><span>&#128138; </span>Look Up</a>
     <a class="nl" href="/mymeds"><span>&#128137; </span>My Meds</a>
@@ -230,7 +243,21 @@ footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color
 
         <!-- INJECTION -->
         <div class="panel" id="panel-injection">
-          <div class="ic pu"><div class="ic-label">&#128137; step-by-step administration</div><div class="ic-body" id="injection"></div></div>
+          <div id="inj-visual" style="display:none">
+            <div style="margin-bottom:1rem">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);margin-bottom:4px">Administration type</div>
+              <div id="injType" style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--purple-bg);border:1px solid var(--purple-b);border-radius:20px;font-size:13px;font-weight:600;color:var(--purple)"></div>
+            </div>
+            <div id="injSiteCard" style="display:none;margin-bottom:1rem">
+              <div class="ic bl">
+                <div class="ic-label">&#127994; injection sites</div>
+                <div class="ic-body" id="injSite"></div>
+              </div>
+            </div>
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);margin-bottom:10px">Step-by-step instructions</div>
+            <div id="injSteps"></div>
+          </div>
+          <div class="ic pu" id="inj-fallback"><div class="ic-label">&#128137; administration guide</div><div class="ic-body" id="injection"></div></div>
         </div>
 
         <!-- TEACH-BACK -->
@@ -373,7 +400,47 @@ function populateResult(data){
   document.getElementById('missedDose').innerHTML=toBullets(data.missedDose);
   document.getElementById('foodAlcohol').innerHTML=toBullets(data.foodAlcohol);
   var it=document.getElementById('injTab');
-  if(data.injection&&data.injection.trim().length>5){document.getElementById('injection').innerHTML=toBullets(data.injection);it.style.display='block';}else{it.style.display='none';}
+  if(data.injection&&data.injection.trim().length>5){
+    document.getElementById('injection').innerHTML=toBullets(data.injection);
+    it.style.display='block';
+    // Try visual steps
+    var steps=data.injectionSteps;
+    var visual=document.getElementById('inj-visual');
+    var fallback=document.getElementById('inj-fallback');
+    if(steps&&Array.isArray(steps)&&steps.length>0){
+      visual.style.display='block'; fallback.style.display='none';
+      // Type badge
+      var typeIcons={'pen':'&#128394;','autoinjector':'&#128137;','syringe':'&#9889;','iv':'&#128167;','inhaler':'&#128168;'};
+      var itype=(data.injectionType||'injectable').toLowerCase();
+      var ticon=typeIcons[itype]||'&#128137;';
+      document.getElementById('injType').innerHTML=ticon+' '+(data.injectionType||'Injectable');
+      // Site
+      var siteCard=document.getElementById('injSiteCard');
+      if(data.injectionSite&&data.injectionSite.trim().length>2){
+        document.getElementById('injSite').textContent=data.injectionSite;
+        siteCard.style.display='block';
+      } else { siteCard.style.display='none'; }
+      // Steps
+      var stepIcons=['&#129501;','&#128197;','&#127774;','&#128137;','&#9989;','&#128680;','&#128274;','&#10060;','&#128290;','&#9200;'];
+      var html='';
+      for(var si=0;si<steps.length;si++){
+        var st=steps[si];
+        var txt=st.replace(/^\d+\.\s*/,'');
+        var isWarn=/(warning|caution|do not|never|danger|emergency|stop|bleed)/i.test(txt);
+        var isTip=/(tip|remember|note|important|make sure|ensure)/i.test(txt);
+        html+='<div class="inj-step">';
+        html+='<div class="inj-num">'+(si+1)+'</div>';
+        html+='<div class="inj-step-body">';
+        html+='<div class="inj-step-text">'+txt+'</div>';
+        if(isWarn) html+='<div class="inj-step-warn">&#9888; Use caution with this step</div>';
+        if(isTip&&!isWarn) html+='<div class="inj-step-tip">&#128161; Key step</div>';
+        html+='</div></div>';
+      }
+      document.getElementById('injSteps').innerHTML=html;
+    } else {
+      visual.style.display='none'; fallback.style.display='block';
+    }
+  } else { it.style.display='none'; }
   var qs=Array.isArray(data.teachback)?data.teachback:[String(data.teachback||'')];
   document.getElementById('teachback').innerHTML=qs.map(function(q){return '<li style="margin-bottom:6px">'+q+'</li>';}).join('');
   var cqs=Array.isArray(data.caregiverTeachback)?data.caregiverTeachback:[String(data.caregiverTeachback||'')];
