@@ -58,7 +58,7 @@ def counsel():
     if not drug:
         return jsonify({"error": "No drug name provided."}), 400
 
-    prompt = """You are a clinical pharmacist. The user entered: "{drug}". This may be a brand or generic name. Handle both.
+    prompt = """You are a clinical pharmacist. The user entered: "{drug}". This may be a brand or generic name, and may contain misspellings or typos. Use your best clinical judgment to identify the intended medication. Handle both brand and generic names.
 Use {level} for ALL text fields.
 Respond ONLY with valid JSON using EXACTLY this schema with ALL fields present:
 {{

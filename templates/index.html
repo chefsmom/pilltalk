@@ -66,6 +66,19 @@ main{max-width:760px;margin:0 auto;padding:2rem 1.25rem 5rem}
 .btn-go:active{transform:translateY(0)}
 .btn-go:disabled{background:var(--g400);box-shadow:none;cursor:not-allowed;transform:none}
 
+
+/* AUTOCOMPLETE */
+.search-wrap{position:relative}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--teal);border-top:none;border-radius:0 0 var(--r) var(--r);box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:200;max-height:280px;overflow-y:auto;display:none}
+.autocomplete-list.show{display:block}
+.ac-item{padding:10px 16px;font-size:14px;color:var(--g700);cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--g100);transition:background .1s}
+.ac-item:last-child{border-bottom:none}
+.ac-item:hover,.ac-item.selected{background:var(--teal-50);color:var(--teal-dd)}
+.ac-item-name{font-weight:600;flex:1}
+.ac-item-type{font-size:11px;color:var(--g400);font-weight:500}
+.ac-match{color:var(--teal);font-weight:700}
+.search-row input.has-suggestions{border-radius:var(--r) var(--r) 0 0;border-bottom-color:var(--teal)}
+
 /* CONTROLS ROW */
 .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .ctrl-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin-right:2px}
@@ -193,7 +206,8 @@ footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color
   <div class="search-section">
     <div class="search-label">&#128138; Look up a medication</div>
     <div class="search-sub">Brand or generic name — we know both</div>
-    <div class="search-row">
+    <div class="search-wrap">
+  <div class="search-row">
       <input type="text" id="drugInput" placeholder="e.g. Lipitor, metformin, Humira, Ozempic, Eliquis..."/>
       <button class="btn-go" id="goBtn">Look Up</button>
     </div>
@@ -406,7 +420,7 @@ document.getElementById('btnSpanish').onclick=function(){
 document.getElementById('goBtn').onclick=generateCounseling;
 document.getElementById('copyBtn').onclick=copyNotes;
 document.getElementById('saveBtn').onclick=saveToMyMeds;
-document.getElementById('drugInput').onkeydown=function(e){if(e.key==='Enter')generateCounseling()};
+// keydown handled by autocomplete
 
 function showTab(name){
   document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on')});
@@ -639,6 +653,204 @@ document.getElementById('installBtn').addEventListener('click', function() {
     localStorage.setItem('pt_install_dismissed', '1');
   }
 });
+
+
+// === DRUG AUTOCOMPLETE ===
+var DRUGS = [
+  // Common generics + brands (500 most prescribed)
+  ["acetaminophen","Tylenol"],["ibuprofen","Advil","Motrin"],["aspirin","Bayer"],
+  ["metformin","Glucophage"],["atorvastatin","Lipitor"],["lisinopril","Prinivil","Zestril"],
+  ["amlodipine","Norvasc"],["metoprolol","Lopressor","Toprol"],["omeprazole","Prilosec"],
+  ["simvastatin","Zocor"],["losartan","Cozaar"],["albuterol","ProAir","Ventolin","Proventil"],
+  ["gabapentin","Neurontin"],["hydrochlorothiazide","Microzide"],["sertraline","Zoloft"],
+  ["levothyroxine","Synthroid","Levoxyl"],["amoxicillin","Amoxil"],["azithromycin","Zithromax","Z-Pack"],
+  ["fluoxetine","Prozac"],["escitalopram","Lexapro"],["bupropion","Wellbutrin","Zyban"],
+  ["duloxetine","Cymbalta"],["venlafaxine","Effexor"],["citalopram","Celexa"],
+  ["alprazolam","Xanax"],["clonazepam","Klonopin"],["lorazepam","Ativan"],
+  ["zolpidem","Ambien"],["trazodone","Desyrel"],["quetiapine","Seroquel"],
+  ["aripiprazole","Abilify"],["risperidone","Risperdal"],["olanzapine","Zyprexa"],
+  ["lithium","Lithobid"],["lamotrigine","Lamictal"],["valproate","Depakote"],
+  ["carbamazepine","Tegretol"],["topiramate","Topamax"],["levetiracetam","Keppra"],
+  ["atenolol","Tenormin"],["carvedilol","Coreg"],["bisoprolol","Zebeta"],
+  ["furosemide","Lasix"],["spironolactone","Aldactone"],["chlorthalidone","Thalitone"],
+  ["ramipril","Altace"],["enalapril","Vasotec"],["benazepril","Lotensin"],
+  ["valsartan","Diovan"],["irbesartan","Avapro"],["olmesartan","Benicar"],
+  ["rosuvastatin","Crestor"],["pravastatin","Pravachol"],["lovastatin","Mevacor"],
+  ["ezetimibe","Zetia"],["fenofibrate","Tricor"],["gemfibrozil","Lopid"],
+  ["warfarin","Coumadin"],["apixaban","Eliquis"],["rivaroxaban","Xarelto"],
+  ["dabigatran","Pradaxa"],["clopidogrel","Plavix"],["ticagrelor","Brilinta"],
+  ["digoxin","Lanoxin"],["amiodarone","Cordarone","Pacerone"],["sotalol","Betapace"],
+  ["nitroglycerin","Nitrostat"],["isosorbide","Imdur"],["hydralazine","Apresoline"],
+  ["clonidine","Catapres"],["doxazosin","Cardura"],["tamsulosin","Flomax"],
+  ["sildenafil","Viagra","Revatio"],["tadalafil","Cialis","Adcirca"],
+  ["finasteride","Proscar","Propecia"],["dutasteride","Avodart"],
+  ["insulin glargine","Lantus","Toujeo"],["insulin lispro","Humalog"],
+  ["insulin aspart","NovoLog"],["insulin detemir","Levemir"],["insulin degludec","Tresiba"],
+  ["semaglutide","Ozempic","Wegovy","Rybelsus"],["liraglutide","Victoza","Saxenda"],
+  ["dulaglutide","Trulicity"],["exenatide","Byetta","Bydureon"],
+  ["sitagliptin","Januvia"],["saxagliptin","Onglyza"],["linagliptin","Tradjenta"],
+  ["empagliflozin","Jardiance"],["dapagliflozin","Farxiga"],["canagliflozin","Invokana"],
+  ["glipizide","Glucotrol"],["glyburide","DiaBeta"],["glimepiride","Amaryl"],
+  ["pioglitazone","Actos"],["rosiglitazone","Avandia"],
+  ["prednisone","Deltasone"],["methylprednisolone","Medrol"],["dexamethasone","Decadron"],
+  ["budesonide","Pulmicort","Entocort"],["fluticasone","Flonase","Flovent"],
+  ["mometasone","Nasonex"],["triamcinolone","Kenalog"],["hydrocortisone","Cortef"],
+  ["montelukast","Singulair"],["tiotropium","Spiriva"],["ipratropium","Atrovent"],
+  ["salmeterol","Serevent"],["formoterol","Foradil"],["umeclidinium","Incruse"],
+  ["omalizumab","Xolair"],["dupilumab","Dupixent"],["mepolizumab","Nucala"],
+  ["adalimumab","Humira"],["etanercept","Enbrel"],["infliximab","Remicade"],
+  ["methotrexate","Rheumatrex"],["hydroxychloroquine","Plaquenil"],["leflunomide","Arava"],
+  ["tofacitinib","Xeljanz"],["baricitinib","Olumiant"],["upadacitinib","Rinvoq"],
+  ["atorvastatin","Lipitor"],["colchicine","Colcrys"],["allopurinol","Zyloprim"],
+  ["febuxostat","Uloric"],["probenecid","Benemid"],
+  ["alendronate","Fosamax"],["risedronate","Actonel"],["ibandronate","Boniva"],
+  ["denosumab","Prolia","Xgeva"],["teriparatide","Forteo"],["raloxifene","Evista"],
+  ["calcitonin","Miacalcin"],["calcium carbonate","Tums","Os-Cal"],
+  ["levothyroxine","Synthroid"],["methimazole","Tapazole"],["propylthiouracil","PTU"],
+  ["testosterone","AndroGel","Testim"],["estradiol","Estrace","Vivelle"],
+  ["progesterone","Prometrium"],["medroxyprogesterone","Depo-Provera","Provera"],
+  ["norethindrone","Aygestin"],["conjugated estrogens","Premarin"],
+  ["donepezil","Aricept"],["memantine","Namenda"],["rivastigmine","Exelon"],
+  ["galantamine","Razadyne"],
+  ["ondansetron","Zofran"],["promethazine","Phenergan"],["metoclopramide","Reglan"],
+  ["pantoprazole","Protonix"],["esomeprazole","Nexium"],["lansoprazole","Prevacid"],
+  ["ranitidine","Zantac"],["famotidine","Pepcid"],["sucralfate","Carafate"],
+  ["mesalamine","Asacol","Pentasa"],["sulfasalazine","Azulfidine"],
+  ["ursodiol","Actigall"],["lactulose","Enulose"],["polyethylene glycol","Miralax"],
+  ["docusate","Colace"],["senna","Senokot"],["bisacodyl","Dulcolax"],
+  ["loperamide","Imodium"],["diphenoxylate","Lomotil"],
+  ["cetirizine","Zyrtec"],["loratadine","Claritin"],["fexofenadine","Allegra"],
+  ["diphenhydramine","Benadryl"],["hydroxyzine","Atarax","Vistaril"],
+  ["doxycycline","Vibramycin"],["minocycline","Minocin"],["tetracycline","Sumycin"],
+  ["ciprofloxacin","Cipro"],["levofloxacin","Levaquin"],["moxifloxacin","Avelox"],
+  ["trimethoprim","Bactrim"],["nitrofurantoin","Macrobid"],["cephalexin","Keflex"],
+  ["cefdinir","Omnicef"],["cefuroxime","Ceftin"],["clindamycin","Cleocin"],
+  ["metronidazole","Flagyl"],["fluconazole","Diflucan"],["nystatin","Mycostatin"],
+  ["acyclovir","Zovirax"],["valacyclovir","Valtrex"],["oseltamivir","Tamiflu"],
+  ["naltrexone","Vivitrol","Revia"],["buprenorphine","Suboxone","Subutex"],
+  ["varenicline","Chantix"],["nicotine","Nicorette","NicoDerm"],
+  ["oxycodone","OxyContin","Percocet"],["hydrocodone","Vicodin","Norco"],
+  ["morphine","MS Contin"],["tramadol","Ultram"],["fentanyl","Duragesic"],
+  ["cyclobenzaprine","Flexeril"],["methocarbamol","Robaxin"],["baclofen","Lioresal"],
+  ["carisoprodol","Soma"],["tizanidine","Zanaflex"],
+  ["methylphenidate","Ritalin","Concerta"],["amphetamine","Adderall","Vyvanse"],
+  ["atomoxetine","Strattera"],["guanfacine","Intuniv"],["clonidine","Kapvay"],
+  ["modafinil","Provigil"],["armodafinil","Nuvigil"],
+  ["atorvastatin","Lipitor"],["sildenafil","Viagra"],["tadalafil","Cialis"],
+  ["amlodipine","Norvasc"],["ramipril","Altace"]
+];
+
+// Flatten drug list into searchable entries
+var DRUG_ENTRIES = [];
+DRUGS.forEach(function(group) {
+  group.forEach(function(name) {
+    DRUG_ENTRIES.push({name: name, group: group});
+  });
+});
+// Deduplicate
+var seen = {};
+DRUG_ENTRIES = DRUG_ENTRIES.filter(function(e) {
+  if (seen[e.name.toLowerCase()]) return false;
+  seen[e.name.toLowerCase()] = true;
+  return true;
+});
+
+function fuzzyScore(query, target) {
+  query = query.toLowerCase();
+  target = target.toLowerCase();
+  if (target.startsWith(query)) return 100;
+  if (target.includes(query)) return 80;
+  // Simple char-by-char fuzzy
+  var qi = 0, score = 0;
+  for (var ti = 0; ti < target.length && qi < query.length; ti++) {
+    if (target[ti] === query[qi]) { score += (qi === ti ? 2 : 1); qi++; }
+  }
+  if (qi < query.length) return 0; // didn't match all chars
+  return Math.round((score / query.length) * 40);
+}
+
+function highlightMatch(name, query) {
+  if (!query) return name;
+  var idx = name.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return name;
+  return name.slice(0, idx) + '<span class="ac-match">' + name.slice(idx, idx + query.length) + '</span>' + name.slice(idx + query.length);
+}
+
+var acSelectedIndex = -1;
+
+function showSuggestions(query) {
+  var list = document.getElementById('acList');
+  if (!query || query.length < 2) { list.classList.remove('show'); return; }
+
+  var results = [];
+  DRUG_ENTRIES.forEach(function(entry) {
+    var score = fuzzyScore(query, entry.name);
+    if (score > 20) results.push({entry: entry, score: score});
+  });
+  results.sort(function(a, b) { return b.score - a.score; });
+  results = results.slice(0, 8);
+
+  if (results.length === 0) { list.classList.remove('show'); return; }
+
+  var html = '';
+  results.forEach(function(r, i) {
+    var entry = r.entry;
+    var others = entry.group.filter(function(n) { return n !== entry.name; });
+    var altText = others.length ? '(' + others.slice(0,2).join(' / ') + ')' : '';
+    html += '<div class="ac-item" data-name="' + entry.name + '" onclick="selectSuggestion('' + entry.name.replace(/'/g, "\'") + '')">';
+    html += '<span class="ac-item-name">' + highlightMatch(entry.name, query) + '</span>';
+    if (altText) html += '<span class="ac-item-type">' + altText + '</span>';
+    html += '</div>';
+  });
+
+  list.innerHTML = html;
+  list.classList.add('show');
+  document.getElementById('drugInput').classList.add('has-suggestions');
+  acSelectedIndex = -1;
+}
+
+function selectSuggestion(name) {
+  document.getElementById('drugInput').value = name;
+  document.getElementById('acList').classList.remove('show');
+  document.getElementById('drugInput').classList.remove('has-suggestions');
+  generateCounseling();
+}
+
+function hideSuggestions() {
+  setTimeout(function() {
+    document.getElementById('acList').classList.remove('show');
+    document.getElementById('drugInput').classList.remove('has-suggestions');
+  }, 150);
+}
+
+// Keyboard navigation
+document.getElementById('drugInput').addEventListener('keydown', function(e) {
+  var items = document.querySelectorAll('.ac-item');
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    acSelectedIndex = Math.min(acSelectedIndex + 1, items.length - 1);
+    items.forEach(function(el, i) { el.classList.toggle('selected', i === acSelectedIndex); });
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    acSelectedIndex = Math.max(acSelectedIndex - 1, -1);
+    items.forEach(function(el, i) { el.classList.toggle('selected', i === acSelectedIndex); });
+  } else if (e.key === 'Enter') {
+    if (acSelectedIndex >= 0 && items[acSelectedIndex]) {
+      e.preventDefault();
+      selectSuggestion(items[acSelectedIndex].getAttribute('data-name'));
+    } else {
+      generateCounseling();
+    }
+  } else if (e.key === 'Escape') {
+    hideSuggestions();
+  }
+});
+
+document.getElementById('drugInput').addEventListener('input', function() {
+  showSuggestions(this.value.trim());
+});
+
+document.getElementById('drugInput').addEventListener('blur', hideSuggestions);
 
 var params=new URLSearchParams(window.location.search);
 var dp=params.get('drug');
