@@ -43,6 +43,13 @@ main{max-width:760px;margin:0 auto;padding:2rem 1.25rem 5rem}
 textarea{width:100%;padding:12px 14px;font-size:14px;font-family:inherit;border:1.5px solid var(--g300);border-radius:var(--r);background:var(--g50);color:var(--g900);outline:none;resize:vertical;min-height:100px;line-height:1.6;transition:border-color .15s}
 textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(5,150,105,.1)}
 textarea::placeholder{color:var(--g400)}
+
+.symptom-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:1rem}
+.sym-chip{padding:6px 13px;border:1.5px solid var(--g300);border-radius:20px;font-size:13px;font-weight:500;color:var(--g600);cursor:pointer;background:#fff;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:5px}
+.sym-chip:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-50)}
+.sym-chip.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.chips-label{font-size:12px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+
 .hint{font-size:12px;color:var(--g400);margin-top:6px}
 .btn-go{width:100%;padding:13px;background:var(--teal);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;box-shadow:0 2px 4px rgba(5,150,105,.25)}
 .btn-go:hover{background:var(--teal-d)}
@@ -86,17 +93,24 @@ textarea::placeholder{color:var(--g400)}
 .act-btn:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-50)}
 .info-banner{background:var(--teal-50);border:1px solid var(--teal-100);border-radius:var(--r);padding:12px 16px;font-size:13px;color:var(--teal-dd);margin-bottom:1.5rem;line-height:1.6}
 footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color:var(--g400);line-height:1.7;border-top:1px solid var(--g200);padding-top:1.5rem}
+
+@media(max-width:580px){
+  .nl span.full{display:none}
+  .nl{padding:6px 8px;font-size:16px}
+  nav{padding:0 .75rem}
+  .logo span{display:none}
+}
 </style>
 </head>
 <body>
 <nav>
   <a class="logo" href="/"><img class="logo-icon" src="/icon.svg" alt="Pill Talk"/>Pill Talk</a>
   <div class="nav-links">
-    <a class="nl" href="/app">&#128138; Look Up</a>
-    <a class="nl" href="/mymeds">&#128137; My Meds</a>
-    <a class="nl on" href="/symptoms">&#128308; Symptoms</a>
-    <a class="nl" href="/tracker">&#128197; Tracker</a>
-    <a class="nl" href="/medcard">&#128203; Med Card</a>
+    <a class="nl" href="/app">&#128138;<span class="full"> Look Up</span></a>
+    <a class="nl" href="/mymeds">&#128137;<span class="full"> My Meds</span></a>
+    <a class="nl on" href="/symptoms">&#128308;<span class="full"> Symptoms</span></a>
+    <a class="nl" href="/tracker">&#128197;<span class="full"> Tracker</span></a>
+    <a class="nl" href="/medcard">&#128203;<span class="full"> Med Card</span></a>
   </div>
 </nav>
 
@@ -159,7 +173,7 @@ footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color
 
 <footer>
   AI-generated content. This is not a medical diagnosis. Always consult your pharmacist, doctor, or call 911 in an emergency.
-  Built by Katie Bowman, PharmD Candidate — University of Kentucky College of Pharmacy.
+  Built by Kathryn Bowman, PharmD Candidate — University of Kentucky College of Pharmacy.
 </footer>
 
 <script>
@@ -179,14 +193,20 @@ function addMed(){
   var val=input.value.trim();
   if(!val) return;
   if(meds.indexOf(val)===-1){meds.push(val);localStorage.setItem('pilltalk_meds',JSON.stringify(meds));}
-  renderTags();
+  // Auto-load from My Meds
+var savedMeds = JSON.parse(localStorage.getItem('pilltalk_meds') || '[]');
+savedMeds.forEach(function(m) { if (meds.indexOf(m) === -1) meds.push(m); });
+renderTags();
   input.value='';input.focus();
 }
 
 function removeMed(i){
   meds.splice(i,1);
   localStorage.setItem('pilltalk_meds',JSON.stringify(meds));
-  renderTags();
+  // Auto-load from My Meds
+var savedMeds = JSON.parse(localStorage.getItem('pilltalk_meds') || '[]');
+savedMeds.forEach(function(m) { if (meds.indexOf(m) === -1) meds.push(m); });
+renderTags();
 }
 
 function showError(msg){
@@ -278,7 +298,28 @@ function clearAll(){
   document.getElementById('errorBox').style.display='none';
 }
 
+
+var selectedChips = [];
+function toggleChip(btn, symptom) {
+  var idx = selectedChips.indexOf(symptom);
+  if (idx === -1) {
+    selectedChips.push(symptom);
+    btn.classList.add('on');
+  } else {
+    selectedChips.splice(idx, 1);
+    btn.classList.remove('on');
+  }
+  // Update textarea
+  var ta = document.getElementById('symptomInput');
+  var manual = ta.value.replace(/^Selected symptoms:[^\n]*\n?/, '').trim();
+  var chipText = selectedChips.length ? 'Selected symptoms: ' + selectedChips.join(', ') : '';
+  ta.value = [chipText, manual].filter(Boolean).join('\n');
+}
+
 document.getElementById('medInput').onkeydown=function(e){if(e.key==='Enter')addMed()};
+// Auto-load from My Meds
+var savedMeds = JSON.parse(localStorage.getItem('pilltalk_meds') || '[]');
+savedMeds.forEach(function(m) { if (meds.indexOf(m) === -1) meds.push(m); });
 renderTags();
 </script>
 </body>

@@ -94,17 +94,24 @@ label{font-size:12px;font-weight:600;color:var(--g600);text-transform:uppercase;
 .success-toast{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--g900);color:#fff;padding:12px 20px;border-radius:var(--r);font-size:14px;font-weight:500;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.2)}
 
 footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color:var(--g400);line-height:1.7;border-top:1px solid var(--g200);padding-top:1.5rem}
+
+@media(max-width:580px){
+  .nl span.full{display:none}
+  .nl{padding:6px 8px;font-size:16px}
+  nav{padding:0 .75rem}
+  .logo span{display:none}
+}
 </style>
 </head>
 <body>
 <nav>
   <a class="logo" href="/"><img class="logo-icon" src="/icon.svg" alt="Pill Talk"/>Pill Talk</a>
   <div class="nav-links">
-    <a class="nl" href="/app">&#128138; Look Up</a>
-    <a class="nl" href="/mymeds">&#128137; My Meds</a>
-    <a class="nl" href="/symptoms">&#128308; Symptoms</a>
-    <a class="nl on" href="/tracker">&#128197; Tracker</a>
-    <a class="nl" href="/medcard">&#128203; Med Card</a>
+    <a class="nl" href="/app">&#128138;<span class="full"> Look Up</span></a>
+    <a class="nl" href="/mymeds">&#128137;<span class="full"> My Meds</span></a>
+    <a class="nl" href="/symptoms">&#128308;<span class="full"> Symptoms</span></a>
+    <a class="nl on" href="/tracker">&#128197;<span class="full"> Tracker</span></a>
+    <a class="nl" href="/medcard">&#128203;<span class="full"> Med Card</span></a>
   </div>
 </nav>
 
@@ -194,7 +201,7 @@ footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color
 
 <footer>
   Data is stored locally on your device only. AI-generated content. Not a substitute for professional medical advice.
-  Built by Katie Bowman, PharmD Candidate — University of Kentucky College of Pharmacy.
+  Built by Kathryn Bowman, PharmD Candidate — University of Kentucky College of Pharmacy.
 </footer>
 
 <script>

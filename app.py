@@ -186,6 +186,16 @@ def translate():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@app.route("/share/<drug>")
+def share_drug(drug):
+    from flask import redirect
+    return redirect("/app?drug=" + drug)
+
+@app.errorhandler(404)
+def not_found(e):
+    return send_from_directory("templates", "404.html"), 404
+
 if __name__ == "__main__":
     if not API_KEY:
         print("GEMINI_API_KEY not set.")
