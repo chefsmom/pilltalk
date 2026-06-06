@@ -11,7 +11,7 @@ var levels=[
 
 levels.forEach(function(lv){
   document.getElementById(lv.id).onclick=function(){
-    document.querySelectorAll('.pill').forEach(function(b){b.classList.remove('on')});
+    document.querySelectorAll('.level-seg').forEach(function(b){b.classList.remove('on')});
     this.classList.add('on');
     currentLevel=lv.val;
   };
