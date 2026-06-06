@@ -1,748 +1,413 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<link rel="icon" type="image/svg+xml" href="/icon.svg">
-<link rel="manifest" href="/manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Pill Talk">
-<meta name="theme-color" content="#059669">
-<link rel="apple-touch-icon" href="/icon.svg">
-
-
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Pill Talk — Look Up a Medication</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pill Talk</title>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --teal:#059669;--teal-d:#047857;--teal-dd:#065f46;
-  --teal-50:#ecfdf5;--teal-100:#d1fae5;--teal-200:#a7f3d0;
-  --g900:#111827;--g800:#1f2937;--g700:#374151;--g600:#4b5563;
-  --g500:#6b7280;--g400:#9ca3af;--g300:#d1d5db;--g200:#e5e7eb;
-  --g100:#f3f4f6;--g50:#f9fafb;--white:#fff;
-  --red:#dc2626;--red-bg:#fef2f2;--red-b:#fecaca;
-  --amber:#d97706;--amber-bg:#fffbeb;--amber-b:#fde68a;
-  --green:#16a34a;--green-bg:#f0fdf4;--green-b:#bbf7d0;
-  --blue:#2563eb;--blue-bg:#eff6ff;--blue-b:#bfdbfe;
-  --purple:#7c3aed;--purple-bg:#f5f3ff;--purple-b:#ddd6fe;
-  --r:10px;--rl:14px;--rxl:20px;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f5f4f1; --surface: #fff; --border: #e4e2dc;
+  --teal: #0d7a5f; --teal-light: #e8f5f1;
+  --red: #c0392b; --red-light: #fdecea;
+  --amber: #b35c00; --amber-light: #fef4e8;
+  --blue: #1a56a0; --blue-light: #eaf1fb;
+  --purple: #7c3aed; --purple-light: #f3f0ff;
+  --green: #166534; --green-light: #dcfce7;
+  --text: #1a1917; --muted: #888; --faint: #bbb;
+  --fs: 16px;
 }
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--g50);color:var(--g900);-webkit-font-smoothing:antialiased;min-height:100vh}
-body.large{font-size:17px}
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem; font-size: var(--fs); }
+body.large { --fs: 20px; }
+.wrap { max-width: 740px; margin: 0 auto; }
 
+/* header */
+.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px; }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo h1 { font-size: 22px; font-weight: 700; }
+.logo-sub { font-size: 12px; color: var(--muted); }
+.header-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+button.tool { padding: 5px 12px; border: 1.5px solid var(--border); border-radius: 20px; background: transparent; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; }
+button.tool:hover, button.tool.active { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
+button.tool.caregiver.active { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
 
-.install-banner{display:none;background:linear-gradient(135deg,#059669,#065f46);color:#fff;padding:12px 1.25rem;align-items:center;justify-content:space-between;gap:10px;font-size:13px;font-weight:500}
-.install-banner button{padding:6px 14px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:20px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
-.install-banner button:hover{background:rgba(255,255,255,.3)}
-.install-banner .dismiss{background:transparent;border:none;opacity:.6;font-size:18px;padding:2px 6px}
+/* search */
+.row { display: flex; gap: 8px; margin-bottom: 10px; }
+input[type=text] { flex: 1; padding: 11px 14px; font-size: var(--fs); font-family: inherit; border: 1.5px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); outline: none; }
+input[type=text]:focus { border-color: var(--teal); }
+input[type=text]::placeholder { color: var(--faint); }
+button.go { padding: 11px 22px; background: var(--teal); color: #fff; border: none; border-radius: 8px; font-size: var(--fs); font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+button.go:hover { background: #0a6550; }
+button.go:disabled { background: #aaa; cursor: not-allowed; }
 
-/* NAV */
-nav{background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--g200);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.logo{font-size:17px;font-weight:800;text-decoration:none;color:var(--g900);display:flex;align-items:center;gap:9px;letter-spacing:-.3px}
-.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,#059669,#065f46);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;box-shadow:0 2px 4px rgba(5,150,105,.3);flex-shrink:0}
-.nav-links{display:flex;gap:2px}
-.nl{padding:6px 12px;font-size:13px;font-weight:500;color:var(--g500);text-decoration:none;border-radius:6px;transition:all .15s}
-.nl:hover{background:var(--g100);color:var(--g900)}
-.nl.on{background:var(--teal-50);color:var(--teal-dd);font-weight:600}
-@media(max-width:480px){.nl span{display:none}}
+/* levels */
+.levels { display: flex; gap: 6px; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.levels span { font-size: 12px; color: var(--muted); }
+button.lv { padding: 4px 12px; border: 1.5px solid var(--border); border-radius: 20px; background: transparent; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; }
+button.lv.active { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
 
-/* MAIN */
-main{max-width:760px;margin:0 auto;padding:2rem 1.25rem 5rem}
+/* error / spinner */
+.error { display: none; padding: 12px 16px; background: var(--red-light); border-radius: 8px; color: var(--red); font-size: 14px; margin-bottom: 1rem; }
+.spinner { display: none; text-align: center; padding: 3rem 0; color: var(--muted); font-size: 14px; }
+.ring { width: 30px; height: 30px; border: 3px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* SEARCH SECTION */
-.search-section{margin-bottom:1.25rem}
-.search-label{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:2px}
-.search-sub{font-size:13px;color:var(--g500);margin-bottom:1.25rem}
-.search-row{display:flex;gap:8px;margin-bottom:1rem}
-.search-row input{flex:1;padding:12px 16px;font-size:15px;font-family:inherit;border:1.5px solid var(--g300);border-radius:var(--r);background:#fff;color:var(--g900);outline:none;transition:border-color .15s,box-shadow .15s;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-.search-row input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(5,150,105,.12)}
-.search-row input::placeholder{color:var(--g400)}
-.btn-go{padding:12px 22px;background:var(--teal);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;box-shadow:0 2px 4px rgba(5,150,105,.25);white-space:nowrap}
-.btn-go:hover{background:var(--teal-d);box-shadow:0 4px 8px rgba(5,150,105,.3);transform:translateY(-1px)}
-.btn-go:active{transform:translateY(0)}
-.btn-go:disabled{background:var(--g400);box-shadow:none;cursor:not-allowed;transform:none}
+/* result */
+#result { display: none; }
+.drug-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.drug-name { font-size: 24px; font-weight: 700; }
+.tag { font-size: 11px; padding: 3px 9px; background: var(--blue-light); color: var(--blue); border-radius: 20px; }
+.brand-note { display: none; padding: 10px 14px; background: var(--teal-light); border-left: 3px solid var(--teal); font-size: 13px; color: #0a6550; margin-bottom: 1rem; border-radius: 0 6px 6px 0; }
+.caregiver-banner { display: none; padding: 10px 14px; background: var(--purple-light); border-left: 3px solid var(--purple); font-size: 13px; color: var(--purple); margin-bottom: 1rem; border-radius: 0 6px 6px 0; }
 
+/* tabs */
+.tabs { display: flex; gap: 4px; margin-bottom: 1.25rem; flex-wrap: wrap; border-bottom: 2px solid var(--border); padding-bottom: 0; }
+button.tab { padding: 8px 14px; border: none; border-bottom: 3px solid transparent; background: transparent; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; margin-bottom: -2px; }
+button.tab:hover { color: var(--teal); }
+button.tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
 
-/* AUTOCOMPLETE */
-.search-wrap{position:relative}
-.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--teal);border-top:none;border-radius:0 0 var(--r) var(--r);box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:200;max-height:280px;overflow-y:auto;display:none;}
-.autocomplete-list.show{display:block}
-.ac-item{padding:10px 16px;font-size:14px;color:var(--g700);cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--g100);transition:background .1s}
-.ac-item:last-child{border-bottom:none}
-.ac-item:hover,.ac-item.selected{background:var(--teal-50);color:var(--teal-dd)}
-.ac-item-name{font-weight:600;flex:1}
-.ac-item-type{font-size:11px;color:var(--g400);font-weight:500}
-.ac-match{color:var(--teal);font-weight:700}
-.search-row input.has-suggestions{border-radius:var(--r) var(--r) 0 0;border-bottom-color:var(--teal)}
+/* cards */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+@media(max-width:520px){ .grid2 { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+.card.what  { border-top: 3px solid var(--teal); }
+.card.cond  { border-top: 3px solid var(--blue); }
+.card.how   { border-top: 3px solid var(--blue); }
+.card.miss  { border-top: 3px solid var(--amber); }
+.card.food  { border-top: 3px solid var(--amber); }
+.card.side  { border-top: 3px solid var(--amber); }
+.card.warn  { border-top: 3px solid var(--red); }
+.card.inj   { border-top: 3px solid var(--purple); }
+.card.cost  { border-top: 3px solid var(--green); }
+.card.tb    { border-top: 3px solid var(--purple); }
+.clabel { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-bottom: 8px; }
+.cbody { font-size: var(--fs); line-height: 1.7; }
+.cbody ul { padding-left: 1.2rem; }
+.cbody ol { padding-left: 1.2rem; }
+.cbody li { margin-bottom: 6px; }
 
-/* CONTROLS ROW */
-.controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.ctrl-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin-right:2px}
-.pill{padding:5px 14px;border:1.5px solid var(--g300);border-radius:20px;background:transparent;font-size:12px;font-weight:600;color:var(--g500);cursor:pointer;font-family:inherit;transition:all .15s}
-.pill:hover{border-color:var(--teal);color:var(--teal)}
-.pill.on{background:var(--teal);border-color:var(--teal);color:#fff}
-.divider-v{width:1px;height:20px;background:var(--g200);margin:0 4px}
-.toggle{padding:5px 12px;border:1.5px solid var(--g300);border-radius:20px;background:transparent;font-size:12px;font-weight:600;color:var(--g500);cursor:pointer;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
-.toggle:hover{border-color:var(--g400);color:var(--g700)}
-.toggle.on-purple{background:var(--purple-bg);border-color:var(--purple-b);color:var(--purple)}
-.toggle.on-blue{background:var(--blue-bg);border-color:var(--blue-b);color:var(--blue)}
-.toggle.on-teal{background:var(--teal-50);border-color:var(--teal-100);color:var(--teal-dd)}
+/* severity badges */
+.sev-green { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #22c55e; margin-right: 5px; vertical-align: middle; }
+.sev-yellow { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; margin-right: 5px; vertical-align: middle; }
+.sev-red { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #ef4444; margin-right: 5px; vertical-align: middle; }
 
-/* SPINNER */
-#spinner{display:none}
-.spin-wrap{display:flex;flex-direction:column;align-items:center;padding:5rem 0;gap:14px}
-.spin-ring{width:34px;height:34px;border:3px solid var(--g200);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite}
-.spin-txt{font-size:13px;color:var(--g500);font-weight:500}
-@keyframes spin{to{transform:rotate(360deg)}}
+/* actions */
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1.5rem; }
+button.sec { padding: 8px 16px; background: transparent; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; font-family: inherit; }
+button.sec:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
 
-/* ERROR */
-.error-box{display:none;padding:12px 16px;background:var(--red-bg);border:1px solid var(--red-b);border-radius:var(--r);color:var(--red);font-size:13px;margin-bottom:1rem}
-
-/* RESULT */
-#result{display:none}
-
-/* DRUG HERO */
-.drug-hero{background:linear-gradient(135deg,#059669 0%,#065f46 100%);border-radius:var(--rl);padding:1.5rem 1.75rem;margin-bottom:1rem;color:#fff;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;box-shadow:0 8px 24px rgba(5,150,105,.25)}
-.hero-left{flex:1;min-width:0}
-.hero-name{font-size:24px;font-weight:800;letter-spacing:-.4px;line-height:1.2;margin-bottom:3px}
-.hero-condition{font-size:13px;opacity:.8;line-height:1.4}
-.hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
-.hero-badge{background:rgba(255,255,255,.18);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;backdrop-filter:blur(4px)}
-.hero-brand{background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);font-size:11px;padding:3px 9px;border-radius:20px}
-
-/* BANNERS */
-.banner{display:none;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r);font-size:13px;font-weight:500;margin-bottom:1rem}
-.banner-teal{background:var(--teal-50);border:1px solid var(--teal-100);color:var(--teal-dd)}
-.banner-purple{background:var(--purple-bg);border:1px solid var(--purple-b);color:var(--purple)}
-
-/* TAB WRAPPER */
-.tab-wrapper{background:#fff;border:1px solid var(--g200);border-radius:var(--rl);box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden;margin-bottom:1rem}
-.tabs{display:flex;border-bottom:1px solid var(--g200);overflow-x:auto;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{padding:13px 18px;font-size:13px;font-weight:500;color:var(--g500);background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s}
-.tab:hover{color:var(--g800);background:var(--g50)}
-.tab.on{color:var(--teal-dd);border-bottom-color:var(--teal);font-weight:700;background:#fff}
-.tab-body{padding:1.5rem}
-.panel{display:none}
-.panel.on{display:block}
-
-/* INFO CARDS */
-.ic{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:14px 16px}
-.ic.tl{border-left:3px solid var(--teal)}
-.ic.bl{border-left:3px solid var(--blue)}
-.ic.am{border-left:3px solid #f59e0b}
-.ic.rd{border-left:3px solid #ef4444}
-.ic.pu{border-left:3px solid var(--purple)}
-.ic.gn{border-left:3px solid #22c55e}
-.ic.pu-bg{border-left:3px solid var(--purple);background:var(--purple-bg)}
-.ic-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);margin-bottom:8px}
-.ic-body{font-size:14px;color:var(--g700);line-height:1.7}
-.ic-body ul{padding-left:1.1rem}
-.ic-body li{margin-bottom:5px}
-.ic-body ol{padding-left:1.2rem}
-.ic-body ol li{margin-bottom:6px}
-body.large .ic-body{font-size:17px}
-
-/* SEV LEGEND */
-.sev-legend{display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap}
-.sev-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--g500)}
-.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.dg{background:#22c55e}.dy{background:#f59e0b}.dr{background:#ef4444}
-.sev-green{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin-right:4px;vertical-align:middle}
-.sev-yellow{display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-right:4px;vertical-align:middle}
-.sev-red{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;vertical-align:middle}
-
-
-/* INJECTION STEPS */
-.inj-step{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid var(--g200);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.inj-step:last-child{margin-bottom:0}
-.inj-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#059669,#065f46);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 6px rgba(5,150,105,.3)}
-.inj-step-body{flex:1;min-width:0}
-.inj-step-text{font-size:14px;color:var(--g700);line-height:1.65}
-.inj-step-icon{font-size:22px;margin-bottom:6px}
-.inj-step-warn{margin-top:8px;padding:6px 10px;background:var(--red-bg);border:1px solid var(--red-b);border-radius:6px;font-size:12px;color:var(--red);font-weight:500}
-.inj-step-tip{margin-top:8px;padding:6px 10px;background:var(--teal-50);border:1px solid var(--teal-100);border-radius:6px;font-size:12px;color:var(--teal-dd);font-weight:500}
-
-/* ACTION BAR */
-.action-bar{display:flex;gap:8px;flex-wrap:wrap;padding:1rem 1.5rem;border-top:1px solid var(--g200);background:var(--g50)}
-.act-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:#fff;border:1.5px solid var(--g300);border-radius:var(--r);font-size:12px;font-weight:600;color:var(--g600);cursor:pointer;font-family:inherit;transition:all .15s}
-.act-btn:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-50)}
-
-/* FOOTER */
-footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color:var(--g400);line-height:1.7;border-top:1px solid var(--g200);padding-top:1.5rem}
-
-@media(max-width:580px){
-  .nl span.full{display:none}
-  .nl{padding:6px 8px;font-size:16px}
-  nav{padding:0 .75rem}
-  .logo span{display:none}
-}
+footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 11px; color: var(--faint); line-height: 1.6; }
 </style>
 </head>
 <body>
-<nav>
-  <a class="logo" href="/"><img src="/icon.svg" style="width:30px;height:30px;border-radius:8px;box-shadow:0 2px 4px rgba(5,150,105,.3)" alt="Pill Talk"/>Pill Talk</a>
-  <div class="nav-links">
-    <a class="nl on" href="/app">&#128138;<span class="full"> Look Up</span></a>
-    <a class="nl" href="/mymeds">&#128137;<span class="full"> My Meds</span></a>
-    <a class="nl" href="/symptoms">&#128308;<span class="full"> Symptoms</span></a>
-    <a class="nl" href="/tracker">&#128197;<span class="full"> Tracker</span></a>
-    <a class="nl" href="/medcard">&#128203;<span class="full"> Med Card</span></a>
-  </div>
-</nav>
+<div class="wrap">
 
-<div class="install-banner" id="installBanner">
-  <span>&#128247; Add Pill Talk to your home screen for quick access</span>
-  <div style="display:flex;gap:8px;align-items:center">
-    <button id="installBtn">Add to Home Screen</button>
-    <button class="dismiss" onclick="document.getElementById('installBanner').style.display='none'">&#10005;</button>
-  </div>
-</div>
-<main>
-  <div class="search-section">
-    <div class="search-label">&#128138; Look up a medication</div>
-    <div class="search-sub">Brand or generic name — we know both</div>
-    <div class="search-wrap">
-      <div class="search-row">
-        <input type="text" id="drugInput" placeholder="e.g. Lipitor, metformin, Humira, Ozempic..." autocomplete="off" oninput="showSuggestions(this.value.trim())" onfocus="showSuggestions(this.value.trim())" onblur="hideSuggestions()"/>
-        <button class="btn-go" id="goBtn">Look Up</button>
+  <div class="header">
+    <div class="logo">
+      <div>
+        <h1>&#128138; Pill Talk</h1>
+        <div class="logo-sub">plain-language medication education</div>
       </div>
-      <div class="autocomplete-list" id="acList"></div>
     </div>
-    <div class="controls">
-      <span class="ctrl-label">Level</span>
-      <button class="pill on" id="lv0">Simple</button>
-      <button class="pill" id="lv1">Standard</button>
-      <button class="pill" id="lv2">Clinical</button>
-      <div class="divider-v"></div>
-      <button class="toggle" id="btnCaregiver">&#128106; Caregiver</button>
-      <button class="toggle" id="btnSpanish">&#127466;&#127480; Espa&#241;ol</button>
-      <button class="toggle" id="btnLarge">&#128269; Large Text</button>
+    <div class="header-tools">
+      <button class="tool" id="btnLarge" title="Large text">&#128269; Large Text</button>
+      <button class="tool caregiver" id="btnCaregiver">&#128106; Caregiver Mode</button>
     </div>
   </div>
 
-  <div class="error-box" id="errorBox"></div>
+  <div class="row">
+    <input type="text" id="drugInput" placeholder="Brand or generic name (e.g. Lipitor, metformin, Humira...)" />
+    <button class="go" id="goBtn">Look Up</button>
+  </div>
 
-  <div id="spinner">
-    <div class="spin-wrap">
-      <div class="spin-ring"></div>
-      <div class="spin-txt">Looking up medication info...</div>
-    </div>
+  <div class="levels">
+    <span>Reading level:</span>
+    <button class="lv active" id="lv0">Simple</button>
+    <button class="lv" id="lv1">6th grade</button>
+    <button class="lv" id="lv2">standard</button>
+    <button class="lv" id="lv3">clinical</button>
+  </div>
+
+  <div class="error" id="errorBox"></div>
+
+  <div class="spinner" id="spinner">
+    <div class="ring"></div>
+    Looking up medication info...
   </div>
 
   <div id="result">
-    <div class="drug-hero">
-      <div class="hero-left">
-        <div class="hero-name" id="heroName"></div>
-        <div class="hero-condition" id="heroCondition"></div>
+    <div class="drug-header">
+      <div class="drug-name" id="drugName"></div>
+      <div class="tag" id="levelTag"></div>
+    </div>
+    <div class="brand-note" id="brandNote"></div>
+    <div class="caregiver-banner" id="caregiverBanner">&#128106; Caregiver Mode — information is framed for someone caring for a patient</div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('overview')">Overview</button>
+      <button class="tab" onclick="showTab('sideeffects')">Side Effects</button>
+      <button class="tab" onclick="showTab('practical')">Practical</button>
+      <button class="tab" id="injTab" onclick="showTab('injection')" style="display:none">&#128137; How to Inject</button>
+      <button class="tab" onclick="showTab('teachback')">Teach-Back</button>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div class="tab-panel active" id="tab-overview">
+      <div class="grid2">
+        <div class="card cond"><div class="clabel">&#127754; condition</div><div class="cbody" id="condition"></div></div>
+        <div class="card what"><div class="clabel">&#9883; how it works</div><div class="cbody" id="what"></div></div>
       </div>
-      <div class="hero-right">
-        <div class="hero-badge" id="heroBadge"></div>
-        <div class="hero-brand" id="heroBrand" style="display:none">Brand name</div>
-        <div style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);font-size:10px;padding:3px 9px;border-radius:20px" id="heroVerified"></div>
+      <div class="card how"><div class="clabel">&#9200; how to take it</div><div class="cbody" id="how"></div></div>
+      <div class="card cost"><div class="clabel">&#128176; cost &amp; savings</div><div class="cbody" id="cost"></div></div>
+    </div>
+
+    <!-- SIDE EFFECTS TAB -->
+    <div class="tab-panel" id="tab-sideeffects">
+      <div style="display:flex;gap:12px;font-size:12px;color:var(--muted);margin-bottom:12px;flex-wrap:wrap;">
+        <span><span class="sev-green"></span>mild — monitor</span>
+        <span><span class="sev-yellow"></span>moderate — contact doctor</span>
+        <span><span class="sev-red"></span>serious — seek care</span>
+      </div>
+      <div class="card side"><div class="clabel">common side effects</div><div class="cbody" id="side"></div></div>
+      <div class="card warn"><div class="clabel">&#128680; warning signs — seek medical attention</div><div class="cbody" id="warn"></div></div>
+    </div>
+
+    <!-- PRACTICAL TAB -->
+    <div class="tab-panel" id="tab-practical">
+      <div class="card miss"><div class="clabel">&#8987; missed dose</div><div class="cbody" id="missedDose"></div></div>
+      <div class="card food"><div class="clabel">&#127829; food, alcohol &amp; interactions</div><div class="cbody" id="foodAlcohol"></div></div>
+    </div>
+
+    <!-- INJECTION TAB -->
+    <div class="tab-panel" id="tab-injection">
+      <div class="card inj"><div class="clabel">&#128137; administration guide</div><div class="cbody" id="injection"></div></div>
+    </div>
+
+    <!-- TEACH-BACK TAB -->
+    <div class="tab-panel" id="tab-teachback">
+      <div class="card tb" id="patientTBCard">
+        <div class="clabel">&#127941; patient teach-back questions</div>
+        <div class="cbody"><ol id="teachback"></ol></div>
+      </div>
+      <div class="card tb" id="caregiverTBCard" style="display:none; border-top-color: var(--purple);">
+        <div class="clabel">&#128106; caregiver teach-back questions</div>
+        <div class="cbody"><ol id="caregiverTeachback"></ol></div>
       </div>
     </div>
 
-    <div class="banner banner-teal" id="brandBanner"><span>&#9432;</span><span id="brandBannerText"></span></div>
-    <div class="banner banner-purple" id="caregiverBanner"><span>&#128106;</span><span>Caregiver Mode — information framed for someone caring for a patient</span></div>
-
-    <div class="tab-wrapper">
-      <div class="tabs">
-        <button class="tab on" onclick="showTab('overview')">Overview</button>
-        <button class="tab" onclick="showTab('sideeffects')">Side Effects</button>
-        <button class="tab" onclick="showTab('practical')">Practical</button>
-        <button class="tab" id="injTab" onclick="showTab('injection')" style="display:none">&#128137; Inject</button>
-        <button class="tab" onclick="showTab('teachback')">Teach-Back</button>
-        <button class="tab" onclick="showTab('savings')">&#128176; Savings</button>
-        <button class="tab" id="cgTab" onclick="showTab('caregiver')" style="display:none">&#128106; Caregiver</button>
-      </div>
-
-      <div class="tab-body">
-        <!-- OVERVIEW -->
-        <div class="panel on" id="panel-overview">
-          <div class="grid2" style="margin-bottom:12px">
-            <div class="ic bl"><div class="ic-label">&#127754; condition</div><div class="ic-body" id="condition"></div></div>
-            <div class="ic tl"><div class="ic-label">&#9883; how it works</div><div class="ic-body" id="what"></div></div>
-          </div>
-          <div class="ic tl" style="margin-bottom:12px"><div class="ic-label">&#9200; how to take it</div><div class="ic-body" id="how"></div></div>
-          <div class="ic gn"><div class="ic-label">&#128176; cost &amp; savings</div><div class="ic-body" id="cost"></div></div>
-        </div>
-
-        <!-- SIDE EFFECTS -->
-        <div class="panel" id="panel-sideeffects">
-          <div class="sev-legend">
-            <div class="sev-item"><div class="dot dg"></div>Mild — monitor</div>
-            <div class="sev-item"><div class="dot dy"></div>Moderate — contact doctor</div>
-            <div class="sev-item"><div class="dot dr"></div>Serious — seek care now</div>
-          </div>
-          <div class="ic am" style="margin-bottom:12px"><div class="ic-label">&#9888; common side effects</div><div class="ic-body" id="side"></div></div>
-          <div class="ic rd"><div class="ic-label">&#128680; warning signs — seek medical attention</div><div class="ic-body" id="warn"></div></div>
-        </div>
-
-        <!-- PRACTICAL -->
-        <div class="panel" id="panel-practical">
-          <div class="ic am" style="margin-bottom:12px"><div class="ic-label">&#8987; missed dose</div><div class="ic-body" id="missedDose"></div></div>
-          <div class="ic am"><div class="ic-label">&#127829; food, alcohol &amp; interactions</div><div class="ic-body" id="foodAlcohol"></div></div>
-        </div>
-
-        <!-- INJECTION -->
-        <div class="panel" id="panel-injection">
-          <div id="inj-visual" style="display:none">
-            <div style="margin-bottom:1rem">
-              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);margin-bottom:4px">Administration type</div>
-              <div id="injType" style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--purple-bg);border:1px solid var(--purple-b);border-radius:20px;font-size:13px;font-weight:600;color:var(--purple)"></div>
-            </div>
-            <div id="injSiteCard" style="display:none;margin-bottom:1rem">
-              <div class="ic bl">
-                <div class="ic-label">&#127994; injection sites</div>
-                <div class="ic-body" id="injSite"></div>
-              </div>
-            </div>
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);margin-bottom:10px">Step-by-step instructions</div>
-            <div id="injSteps"></div>
-          </div>
-          <div class="ic pu" id="inj-fallback"><div class="ic-label">&#128137; administration guide</div><div class="ic-body" id="injection"></div></div>
-        </div>
-
-        <!-- TEACH-BACK -->
-        <div class="panel" id="panel-teachback">
-          <div class="ic pu" style="margin-bottom:12px"><div class="ic-label">&#127941; patient teach-back</div><div class="ic-body"><ol id="teachback" style="padding-left:1.2rem"></ol></div></div>
-          <div class="ic" style="border-left:3px solid var(--purple);display:none" id="cgTBCard"><div class="ic-label">&#128106; caregiver teach-back</div><div class="ic-body"><ol id="cgTeachback" style="padding-left:1.2rem"></ol></div></div>
-        </div>
-
-        <!-- SAVINGS -->
-        <div class="panel" id="panel-savings">
-          <div style="background:var(--green-bg);border:1px solid var(--green-b);border-radius:var(--r);padding:12px 16px;font-size:13px;color:var(--green);margin-bottom:1rem;line-height:1.6">
-            &#128161; Financial assistance is available for most medications. Programs listed here are drug-specific where possible, plus broad resources that help anyone.
-          </div>
-          <div class="ic gn" style="margin-bottom:12px">
-            <div class="ic-label">&#128176; cost &amp; generic availability</div>
-            <div class="ic-body" id="costFull"></div>
-          </div>
-          <div class="ic tl" style="margin-bottom:12px">
-            <div class="ic-label">&#127891; assistance programs for this medication</div>
-            <div class="ic-body" id="financialResources"></div>
-          </div>
-          <div class="ic bl">
-            <div class="ic-label">&#127758; broad resources — always available</div>
-            <div class="ic-body">
-              <ul style="padding-left:1.1rem">
-                <li style="margin-bottom:6px"><strong>GoodRx</strong> — goodrx.com — free coupons at most pharmacies, often 80%+ off</li>
-                <li style="margin-bottom:6px"><strong>NeedyMeds</strong> — needymeds.org — database of patient assistance programs by drug</li>
-                <li style="margin-bottom:6px"><strong>RxAssist</strong> — rxassist.org — manufacturer PAP directory with eligibility guides</li>
-                <li style="margin-bottom:6px"><strong>Partnership for Prescription Assistance</strong> — pparx.org — connects to 475+ assistance programs</li>
-                <li style="margin-bottom:6px"><strong>State Pharmaceutical Assistance Programs</strong> — many states offer help for seniors and low-income patients; search "[your state] SPAP"</li>
-                <li style="margin-bottom:6px"><strong>Medicare Extra Help</strong> — ssa.gov/extrahelp — subsidizes Part D costs for qualifying Medicare patients</li>
-                <li style="margin-bottom:6px"><strong>Community Health Centers</strong> — findahealthcenter.hrsa.gov — sliding scale fees, 340B drug pricing</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- CAREGIVER -->
-        <div class="panel" id="panel-caregiver">
-          <div class="ic pu-bg" style="margin-bottom:12px"><div class="ic-label">&#128106; caregiver overview</div><div class="ic-body" id="cgTips"></div></div>
-          <div class="grid2" style="margin-bottom:12px">
-            <div class="ic bl"><div class="ic-label">&#128203; what to monitor</div><div class="ic-body" id="cgMonitoring"></div></div>
-            <div class="ic tl"><div class="ic-label">&#9883; helping with administration</div><div class="ic-body" id="cgAdmin"></div></div>
-          </div>
-          <div class="ic rd" style="margin-bottom:12px"><div class="ic-label">&#128680; when to call a doctor or 911</div><div class="ic-body" id="cgWatchFor"></div></div>
-          <div class="ic" style="border-left:3px solid var(--purple)"><div class="ic-label">&#127941; caregiver teach-back</div><div class="ic-body"><ol id="cgTeachback2" style="padding-left:1.2rem"></ol></div></div>
-        </div>
-      </div>
-
-      <div style="padding:10px 1.5rem;background:var(--g50);border-top:1px solid var(--g200);font-size:11px;color:var(--g400);line-height:1.6">
-        &#9432; AI-generated from clinical sources. Information reflects current prescribing guidelines but may not capture recent label changes. Always verify with your pharmacist, prescribing information, Lexicomp, or Micromedex. Last checked: <span id="lastChecked"></span>
-      </div>
-      <div class="action-bar">
-        <button class="act-btn" id="copyBtn">&#10232; Copy Notes</button>
-        <button class="act-btn" onclick="window.print()">&#9113; Print</button>
-        <button class="act-btn" id="saveBtn">&#43; Save to My Meds</button>
-        <button class="act-btn" id="shareBtn" onclick="shareLink()">&#128279; Share</button>
-        <button class="act-btn" onclick="clearAll()">&#8635; New Search</button>
-      </div>
+    <div class="actions">
+      <button class="sec" id="copyBtn">&#10232; Copy Notes</button>
+      <button class="sec" onclick="window.print()">&#9113; Print</button>
+      <button class="sec" onclick="clearAll()">&#8635; New Drug</button>
     </div>
   </div>
-</main>
 
-<footer>
-  AI-generated content. Always verify with Lexicomp, Micromedex, or prescribing information.
-  Not a substitute for professional clinical judgment. Built by Kathryn Bowman, PharmD Candidate — University of Kentucky College of Pharmacy.
-</footer>
+  <footer>
+    AI-generated content. Always verify with Lexicomp, Micromedex, or prescribing information.
+    Not a substitute for professional clinical judgment. For use as a counseling aid only.
+  </footer>
+</div>
 
 <script>
-var currentLevel='simple and clear language - avoid medical jargon, explain technical words in plain terms, use short sentences, assume no medical background';
-var caregiverMode=false,largeText=false,spanishMode=false;
-var lastResult={},englishResult={},currentDrug='';
+var currentLevel = 'simple and clear language — avoid medical jargon, explain any necessary technical words in plain terms, use short sentences, assume no medical background';
+var caregiverMode = false;
+var largeText = false;
+var lastResult = {};
+var currentTab = 'overview';
 
-var levels=[
-  {id:'lv0',val:'simple and clear language - avoid medical jargon, explain technical words in plain terms, use short sentences, assume no medical background',label:'Simple'},
-  {id:'lv1',val:'standard adult reading level',label:'Standard'},
-  {id:'lv2',val:'clinical professional level with medical terminology',label:'Clinical'}
+// level buttons
+var levels = [
+  {id:'lv0', val:'simple and clear language — avoid medical jargon, explain any necessary technical words in plain terms, use short sentences, assume no medical background'},
+  {id:'lv1', val:'6th grade reading level'},
+  {id:'lv2', val:'standard adult reading level'},
+  {id:'lv3', val:'clinical professional level with medical terminology'}
 ];
+for (var i = 0; i < levels.length; i++) {
+  (function(lv) {
+    document.getElementById(lv.id).onclick = function() {
+      var btns = document.querySelectorAll('.lv');
+      for (var j = 0; j < btns.length; j++) btns[j].classList.remove('active');
+      this.classList.add('active');
+      currentLevel = lv.val;
+    };
+  })(levels[i]);
+}
 
-levels.forEach(function(lv){
-  document.getElementById(lv.id).onclick=function(){
-    document.querySelectorAll('.pill').forEach(function(b){b.classList.remove('on')});
-    this.classList.add('on');
-    currentLevel=lv.val;
-  };
-});
-
-document.getElementById('btnLarge').onclick=function(){
-  largeText=!largeText;
-  document.body.classList.toggle('large',largeText);
-  this.classList.toggle('on-blue',largeText);
-  this.innerHTML=largeText?'Large Text: ON':'Large Text';
+document.getElementById('btnLarge').onclick = function() {
+  largeText = !largeText;
+  document.body.classList.toggle('large', largeText);
+  this.classList.toggle('active', largeText);
 };
 
-document.getElementById('btnCaregiver').onclick=function(){
-  caregiverMode=!caregiverMode;
-  this.classList.toggle('on-purple',caregiverMode);
-  document.getElementById('caregiverBanner').style.display=caregiverMode?'flex':'none';
-  document.getElementById('cgTBCard').style.display=caregiverMode&&lastResult.caregiverTeachback?'block':'none';
-  var cgTab=document.getElementById('cgTab');
-  cgTab.style.display=caregiverMode?'block':'none';
-  if(caregiverMode&&lastResult.caregiverTips) showTab('caregiver');
-  else if(!caregiverMode) showTab('overview');
+document.getElementById('btnCaregiver').onclick = function() {
+  caregiverMode = !caregiverMode;
+  this.classList.toggle('active', caregiverMode);
+  var banner = document.getElementById('caregiverBanner');
+  banner.style.display = caregiverMode ? 'block' : 'none';
+  var ctb = document.getElementById('caregiverTBCard');
+  ctb.style.display = caregiverMode ? 'block' : 'none';
 };
 
-document.getElementById('btnSpanish').onclick=function(){
-  spanishMode=!spanishMode;
-  this.classList.toggle('on-teal',spanishMode);
-  this.innerHTML=spanishMode?'Español On':'Español';
-  if(spanishMode&&englishResult.drugName) translateToSpanish();
-  else if(!spanishMode&&englishResult.drugName){lastResult=englishResult;populateResult(lastResult);}
+document.getElementById('goBtn').onclick = generateCounseling;
+document.getElementById('copyBtn').onclick = copyNotes;
+document.getElementById('drugInput').onkeydown = function(e) {
+  if (e.key === 'Enter') generateCounseling();
 };
 
-document.getElementById('goBtn').onclick=generateCounseling;
-document.getElementById('copyBtn').onclick=copyNotes;
-document.getElementById('saveBtn').onclick=saveToMyMeds;
+function showTab(name) {
+  var panels = document.querySelectorAll('.tab-panel');
+  for (var i = 0; i < panels.length; i++) panels[i].classList.remove('active');
+  var tabs = document.querySelectorAll('.tab');
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  currentTab = name;
+  var allTabs = document.querySelectorAll('.tab');
+  for (var i = 0; i < allTabs.length; i++) {
+    if (allTabs[i].getAttribute('onclick') === "showTab('" + name + "')") {
+      allTabs[i].classList.add('active');
+    }
+  }
+}
 
-function showTab(name){
-  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on')});
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on')});
-  var panel=document.getElementById('panel-'+name);
-  if(panel) panel.classList.add('on');
-  document.querySelectorAll('.tab').forEach(function(t){
-    if(t.getAttribute('onclick')==="showTab('"+name+"')") t.classList.add('on');
+function showError(msg) {
+  var el = document.getElementById('errorBox');
+  el.textContent = msg;
+  el.style.display = 'block';
+  document.getElementById('spinner').style.display = 'none';
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('goBtn').disabled = false;
+}
+
+function toBullets(val) {
+  if (!val) return '';
+  var s = Array.isArray(val) ? val.join('\n') : String(val);
+  var lines = s.split('\n');
+  var cleaned = [];
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].replace(/^[-*•]\s*/, '').trim();
+    if (line) cleaned.push(line);
+  }
+  if (cleaned.length > 1) {
+    var html = '<ul>';
+    for (var j = 0; j < cleaned.length; j++) {
+      var item = cleaned[j];
+      item = item.replace(/\[green\]/gi, '<span class="sev-green"></span>');
+      item = item.replace(/\[yellow\]/gi, '<span class="sev-yellow"></span>');
+      item = item.replace(/\[red\]/gi, '<span class="sev-red"></span>');
+      html += '<li>' + item + '</li>';
+    }
+    html += '</ul>';
+    return html;
+  }
+  var out = s.replace(/\[green\]/gi, '<span class="sev-green"></span>');
+  out = out.replace(/\[yellow\]/gi, '<span class="sev-yellow"></span>');
+  out = out.replace(/\[red\]/gi, '<span class="sev-red"></span>');
+  return '<p style="margin:0">' + out + '</p>';
+}
+
+function generateCounseling() {
+  var drug = document.getElementById('drugInput').value.trim();
+  if (!drug) return;
+
+  document.getElementById('errorBox').style.display = 'none';
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('spinner').style.display = 'block';
+  document.getElementById('goBtn').disabled = true;
+
+  fetch('/counsel', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ drug: drug, level: currentLevel })
+  })
+  .then(function(resp) { return resp.json(); })
+  .then(function(data) {
+    if (data.error) { showError(data.error); return; }
+    lastResult = data;
+
+    document.getElementById('drugName').textContent = data.drugName || drug;
+    document.getElementById('levelTag').textContent = currentLevel.split(',')[0];
+
+    var bn = document.getElementById('brandNote');
+    if (data.isBrand && data.brandNote) {
+      bn.textContent = data.brandNote;
+      bn.style.display = 'block';
+    } else {
+      bn.style.display = 'none';
+    }
+
+    document.getElementById('condition').innerHTML = toBullets(data.condition);
+    document.getElementById('what').innerHTML = toBullets(data.what);
+    document.getElementById('how').innerHTML = toBullets(data.how);
+    document.getElementById('cost').innerHTML = toBullets(data.cost);
+    document.getElementById('side').innerHTML = toBullets(data.side);
+    document.getElementById('warn').innerHTML = toBullets(data.warn);
+    document.getElementById('missedDose').innerHTML = toBullets(data.missedDose);
+    document.getElementById('foodAlcohol').innerHTML = toBullets(data.foodAlcohol);
+
+    // injection tab
+    var injTab = document.getElementById('injTab');
+    if (data.injection && data.injection.trim().length > 5) {
+      document.getElementById('injection').innerHTML = toBullets(data.injection);
+      injTab.style.display = 'inline-block';
+    } else {
+      injTab.style.display = 'none';
+    }
+
+    // teach-back
+    var tb = document.getElementById('teachback');
+    var qs = Array.isArray(data.teachback) ? data.teachback : [String(data.teachback)];
+    var tbHtml = '';
+    for (var i = 0; i < qs.length; i++) tbHtml += '<li>' + qs[i] + '</li>';
+    tb.innerHTML = tbHtml;
+
+    var ctb = document.getElementById('caregiverTeachback');
+    var cqs = Array.isArray(data.caregiverTeachback) ? data.caregiverTeachback : [String(data.caregiverTeachback || '')];
+    var ctbHtml = '';
+    for (var i = 0; i < cqs.length; i++) ctbHtml += '<li>' + cqs[i] + '</li>';
+    ctb.innerHTML = ctbHtml;
+
+    document.getElementById('caregiverTBCard').style.display = caregiverMode ? 'block' : 'none';
+    document.getElementById('caregiverBanner').style.display = caregiverMode ? 'block' : 'none';
+
+    showTab('overview');
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('goBtn').disabled = false;
+  })
+  .catch(function(err) {
+    showError('Could not reach the server. (' + err.message + ')');
   });
 }
 
-function showError(msg){
-  var el=document.getElementById('errorBox');
-  el.textContent=msg; el.style.display='block';
-  document.getElementById('spinner').style.display='none';
-  document.getElementById('result').style.display='none';
-  document.getElementById('goBtn').disabled=false;
-}
-
-function toBullets(val){
-  if(!val) return '';
-  var s=Array.isArray(val)?val.join('
-'):String(val);
-  var lines=s.split('
-');
-  var cleaned=[];
-  for(var i=0;i<lines.length;i++){
-    var line=lines[i].replace(/^[-*•]\s*/,'').trim();
-    if(line) cleaned.push(line);
-  }
-  function colorize(t){
-    t=t.replace(/\[green\]/gi,'<span class="sev-green"></span>');
-    t=t.replace(/\[yellow\]/gi,'<span class="sev-yellow"></span>');
-    t=t.replace(/\[red\]/gi,'<span class="sev-red"></span>');
-    return t;
-  }
-  if(cleaned.length>1){
-    return '<ul style="padding-left:1.1rem">'+cleaned.map(function(l){return '<li style="margin-bottom:5px">'+colorize(l)+'</li>';}).join('')+'</ul>';
-  }
-  return '<p style="margin:0">'+colorize(s)+'</p>';
-}
-
-function populateResult(data){
-  var lv=levels.filter(function(l){return l.val===currentLevel})[0];
-  document.getElementById('heroName').textContent=data.drugName||currentDrug;
-  document.getElementById('heroCondition').textContent=data.condition?data.condition.split('.')[0]:'';
-  document.getElementById('heroBadge').textContent=lv?lv.label:'';
-  document.getElementById('heroBrand').style.display=data.isBrand?'block':'none';
-  document.getElementById('lastChecked').textContent=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-  document.getElementById('heroVerified').textContent='Verified '+new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'});
-  var bb=document.getElementById('brandBanner'),bbt=document.getElementById('brandBannerText');
-  if(data.isBrand&&data.brandNote){bbt.textContent=data.brandNote;bb.style.display='flex';}else{bb.style.display='none';}
-  document.getElementById('caregiverBanner').style.display=caregiverMode?'flex':'none';
-  document.getElementById('condition').innerHTML=toBullets(data.condition);
-  document.getElementById('what').innerHTML=toBullets(data.what);
-  document.getElementById('how').innerHTML=toBullets(data.how);
-  document.getElementById('cost').innerHTML=toBullets(data.cost);
-  document.getElementById('costFull').innerHTML=toBullets(data.cost);
-  document.getElementById('financialResources').innerHTML=toBullets(data.financialResources)||'<p style="margin:0;color:var(--g400)">Drug-specific programs not found — see broad resources below.</p>';
-  document.getElementById('side').innerHTML=toBullets(data.side);
-  document.getElementById('warn').innerHTML=toBullets(data.warn);
-  document.getElementById('missedDose').innerHTML=toBullets(data.missedDose);
-  document.getElementById('foodAlcohol').innerHTML=toBullets(data.foodAlcohol);
-  var it=document.getElementById('injTab');
-  if(data.injection&&data.injection.trim().length>5){
-    document.getElementById('injection').innerHTML=toBullets(data.injection);
-    it.style.display='block';
-    var steps=data.injectionSteps;
-    if(typeof steps==='string'&&steps.trim().length>5){
-      steps=steps.split('
-').map(function(s){return s.replace(/^[-*•\d.]+\s*/,'').trim();}).filter(Boolean);
-    }
-    var visual=document.getElementById('inj-visual');
-    var fallback=document.getElementById('inj-fallback');
-    if(steps&&Array.isArray(steps)&&steps.length>0){
-      visual.style.display='block'; fallback.style.display='none';
-      var typeIcons={pen:'&#128394;',autoinjector:'&#128137;',syringe:'&#9889;',iv:'&#128167;',inhaler:'&#128168;',patch:'&#129657;'};
-      var itype=(data.injectionType||'injectable').toLowerCase();
-      document.getElementById('injType').innerHTML=(typeIcons[itype]||'&#128137;')+' '+(data.injectionType||'Injectable');
-      var siteCard=document.getElementById('injSiteCard');
-      if(data.injectionSite&&data.injectionSite.trim().length>2){
-        document.getElementById('injSite').textContent=data.injectionSite;
-        siteCard.style.display='block';
-      } else { siteCard.style.display='none'; }
-      var html='';
-      for(var si=0;si<steps.length;si++){
-        var st=steps[si];
-        var txt=st.replace(/^\d+\.\s*/,'');
-        var isWarn=/(warning|caution|do not|never|danger|emergency|stop|bleed)/i.test(txt);
-        var isTip=/(tip|remember|note|important|make sure|ensure)/i.test(txt);
-        html+='<div class="inj-step"><div class="inj-num">'+(si+1)+'</div><div class="inj-step-body"><div class="inj-step-text">'+txt+'</div>';
-        if(isWarn) html+='<div class="inj-step-warn">&#9888; Use caution with this step</div>';
-        if(isTip&&!isWarn) html+='<div class="inj-step-tip">&#128161; Key step</div>';
-        html+='</div></div>';
-      }
-      document.getElementById('injSteps').innerHTML=html;
-    } else {
-      visual.style.display='none'; fallback.style.display='block';
-    }
-  } else { it.style.display='none'; }
-  var qs=Array.isArray(data.teachback)?data.teachback:[String(data.teachback||'')];
-  document.getElementById('teachback').innerHTML=qs.map(function(q){return '<li style="margin-bottom:6px">'+q+'</li>';}).join('');
-  var cqs=Array.isArray(data.caregiverTeachback)?data.caregiverTeachback:[String(data.caregiverTeachback||'')];
-  var cqHtml=cqs.map(function(q){return '<li style="margin-bottom:6px">'+q+'</li>';}).join('');
-  document.getElementById('cgTeachback').innerHTML=cqHtml;
-  document.getElementById('cgTeachback2').innerHTML=cqHtml;
-  document.getElementById('cgTBCard').style.display=caregiverMode?'block':'none';
-  document.getElementById('cgTips').innerHTML=toBullets(data.caregiverTips);
-  document.getElementById('cgMonitoring').innerHTML=toBullets(data.caregiverMonitoring);
-  document.getElementById('cgAdmin').innerHTML=toBullets(data.caregiverAdmin);
-  document.getElementById('cgWatchFor').innerHTML=toBullets(data.caregiverWatchFor);
-  document.getElementById('cgTab').style.display=caregiverMode?'block':'none';
-}
-
-function generateCounseling(){
-  var drug=document.getElementById('drugInput').value.trim();
-  if(!drug) return;
-  currentDrug=drug;
-  document.getElementById('errorBox').style.display='none';
-  document.getElementById('result').style.display='none';
-  document.getElementById('spinner').style.display='block';
-  document.getElementById('goBtn').disabled=true;
-  document.getElementById('acList').classList.remove('show');
-
-  fetch('/counsel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({drug:drug,level:currentLevel})})
-  .then(function(r){return r.json();})
-  .then(function(data){
-    if(data.error){showError(data.error);return;}
-    lastResult=data; englishResult=data;
-    if(spanishMode){translateToSpanish();return;}
-    populateResult(data);
-    showTab('overview');
-    document.getElementById('spinner').style.display='none';
-    document.getElementById('result').style.display='block';
-    document.getElementById('goBtn').disabled=false;
-    document.getElementById('result').scrollIntoView({behavior:'smooth',block:'nearest'});
-  })
-  .catch(function(err){showError('Could not reach the server. ('+err.message+')');});
-}
-
-function translateToSpanish(){
-  var btn=document.getElementById('btnSpanish');
-  btn.disabled=true; btn.innerHTML='Translating...';
-  fetch('/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:englishResult})})
-  .then(function(r){return r.json();})
-  .then(function(data){
-    if(data.error){alert('Translation error: '+data.error);spanishMode=false;btn.classList.remove('on-teal');}
-    else{lastResult=data;populateResult(data);}
-    btn.disabled=false;
-    btn.innerHTML=spanishMode?'Español On':'Español';
-    document.getElementById('spinner').style.display='none';
-    document.getElementById('result').style.display='block';
-    document.getElementById('goBtn').disabled=false;
-  })
-  .catch(function(err){alert('Translation failed: '+err.message);btn.disabled=false;});
-}
-
-function saveToMyMeds(){
-  if(!currentDrug) return;
-  var meds=JSON.parse(localStorage.getItem('pilltalk_meds')||'[]');
-  var name=lastResult.drugName||currentDrug;
-  var btn=document.getElementById('saveBtn');
-  if(meds.indexOf(name)===-1){meds.push(name);localStorage.setItem('pilltalk_meds',JSON.stringify(meds));btn.textContent='Saved!';}
-  else{btn.textContent='Already saved';}
-  setTimeout(function(){btn.innerHTML='+ Save to My Meds';},2000);
-}
-
-function shareLink(){
-  if(!currentDrug) return;
-  var url=window.location.origin+'/app?drug='+encodeURIComponent(lastResult.drugName||currentDrug);
-  navigator.clipboard.writeText(url);
-  var btn=document.getElementById('shareBtn');
-  btn.textContent='Link copied!';
-  setTimeout(function(){btn.innerHTML='Share';},2000);
-}
-
-function copyNotes(){
-  if(!lastResult.drugName) return;
-  var r=lastResult;
-  var qs=Array.isArray(r.teachback)?r.teachback:[r.teachback];
-  var text='PILL TALK - '+r.drugName+'
-'+(r.brandNote?r.brandNote+'
-':'')+
-    '
-CONDITION
-'+r.condition+'
-
-HOW IT WORKS
-'+r.what+
-    '
-
-HOW TO TAKE IT
-'+r.how+'
-
-MISSED DOSE
-'+r.missedDose+
-    '
-
-FOOD & ALCOHOL
-'+r.foodAlcohol+'
-
-SIDE EFFECTS
-'+r.side+
-    '
-
-WATCH FOR
-'+r.warn+'
-
-COST & SAVINGS
-'+r.cost+
-    '
-
-TEACH-BACK
-'+qs.map(function(q,i){return (i+1)+'. '+q;}).join('
-')+
-    '
-
----
-Generated by Pill Talk - Always verify with clinical references';
+function copyNotes() {
+  if (!lastResult.drugName) return;
+  var r = lastResult;
+  var qs = Array.isArray(r.teachback) ? r.teachback : [r.teachback];
+  var qtext = '';
+  for (var i = 0; i < qs.length; i++) qtext += (i+1) + '. ' + qs[i] + '\n';
+  var text = 'PILL TALK — ' + r.drugName + '\n' +
+    (r.brandNote ? r.brandNote + '\n' : '') +
+    '\nCONDITION\n' + r.condition +
+    '\n\nHOW IT WORKS\n' + r.what +
+    '\n\nHOW TO TAKE IT\n' + r.how +
+    '\n\nMISSED DOSE\n' + r.missedDose +
+    '\n\nFOOD & ALCOHOL\n' + r.foodAlcohol +
+    '\n\nCOMMON SIDE EFFECTS\n' + r.side +
+    '\n\nWATCH FOR\n' + r.warn +
+    '\n\nCOST & SAVINGS\n' + r.cost +
+    '\n\nTEACH-BACK QUESTIONS\n' + qtext +
+    '\n---\nGenerated by Pill Talk · Always verify with clinical references';
   navigator.clipboard.writeText(text);
 }
 
-function clearAll(){
-  document.getElementById('drugInput').value='';
-  document.getElementById('result').style.display='none';
-  document.getElementById('errorBox').style.display='none';
-  currentDrug=''; lastResult={}; englishResult={};
+function clearAll() {
+  document.getElementById('drugInput').value = '';
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('errorBox').style.display = 'none';
   document.getElementById('drugInput').focus();
 }
-
-// === AUTOCOMPLETE ===
-var DRUGS=[["acetaminophen","Tylenol"],["ibuprofen","Advil","Motrin"],["aspirin","Bayer"],["metformin","Glucophage"],["atorvastatin","Lipitor"],["lisinopril","Prinivil","Zestril"],["amlodipine","Norvasc"],["metoprolol","Lopressor","Toprol"],["omeprazole","Prilosec"],["simvastatin","Zocor"],["losartan","Cozaar"],["albuterol","ProAir","Ventolin"],["gabapentin","Neurontin"],["hydrochlorothiazide","Microzide"],["sertraline","Zoloft"],["levothyroxine","Synthroid","Levoxyl"],["amoxicillin","Amoxil"],["azithromycin","Zithromax"],["fluoxetine","Prozac"],["escitalopram","Lexapro"],["bupropion","Wellbutrin"],["duloxetine","Cymbalta"],["venlafaxine","Effexor"],["citalopram","Celexa"],["alprazolam","Xanax"],["clonazepam","Klonopin"],["lorazepam","Ativan"],["zolpidem","Ambien"],["trazodone","Desyrel"],["quetiapine","Seroquel"],["aripiprazole","Abilify"],["risperidone","Risperdal"],["lamotrigine","Lamictal"],["levetiracetam","Keppra"],["atenolol","Tenormin"],["carvedilol","Coreg"],["furosemide","Lasix"],["spironolactone","Aldactone"],["ramipril","Altace"],["valsartan","Diovan"],["rosuvastatin","Crestor"],["warfarin","Coumadin"],["apixaban","Eliquis"],["rivaroxaban","Xarelto"],["clopidogrel","Plavix"],["semaglutide","Ozempic","Wegovy","Rybelsus"],["liraglutide","Victoza","Saxenda"],["dulaglutide","Trulicity"],["sitagliptin","Januvia"],["empagliflozin","Jardiance"],["dapagliflozin","Farxiga"],["glipizide","Glucotrol"],["insulin glargine","Lantus","Toujeo"],["insulin lispro","Humalog"],["insulin aspart","NovoLog"],["prednisone","Deltasone"],["methylprednisolone","Medrol"],["budesonide","Pulmicort"],["fluticasone","Flonase","Flovent"],["montelukast","Singulair"],["tiotropium","Spiriva"],["adalimumab","Humira"],["etanercept","Enbrel"],["infliximab","Remicade"],["methotrexate","Rheumatrex"],["hydroxychloroquine","Plaquenil"],["alendronate","Fosamax"],["levothyroxine","Synthroid"],["donepezil","Aricept"],["memantine","Namenda"],["ondansetron","Zofran"],["pantoprazole","Protonix"],["esomeprazole","Nexium"],["famotidine","Pepcid"],["cetirizine","Zyrtec"],["loratadine","Claritin"],["fexofenadine","Allegra"],["diphenhydramine","Benadryl"],["doxycycline","Vibramycin"],["ciprofloxacin","Cipro"],["levofloxacin","Levaquin"],["trimethoprim","Bactrim"],["nitrofurantoin","Macrobid"],["cephalexin","Keflex"],["clindamycin","Cleocin"],["metronidazole","Flagyl"],["fluconazole","Diflucan"],["acyclovir","Zovirax"],["valacyclovir","Valtrex"],["oseltamivir","Tamiflu"],["naltrexone","Vivitrol"],["buprenorphine","Suboxone"],["oxycodone","OxyContin","Percocet"],["hydrocodone","Vicodin","Norco"],["tramadol","Ultram"],["cyclobenzaprine","Flexeril"],["baclofen","Lioresal"],["methylphenidate","Ritalin","Concerta"],["amphetamine","Adderall","Vyvanse"],["modafinil","Provigil"],["colchicine","Colcrys"],["allopurinol","Zyloprim"],["sildenafil","Viagra","Revatio"],["tadalafil","Cialis"],["finasteride","Proscar","Propecia"],["tamsulosin","Flomax"],["testosterone","AndroGel"],["estradiol","Estrace"],["progesterone","Prometrium"]];
-
-var ENTRIES=[];
-var _seen={};
-DRUGS.forEach(function(g){g.forEach(function(n){if(!_seen[n.toLowerCase()]){_seen[n.toLowerCase()]=1;ENTRIES.push({name:n,group:g});}});});
-
-function fuzzyScore(q,t){
-  q=q.toLowerCase();t=t.toLowerCase();
-  if(t.startsWith(q))return 100;
-  if(t.includes(q))return 80;
-  var qi=0,sc=0;
-  for(var ti=0;ti<t.length&&qi<q.length;ti++){if(t[ti]===q[qi]){sc+=(qi===ti?2:1);qi++;}}
-  if(qi<q.length)return 0;
-  return Math.round(sc/q.length*40);
-}
-
-function showSuggestions(q){
-  var list=document.getElementById('acList');
-  if(!q||q.length<2){list.style.display='none';return;}
-  var res=[];
-  ENTRIES.forEach(function(e){var s=fuzzyScore(q,e.name);if(s>20)res.push({e:e,s:s});});
-  res.sort(function(a,b){return b.s-a.s;});
-  res=res.slice(0,8);
-  if(!res.length){list.style.display='none';return;}
-  while(list.firstChild)list.removeChild(list.firstChild);
-  res.forEach(function(r){
-    var e=r.e;
-    var others=e.group.filter(function(n){return n!==e.name;});
-    var d=document.createElement('div');
-    d.className='ac-item';
-    var nameEl=document.createElement('span');
-    nameEl.className='ac-item-name';
-    nameEl.textContent=e.name;
-    d.appendChild(nameEl);
-    if(others.length){
-      var altEl=document.createElement('span');
-      altEl.className='ac-item-type';
-      altEl.textContent='('+others.slice(0,2).join(' / ')+')';
-      d.appendChild(altEl);
-    }
-    d.addEventListener('mousedown',function(ev){
-      ev.preventDefault();
-      document.getElementById('drugInput').value=e.name;
-      list.style.display='none';
-      generateCounseling();
-    });
-    list.appendChild(d);
-  });
-  list.style.display='block';
-}
-
-function hideSuggestions(){
-  var list=document.getElementById('acList');
-  if(list)list.style.display='none';
-}
-
-var _drugInput=document.getElementById('drugInput');
-_drugInput.addEventListener('input',function(){showSuggestions(this.value.trim());});
-_drugInput.addEventListener('keydown',function(e){
-  if(e.key==='Enter'){hideSuggestions();generateCounseling();}
-  if(e.key==='Escape')hideSuggestions();
-});
-_drugInput.addEventListener('blur',function(){setTimeout(hideSuggestions,150);});
-
-// PWA install
-var deferredPrompt;
-window.addEventListener('beforeinstallprompt',function(e){
-  e.preventDefault(); deferredPrompt=e;
-  if(!localStorage.getItem('pt_install_dismissed')){
-    document.getElementById('installBanner').style.display='flex';
-  }
-});
-document.getElementById('installBtn').addEventListener('click',function(){
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(function(){
-      deferredPrompt=null;
-      document.getElementById('installBanner').style.display='none';
-      localStorage.setItem('pt_install_dismissed','1');
-    });
-  } else {
-    alert('To install: tap the Share button in Safari, then tap "Add to Home Screen".');
-    document.getElementById('installBanner').style.display='none';
-    localStorage.setItem('pt_install_dismissed','1');
-  }
-});
-
-var params=new URLSearchParams(window.location.search);
-var dp=params.get('drug');
-if(dp){document.getElementById('drugInput').value=dp;generateCounseling();}
 </script>
 </body>
 </html>
