@@ -216,6 +216,7 @@ footer { max-width: 760px; margin: 0 auto; padding: 0 1.5rem 2rem; font-size: 11
         <button class="tab" onclick="showTab('practical')">Practical</button>
         <button class="tab" id="injTab" onclick="showTab('injection')" style="display:none;">&#128137; How to Inject</button>
         <button class="tab" onclick="showTab('teachback')">Teach-Back</button>
+        <button class="tab" id="caregiverTab" onclick="showTab('caregiver')" style="display:none;">&#128106; Caregiver</button>
       </div>
 
       <div class="tab-body">
@@ -284,9 +285,37 @@ footer { max-width: 760px; margin: 0 auto; padding: 0 1.5rem 2rem; font-size: 11
             <div class="card-label">&#127941; patient teach-back questions</div>
             <div class="card-body"><ol id="teachback"></ol></div>
           </div>
-          <div class="info-card" id="caregiverTBCard" style="display:none; border-left: 3px solid var(--purple);">
+          <div id="caregiverTBCard" style="display:none;">
+            <div class="info-card" style="border-left:3px solid var(--purple); margin-bottom:12px;">
+              <div class="card-label">&#128106; caregiver teach-back questions</div>
+              <div class="card-body"><ol id="caregiverTeachback"></ol></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAREGIVER -->
+        <div class="tab-panel" id="tab-caregiver">
+          <div class="info-card" style="border-left:3px solid var(--purple); margin-bottom:12px; background: var(--purple-light);">
+            <div class="card-label">&#128106; caregiver overview</div>
+            <div class="card-body" id="caregiverTips"></div>
+          </div>
+          <div class="grid2">
+            <div class="info-card accent-blue">
+              <div class="card-label">&#128203; what to monitor</div>
+              <div class="card-body" id="caregiverMonitoring"></div>
+            </div>
+            <div class="info-card accent-teal">
+              <div class="card-label">&#9883; helping with administration</div>
+              <div class="card-body" id="caregiverAdmin"></div>
+            </div>
+          </div>
+          <div class="info-card accent-red" style="margin-bottom:12px;">
+            <div class="card-label">&#128680; when to call a doctor or 911</div>
+            <div class="card-body" id="caregiverWatchFor"></div>
+          </div>
+          <div class="info-card" style="border-left:3px solid var(--purple);">
             <div class="card-label">&#128106; caregiver teach-back questions</div>
-            <div class="card-body"><ol id="caregiverTeachback"></ol></div>
+            <div class="card-body"><ol id="caregiverTeachback2"></ol></div>
           </div>
         </div>
       </div>
@@ -342,6 +371,10 @@ document.getElementById('btnCaregiver').onclick = function() {
   this.classList.toggle('active', caregiverMode);
   document.getElementById('caregiverBanner').style.display = caregiverMode ? 'flex' : 'none';
   document.getElementById('caregiverTBCard').style.display = caregiverMode && lastResult.caregiverTeachback ? 'block' : 'none';
+  var cgTab = document.getElementById('caregiverTab');
+  cgTab.style.display = caregiverMode ? 'block' : 'none';
+  if (caregiverMode && lastResult.caregiverTeachback) { showTab('caregiver'); }
+  if (!caregiverMode) { showTab('overview'); }
 };
 
 document.getElementById('goBtn').onclick = generateCounseling;
@@ -450,10 +483,16 @@ function generateCounseling() {
     var qs = Array.isArray(data.teachback) ? data.teachback : [String(data.teachback)];
     tb.innerHTML = qs.map(function(q){ return '<li>' + q + '</li>'; }).join('');
 
-    var ctb = document.getElementById('caregiverTeachback');
     var cqs = Array.isArray(data.caregiverTeachback) ? data.caregiverTeachback : [String(data.caregiverTeachback || '')];
-    ctb.innerHTML = cqs.map(function(q){ return '<li>' + q + '</li>'; }).join('');
+    var cqHtml = cqs.map(function(q){ return '<li>' + q + '</li>'; }).join('');
+    document.getElementById('caregiverTeachback').innerHTML = cqHtml;
+    document.getElementById('caregiverTeachback2').innerHTML = cqHtml;
     document.getElementById('caregiverTBCard').style.display = caregiverMode ? 'block' : 'none';
+    document.getElementById('caregiverTips').innerHTML = toBullets(data.caregiverTips);
+    document.getElementById('caregiverMonitoring').innerHTML = toBullets(data.caregiverMonitoring);
+    document.getElementById('caregiverAdmin').innerHTML = toBullets(data.caregiverAdmin);
+    document.getElementById('caregiverWatchFor').innerHTML = toBullets(data.caregiverWatchFor);
+    document.getElementById('caregiverTab').style.display = caregiverMode ? 'block' : 'none';
 
     showTab('overview');
     document.getElementById('spinner').style.display = 'none';
