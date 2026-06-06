@@ -28,6 +28,11 @@ def symptoms():
 def tracker():
     return send_from_directory("templates", "tracker.html")
 
+@app.route("/app.js")
+def appjs():
+	return send_from_directory("templates", "app.js",
+mimetype="application/javascript")
+
 @app.route("/icon.svg")
 def icon():
     return send_from_directory("templates", "icon.svg", mimetype="image/svg+xml")
