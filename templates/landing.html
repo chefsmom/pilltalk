@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pill Talk — Understand Your Medications</title>
+<meta name="description" content="Plain-language medication education for everyone. Built by a pharmacist. Free forever." />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --teal: #0d7a5f;
+  --teal-dark: #0a5c47;
+  --teal-light: #e8f5f1;
+  --text: #0f0e0d;
+  --muted: #6b6860;
+  --border: #e4e2dc;
+  --bg: #fafaf8;
+  --surface: #ffffff;
+}
+html { scroll-behavior: smooth; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+/* NAV */
+nav { position: sticky; top: 0; z-index: 100; background: rgba(250,250,248,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+.nav-logo { font-size: 18px; font-weight: 700; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+.nav-links { display: flex; gap: 8px; align-items: center; }
+.nav-link { padding: 7px 16px; font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none; border-radius: 8px; }
+.nav-link:hover { color: var(--text); background: var(--border); }
+.nav-cta { padding: 8px 18px; background: var(--teal); color: #fff; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; }
+.nav-cta:hover { background: var(--teal-dark); }
+
+/* HERO */
+.hero { max-width: 900px; margin: 0 auto; padding: 7rem 2rem 5rem; text-align: center; }
+.hero-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; background: var(--teal-light); color: var(--teal); border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 1.5rem; border: 1px solid #b8e0d6; }
+.hero h1 { font-size: clamp(2.2rem, 6vw, 4rem); font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 1.25rem; }
+.hero h1 span { color: var(--teal); }
+.hero-sub { font-size: clamp(1rem, 2.5vw, 1.25rem); color: var(--muted); max-width: 560px; margin: 0 auto 2.5rem; line-height: 1.7; }
+.hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+.btn-primary { padding: 14px 28px; background: var(--teal); color: #fff; border-radius: 10px; font-size: 16px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+.btn-primary:hover { background: var(--teal-dark); }
+.btn-secondary { padding: 14px 28px; background: var(--surface); color: var(--text); border: 1.5px solid var(--border); border-radius: 10px; font-size: 16px; font-weight: 600; text-decoration: none; }
+.btn-secondary:hover { border-color: var(--teal); color: var(--teal); }
+.hero-note { font-size: 13px; color: var(--muted); }
+
+/* STATS */
+.stats { background: var(--text); color: #fff; padding: 3rem 2rem; }
+.stats-inner { max-width: 800px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; text-align: center; }
+@media(max-width:600px){ .stats-inner { grid-template-columns: 1fr; gap: 1.5rem; } }
+.stat-num { font-size: 2.5rem; font-weight: 800; color: #5eead4; line-height: 1; margin-bottom: 6px; }
+.stat-label { font-size: 14px; color: #a8a29e; }
+
+/* FEATURES */
+.features { max-width: 900px; margin: 0 auto; padding: 6rem 2rem; }
+.section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--teal); margin-bottom: 12px; }
+.section-title { font-size: clamp(1.6rem, 4vw, 2.5rem); font-weight: 800; letter-spacing: -0.5px; margin-bottom: 1rem; line-height: 1.2; }
+.section-sub { font-size: 16px; color: var(--muted); margin-bottom: 3rem; max-width: 560px; }
+.feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.feature-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; padding: 24px; }
+.feature-card:hover { border-color: var(--teal); }
+.feature-icon { font-size: 28px; margin-bottom: 12px; }
+.feature-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.feature-desc { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+/* HOW IT WORKS */
+.how { background: var(--teal-light); padding: 6rem 2rem; border-top: 1px solid #b8e0d6; border-bottom: 1px solid #b8e0d6; }
+.how-inner { max-width: 800px; margin: 0 auto; }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 3rem; }
+@media(max-width:600px){ .steps { grid-template-columns: 1fr; } }
+.step { text-align: center; }
+.step-num { width: 48px; height: 48px; background: var(--teal); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; margin: 0 auto 16px; }
+.step-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.step-desc { font-size: 14px; color: var(--muted); }
+
+/* STORY */
+.story { max-width: 700px; margin: 0 auto; padding: 6rem 2rem; }
+.story-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 16px; padding: 2.5rem; position: relative; }
+.story-card::before { content: '\201C'; font-size: 80px; color: var(--teal-light); position: absolute; top: 10px; left: 24px; line-height: 1; font-family: Georgia, serif; }
+.story-text { font-size: 18px; line-height: 1.8; color: var(--text); margin-bottom: 1.5rem; padding-top: 1.5rem; }
+.story-author { display: flex; align-items: center; gap: 14px; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.story-avatar { width: 48px; height: 48px; background: var(--teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; font-weight: 700; flex-shrink: 0; }
+.story-name { font-size: 15px; font-weight: 700; }
+.story-title { font-size: 13px; color: var(--muted); }
+
+/* CTA */
+.cta { background: var(--text); color: #fff; padding: 6rem 2rem; text-align: center; }
+.cta h2 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.5px; margin-bottom: 1rem; }
+.cta p { font-size: 16px; color: #a8a29e; margin-bottom: 2.5rem; }
+.cta .btn-primary { background: var(--teal); font-size: 18px; padding: 16px 36px; }
+.cta .btn-primary:hover { background: var(--teal-dark); }
+.cta-note { margin-top: 1rem; font-size: 13px; color: #78716c; }
+
+/* FOOTER */
+footer { padding: 2rem; text-align: center; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); }
+
+/* DEMO PREVIEW */
+.preview { max-width: 900px; margin: 0 auto; padding: 0 2rem 6rem; }
+.preview-window { background: var(--surface); border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
+.preview-bar { background: #f5f4f1; border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; align-items: center; gap: 8px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.dot.r { background: #ff5f57; }
+.dot.y { background: #febc2e; }
+.dot.g { background: #28c840; }
+.preview-url { flex: 1; background: var(--bg); border-radius: 6px; padding: 4px 12px; font-size: 12px; color: var(--muted); margin-left: 8px; }
+.preview-body { padding: 2rem; }
+.preview-drug { font-size: 22px; font-weight: 700; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border); }
+.preview-tabs { display: flex; gap: 4px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.ptab { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--muted); background: var(--bg); }
+.ptab.active { background: var(--teal-light); color: var(--teal); }
+.preview-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:500px){ .preview-cards { grid-template-columns: 1fr; } }
+.pcard { border: 1.5px solid var(--border); border-radius: 10px; padding: 14px; }
+.pcard.t1 { border-top: 3px solid var(--teal); }
+.pcard.t2 { border-top: 3px solid #1a56a0; }
+.pcard.t3 { border-top: 3px solid #b35c00; }
+.pcard.t4 { border-top: 3px solid #c0392b; }
+.pcard-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #aaa; margin-bottom: 6px; }
+.pcard-body { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.sev { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+.sg { background: #22c55e; } .sy { background: #f59e0b; } .sr { background: #ef4444; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/landing">&#128138; Pill Talk</a>
+  <div class="nav-links">
+    <a class="nav-link" href="#features">Features</a>
+    <a class="nav-link" href="#how">How it works</a>
+    <a class="nav-link" href="#story">Our story</a>
+    <a class="nav-cta" href="/">Try it free &rarr;</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">&#9883; Built by a PharmD &middot; Free forever</div>
+  <h1>Understand your meds.<br><span>Finally.</span></h1>
+  <p class="hero-sub">Pill Talk translates medical jargon into plain language anyone can understand — from a 5-year-old to a clinical professional. No insurance required. No appointment needed.</p>
+  <div class="hero-actions">
+    <a class="btn-primary" href="/">Look up a medication &rarr;</a>
+    <a class="btn-secondary" href="#how">See how it works</a>
+  </div>
+  <p class="hero-note">&#10003; Free &nbsp;&nbsp; &#10003; No account needed &nbsp;&nbsp; &#10003; Brand &amp; generic names &nbsp;&nbsp; &#10003; En Espa&ntilde;ol coming soon</p>
+</section>
+
+<!-- PREVIEW -->
+<div class="preview">
+  <div class="preview-window">
+    <div class="preview-bar">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <div class="preview-url">pilltalk.onrender.com</div>
+    </div>
+    <div class="preview-body">
+      <div class="preview-drug">&#128138; Metformin (Glucophage)</div>
+      <div class="preview-tabs">
+        <div class="ptab active">Overview</div>
+        <div class="ptab">Side Effects</div>
+        <div class="ptab">Practical</div>
+        <div class="ptab">Teach-Back</div>
+      </div>
+      <div class="preview-cards">
+        <div class="pcard t1"><div class="pcard-label">how it works</div><div class="pcard-body">Metformin helps your body use insulin better and lowers the amount of sugar your liver makes.</div></div>
+        <div class="pcard t2"><div class="pcard-label">how to take it</div><div class="pcard-body">Take with food to avoid an upset stomach. Take at the same time every day. Never skip doses.</div></div>
+        <div class="pcard t3"><div class="pcard-label">common side effects</div><div class="pcard-body"><span class="sev sg"></span>Upset stomach &nbsp; <span class="sev sg"></span>Nausea &nbsp; <span class="sev sy"></span>Low B12 &nbsp; <span class="sev sr"></span>Lactic acidosis (rare)</div></div>
+        <div class="pcard t4"><div class="pcard-label">watch for</div><div class="pcard-body">Muscle pain, trouble breathing, or stomach pain — call your doctor right away.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="stats-inner">
+    <div><div class="stat-num">131M</div><div class="stat-label">Americans take prescription drugs</div></div>
+    <div><div class="stat-num">9 in 10</div><div class="stat-label">adults have low health literacy</div></div>
+    <div><div class="stat-num">125K</div><div class="stat-label">deaths/year from medication errors</div></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-label">Features</div>
+  <h2 class="section-title">Everything you need to know about your medication</h2>
+  <p class="section-sub">From what a drug does to how to inject it — Pill Talk covers it all, in the language that works for you.</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon">&#128218;</div>
+      <div class="feature-title">4 Reading Levels</div>
+      <div class="feature-desc">From "explain like I'm 5" to full clinical detail. You choose what makes sense for you.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#128137;</div>
+      <div class="feature-title">Injectable & Biologic Guides</div>
+      <div class="feature-desc">Step-by-step administration guidance for Humira, Ozempic, insulin, and more.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#128680;</div>
+      <div class="feature-title">Color-Coded Side Effects</div>
+      <div class="feature-desc">Green, yellow, and red severity ratings so you instantly know what to monitor vs. what needs a doctor.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#128106;</div>
+      <div class="feature-title">Caregiver Mode</div>
+      <div class="feature-desc">Managing meds for a parent or loved one? Caregiver mode reframes everything for you.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#128176;</div>
+      <div class="feature-title">Cost & Savings Tips</div>
+      <div class="feature-desc">Generic alternatives, GoodRx tips, and cost-saving options — because medication should be affordable.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#127981;</div>
+      <div class="feature-title">Teach-Back Questions</div>
+      <div class="feature-desc">Built-in questions to make sure you actually understood what you just read. Used by pharmacists everywhere.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#127829;</div>
+      <div class="feature-title">Food & Alcohol Guidance</div>
+      <div class="feature-desc">What to avoid, what to take with food, and what happens if you don't follow the rules.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#9883;</div>
+      <div class="feature-title">Brand & Generic</div>
+      <div class="feature-desc">Type Lipitor or atorvastatin — Pill Talk knows both and tells you they're the same thing.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="how-inner">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">Three steps to understanding your medication</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Type your medication</div>
+        <div class="step-desc">Brand name, generic name — whatever's on your pill bottle. We handle both.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Choose your level</div>
+        <div class="step-desc">Pick from "Like I'm 5" to clinical. No judgment — pick what works for you.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Understand &amp; act</div>
+        <div class="step-desc">Read plain-language guidance, copy notes for your doctor, or share with a caregiver.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section class="story" id="story">
+  <div class="section-label">Our story</div>
+  <h2 class="section-title" style="margin-bottom:2rem;">Built by a pharmacist who saw the gap firsthand</h2>
+  <div class="story-card">
+    <p class="story-text">
+      On rotation, I watched patients leave the pharmacy with medications they didn't understand — not because they couldn't learn, but because nobody had explained it in a way that made sense to them. The insert was 12 pages long. The pharmacist was busy. And the patient was just trying to get home.<br><br>
+      I built Pill Talk because everyone deserves to understand what they're putting in their body — regardless of their education, income, or whether they grew up in a place with good healthcare. Plain language saves lives. That's not an exaggeration.
+    </p>
+    <div class="story-author">
+      <div class="story-avatar">K</div>
+      <div>
+        <div class="story-name">Katie Bowman</div>
+        <div class="story-title">PharmD Candidate &middot; University of Kentucky College of Pharmacy</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2>Your medication shouldn't be a mystery.</h2>
+  <p>Free. No account. Works on any device. Look up your first medication in 30 seconds.</p>
+  <a class="btn-primary" href="/">Try Pill Talk now &rarr;</a>
+  <p class="cta-note">No sign-up required &middot; Always free &middot; Built by a pharmacist</p>
+</section>
+
+<footer>
+  &copy; 2026 Pill Talk &middot; Built by Katie Bowman, PharmD Candidate &middot; University of Kentucky College of Pharmacy<br>
+  AI-generated content. Always verify with your pharmacist or prescriber. Not a substitute for professional medical advice.
+</footer>
+
+</body>
+</html>

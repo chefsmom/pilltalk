@@ -5,6 +5,10 @@ app = Flask(__name__, static_folder='templates')
 API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
 @app.route("/")
+def landing():
+    return send_from_directory('templates', 'landing.html')
+
+@app.route("/app")
 def index():
     return send_from_directory('templates', 'index.html')
 
@@ -22,14 +26,25 @@ def counsel():
 
     prompt = (
         'You are a clinical pharmacist. The user entered: "' + drug + '". '
-        'This may be a brand name (e.g. Lipitor) or generic (e.g. atorvastatin). Handle both. '
-        'Respond ONLY with valid JSON using exactly this schema, no markdown, no backticks: '
-        '{"drugName": "Generic (Brand)", "isBrand": true or false, "brandNote": "brand note or empty string", '
-        '"what": "1-2 sentences at ' + level + ' reading level", '
-        '"how": "bullet points on how to take it at ' + level + ' reading level", '
-        '"side": "bullet points of 3-4 common side effects at ' + level + ' reading level", '
-        '"warn": "bullet points of 2-3 warning signs at ' + level + ' reading level", '
-        '"teachback": ["question 1", "question 2", "question 3"]}'
+        'This may be a brand name or generic. Handle both. '
+        'Reading level for ALL text fields: ' + level + '. '
+        'Respond ONLY with valid JSON, no markdown, no backticks, using exactly this schema: '
+        '{'
+        '"drugName": "Generic (Brand) or just Generic if no brand",'
+        '"isBrand": true or false,'
+        '"brandNote": "If isBrand true: Brand X is the brand name for generic Y. Else empty string.",'
+        '"condition": "1-2 sentences on what condition this treats",'
+        '"what": "1-2 sentences on what this drug does in the body",'
+        '"how": "2-3 bullet points on how to take it",'
+        '"missedDose": "What to do if a dose is missed, 2-3 sentences",'
+        '"foodAlcohol": "bullet points on food, alcohol, and timing interactions",'
+        '"side": "bullet points of 3-4 common side effects, color-coded as green/yellow/red severity in format: [green] mild nausea",'
+        '"warn": "bullet points of 2-3 serious warning signs that need medical attention, all marked [red]",'
+        '"injection": "If this drug is an injectable or biologic, provide step-by-step injection/administration guidance. If not injectable, return empty string.",'
+        '"cost": "1-2 sentences on generic availability and cost-saving tips like GoodRx",'
+        '"teachback": ["question 1", "question 2", "question 3"],'
+        '"caregiverTeachback": ["caregiver question 1", "caregiver question 2"]'
+        '}'
     )
 
     payload = json.dumps({
