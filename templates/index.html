@@ -375,12 +375,12 @@ footer{max-width:760px;margin:0 auto;padding:0 1.25rem 2rem;font-size:11px;color
 </footer>
 
 <script>
-var currentLevel='simple and clear language — avoid medical jargon, explain any necessary technical words in plain terms, use short sentences, assume no medical background';
+var currentLevel='simple and clear language - avoid medical jargon, explain technical words in plain terms, use short sentences, assume no medical background';
 var caregiverMode=false,largeText=false,spanishMode=false;
 var lastResult={},englishResult={},currentDrug='';
 
 var levels=[
-  {id:'lv0',val:'simple and clear language — avoid medical jargon, explain any necessary technical words in plain terms, use short sentences, assume no medical background',label:'Simple'},
+  {id:'lv0',val:'simple and clear language - avoid medical jargon, explain technical words in plain terms, use short sentences, assume no medical background',label:'Simple'},
   {id:'lv1',val:'standard adult reading level',label:'Standard'},
   {id:'lv2',val:'clinical professional level with medical terminology',label:'Clinical'}
 ];
@@ -397,8 +397,7 @@ document.getElementById('btnLarge').onclick=function(){
   largeText=!largeText;
   document.body.classList.toggle('large',largeText);
   this.classList.toggle('on-blue',largeText);
-  this.textContent=largeText?'&#128269; Large On':'&#128269; Large Text';
-  this.innerHTML=largeText?'&#128269; Large On':'&#128269; Large Text';
+  this.innerHTML=largeText?'Large Text: ON':'Large Text';
 };
 
 document.getElementById('btnCaregiver').onclick=function(){
@@ -406,7 +405,8 @@ document.getElementById('btnCaregiver').onclick=function(){
   this.classList.toggle('on-purple',caregiverMode);
   document.getElementById('caregiverBanner').style.display=caregiverMode?'flex':'none';
   document.getElementById('cgTBCard').style.display=caregiverMode&&lastResult.caregiverTeachback?'block':'none';
-  document.getElementById('cgTab').style.display=caregiverMode?'block':'none';
+  var cgTab=document.getElementById('cgTab');
+  cgTab.style.display=caregiverMode?'block':'none';
   if(caregiverMode&&lastResult.caregiverTips) showTab('caregiver');
   else if(!caregiverMode) showTab('overview');
 };
@@ -414,7 +414,7 @@ document.getElementById('btnCaregiver').onclick=function(){
 document.getElementById('btnSpanish').onclick=function(){
   spanishMode=!spanishMode;
   this.classList.toggle('on-teal',spanishMode);
-  this.innerHTML=spanishMode?'&#127466;&#127480; Espa&#241;ol On':'&#127466;&#127480; Espa&#241;ol';
+  this.innerHTML=spanishMode?'Español On':'Español';
   if(spanishMode&&englishResult.drugName) translateToSpanish();
   else if(!spanishMode&&englishResult.drugName){lastResult=englishResult;populateResult(lastResult);}
 };
@@ -422,7 +422,6 @@ document.getElementById('btnSpanish').onclick=function(){
 document.getElementById('goBtn').onclick=generateCounseling;
 document.getElementById('copyBtn').onclick=copyNotes;
 document.getElementById('saveBtn').onclick=saveToMyMeds;
-// keydown handled by autocomplete
 
 function showTab(name){
   document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on')});
@@ -444,8 +443,10 @@ function showError(msg){
 
 function toBullets(val){
   if(!val) return '';
-  var s=Array.isArray(val)?val.join('\n'):String(val);
-  var lines=s.split('\n');
+  var s=Array.isArray(val)?val.join('
+'):String(val);
+  var lines=s.split('
+');
   var cleaned=[];
   for(var i=0;i<lines.length;i++){
     var line=lines[i].replace(/^[-*•]\s*/,'').trim();
@@ -466,11 +467,11 @@ function toBullets(val){
 function populateResult(data){
   var lv=levels.filter(function(l){return l.val===currentLevel})[0];
   document.getElementById('heroName').textContent=data.drugName||currentDrug;
-  document.getElementById('lastChecked').textContent=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-  document.getElementById('heroVerified').textContent='Verified ' + new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'});
   document.getElementById('heroCondition').textContent=data.condition?data.condition.split('.')[0]:'';
   document.getElementById('heroBadge').textContent=lv?lv.label:'';
   document.getElementById('heroBrand').style.display=data.isBrand?'block':'none';
+  document.getElementById('lastChecked').textContent=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('heroVerified').textContent='Verified '+new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'});
   var bb=document.getElementById('brandBanner'),bbt=document.getElementById('brandBannerText');
   if(data.isBrand&&data.brandNote){bbt.textContent=data.brandNote;bb.style.display='flex';}else{bb.style.display='none';}
   document.getElementById('caregiverBanner').style.display=caregiverMode?'flex':'none';
@@ -479,7 +480,7 @@ function populateResult(data){
   document.getElementById('how').innerHTML=toBullets(data.how);
   document.getElementById('cost').innerHTML=toBullets(data.cost);
   document.getElementById('costFull').innerHTML=toBullets(data.cost);
-  document.getElementById('financialResources').innerHTML=toBullets(data.financialResources)||'<p style="margin:0;color:var(--g400)">Drug-specific programs not available — see broad resources below.</p>';
+  document.getElementById('financialResources').innerHTML=toBullets(data.financialResources)||'<p style="margin:0;color:var(--g400)">Drug-specific programs not found — see broad resources below.</p>';
   document.getElementById('side').innerHTML=toBullets(data.side);
   document.getElementById('warn').innerHTML=toBullets(data.warn);
   document.getElementById('missedDose').innerHTML=toBullets(data.missedDose);
@@ -488,39 +489,30 @@ function populateResult(data){
   if(data.injection&&data.injection.trim().length>5){
     document.getElementById('injection').innerHTML=toBullets(data.injection);
     it.style.display='block';
-    // Try visual steps
     var steps=data.injectionSteps;
-    // Handle if Gemini returns steps as a string instead of array
     if(typeof steps==='string'&&steps.trim().length>5){
-      steps=steps.split(/\n/).map(function(s){return s.replace(/^[-*•\d.]+\s*/,'').trim();}).filter(Boolean);
+      steps=steps.split('
+').map(function(s){return s.replace(/^[-*•\d.]+\s*/,'').trim();}).filter(Boolean);
     }
     var visual=document.getElementById('inj-visual');
     var fallback=document.getElementById('inj-fallback');
     if(steps&&Array.isArray(steps)&&steps.length>0){
       visual.style.display='block'; fallback.style.display='none';
-      // Type badge
-      var typeIcons={'pen':'&#128394;','autoinjector':'&#128137;','syringe':'&#9889;','iv':'&#128167;','inhaler':'&#128168;'};
+      var typeIcons={pen:'&#128394;',autoinjector:'&#128137;',syringe:'&#9889;',iv:'&#128167;',inhaler:'&#128168;',patch:'&#129657;'};
       var itype=(data.injectionType||'injectable').toLowerCase();
-      var ticon=typeIcons[itype]||'&#128137;';
-      document.getElementById('injType').innerHTML=ticon+' '+(data.injectionType||'Injectable');
-      // Site
+      document.getElementById('injType').innerHTML=(typeIcons[itype]||'&#128137;')+' '+(data.injectionType||'Injectable');
       var siteCard=document.getElementById('injSiteCard');
       if(data.injectionSite&&data.injectionSite.trim().length>2){
         document.getElementById('injSite').textContent=data.injectionSite;
         siteCard.style.display='block';
       } else { siteCard.style.display='none'; }
-      // Steps
-      var stepIcons=['&#129501;','&#128197;','&#127774;','&#128137;','&#9989;','&#128680;','&#128274;','&#10060;','&#128290;','&#9200;'];
       var html='';
       for(var si=0;si<steps.length;si++){
         var st=steps[si];
         var txt=st.replace(/^\d+\.\s*/,'');
         var isWarn=/(warning|caution|do not|never|danger|emergency|stop|bleed)/i.test(txt);
         var isTip=/(tip|remember|note|important|make sure|ensure)/i.test(txt);
-        html+='<div class="inj-step">';
-        html+='<div class="inj-num">'+(si+1)+'</div>';
-        html+='<div class="inj-step-body">';
-        html+='<div class="inj-step-text">'+txt+'</div>';
+        html+='<div class="inj-step"><div class="inj-num">'+(si+1)+'</div><div class="inj-step-body"><div class="inj-step-text">'+txt+'</div>';
         if(isWarn) html+='<div class="inj-step-warn">&#9888; Use caution with this step</div>';
         if(isTip&&!isWarn) html+='<div class="inj-step-tip">&#128161; Key step</div>';
         html+='</div></div>';
@@ -552,9 +544,10 @@ function generateCounseling(){
   document.getElementById('result').style.display='none';
   document.getElementById('spinner').style.display='block';
   document.getElementById('goBtn').disabled=true;
+  document.getElementById('acList').classList.remove('show');
 
   fetch('/counsel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({drug:drug,level:currentLevel})})
-  .then(function(r){return r.json()})
+  .then(function(r){return r.json();})
   .then(function(data){
     if(data.error){showError(data.error);return;}
     lastResult=data; englishResult=data;
@@ -571,14 +564,14 @@ function generateCounseling(){
 
 function translateToSpanish(){
   var btn=document.getElementById('btnSpanish');
-  btn.disabled=true; btn.innerHTML='&#127466;&#127480; Translating...';
+  btn.disabled=true; btn.innerHTML='Translating...';
   fetch('/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:englishResult})})
-  .then(function(r){return r.json()})
+  .then(function(r){return r.json();})
   .then(function(data){
     if(data.error){alert('Translation error: '+data.error);spanishMode=false;btn.classList.remove('on-teal');}
     else{lastResult=data;populateResult(data);}
     btn.disabled=false;
-    btn.innerHTML=spanishMode?'&#127466;&#127480; Espa&#241;ol On':'&#127466;&#127480; Espa&#241;ol';
+    btn.innerHTML=spanishMode?'Español On':'Español';
     document.getElementById('spinner').style.display='none';
     document.getElementById('result').style.display='block';
     document.getElementById('goBtn').disabled=false;
@@ -591,33 +584,64 @@ function saveToMyMeds(){
   var meds=JSON.parse(localStorage.getItem('pilltalk_meds')||'[]');
   var name=lastResult.drugName||currentDrug;
   var btn=document.getElementById('saveBtn');
-  if(meds.indexOf(name)===-1){meds.push(name);localStorage.setItem('pilltalk_meds',JSON.stringify(meds));btn.textContent='✓ Saved!';}
+  if(meds.indexOf(name)===-1){meds.push(name);localStorage.setItem('pilltalk_meds',JSON.stringify(meds));btn.textContent='Saved!';}
   else{btn.textContent='Already saved';}
-  setTimeout(function(){btn.innerHTML='&#43; Save to My Meds';},2000);
+  setTimeout(function(){btn.innerHTML='+ Save to My Meds';},2000);
+}
+
+function shareLink(){
+  if(!currentDrug) return;
+  var url=window.location.origin+'/app?drug='+encodeURIComponent(lastResult.drugName||currentDrug);
+  navigator.clipboard.writeText(url);
+  var btn=document.getElementById('shareBtn');
+  btn.textContent='Link copied!';
+  setTimeout(function(){btn.innerHTML='Share';},2000);
 }
 
 function copyNotes(){
   if(!lastResult.drugName) return;
   var r=lastResult;
   var qs=Array.isArray(r.teachback)?r.teachback:[r.teachback];
-  var text='PILL TALK — '+r.drugName+'\n'+(r.brandNote?r.brandNote+'\n':'')+
-    '\nCONDITION\n'+r.condition+'\n\nHOW IT WORKS\n'+r.what+
-    '\n\nHOW TO TAKE IT\n'+r.how+'\n\nMISSED DOSE\n'+r.missedDose+
-    '\n\nFOOD & ALCOHOL\n'+r.foodAlcohol+'\n\nSIDE EFFECTS\n'+r.side+
-    '\n\nWATCH FOR\n'+r.warn+'\n\nCOST & SAVINGS\n'+r.cost+
-    '\n\nTEACH-BACK\n'+qs.map(function(q,i){return (i+1)+'. '+q;}).join('\n')+
-    '\n\n---\nGenerated by Pill Talk · Always verify with clinical references';
+  var text='PILL TALK - '+r.drugName+'
+'+(r.brandNote?r.brandNote+'
+':'')+
+    '
+CONDITION
+'+r.condition+'
+
+HOW IT WORKS
+'+r.what+
+    '
+
+HOW TO TAKE IT
+'+r.how+'
+
+MISSED DOSE
+'+r.missedDose+
+    '
+
+FOOD & ALCOHOL
+'+r.foodAlcohol+'
+
+SIDE EFFECTS
+'+r.side+
+    '
+
+WATCH FOR
+'+r.warn+'
+
+COST & SAVINGS
+'+r.cost+
+    '
+
+TEACH-BACK
+'+qs.map(function(q,i){return (i+1)+'. '+q;}).join('
+')+
+    '
+
+---
+Generated by Pill Talk - Always verify with clinical references';
   navigator.clipboard.writeText(text);
-}
-
-
-function shareLink() {
-  if (!currentDrug) return;
-  var url = window.location.origin + '/app?drug=' + encodeURIComponent(lastResult.drugName || currentDrug);
-  navigator.clipboard.writeText(url);
-  var btn = document.getElementById('shareBtn');
-  btn.textContent = '✓ Link copied!';
-  setTimeout(function() { btn.innerHTML = '&#128279; Share'; }, 2000);
 }
 
 function clearAll(){
@@ -628,231 +652,154 @@ function clearAll(){
   document.getElementById('drugInput').focus();
 }
 
-
-// PWA install prompt
-var deferredPrompt;
-window.addEventListener('beforeinstallprompt', function(e) {
-  e.preventDefault();
-  deferredPrompt = e;
-  // Show banner if not dismissed before
-  if (!localStorage.getItem('pt_install_dismissed')) {
-    document.getElementById('installBanner').style.display = 'flex';
-  }
-});
-
-document.getElementById('installBtn').addEventListener('click', function() {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(function(result) {
-      deferredPrompt = null;
-      document.getElementById('installBanner').style.display = 'none';
-      localStorage.setItem('pt_install_dismissed', '1');
-    });
-  } else {
-    // iOS fallback
-    alert('To add Pill Talk to your home screen: tap the Share button in Safari, then tap "Add to Home Screen".');
-    document.getElementById('installBanner').style.display = 'none';
-    localStorage.setItem('pt_install_dismissed', '1');
-  }
-});
-
-
-// === DRUG AUTOCOMPLETE ===
-var DRUGS = [
-  // Common generics + brands (500 most prescribed)
+// === AUTOCOMPLETE ===
+var DRUGS=[
   ["acetaminophen","Tylenol"],["ibuprofen","Advil","Motrin"],["aspirin","Bayer"],
   ["metformin","Glucophage"],["atorvastatin","Lipitor"],["lisinopril","Prinivil","Zestril"],
   ["amlodipine","Norvasc"],["metoprolol","Lopressor","Toprol"],["omeprazole","Prilosec"],
-  ["simvastatin","Zocor"],["losartan","Cozaar"],["albuterol","ProAir","Ventolin","Proventil"],
+  ["simvastatin","Zocor"],["losartan","Cozaar"],["albuterol","ProAir","Ventolin"],
   ["gabapentin","Neurontin"],["hydrochlorothiazide","Microzide"],["sertraline","Zoloft"],
-  ["levothyroxine","Synthroid","Levoxyl"],["amoxicillin","Amoxil"],["azithromycin","Zithromax","Z-Pack"],
-  ["fluoxetine","Prozac"],["escitalopram","Lexapro"],["bupropion","Wellbutrin","Zyban"],
+  ["levothyroxine","Synthroid","Levoxyl"],["amoxicillin","Amoxil"],["azithromycin","Zithromax"],
+  ["fluoxetine","Prozac"],["escitalopram","Lexapro"],["bupropion","Wellbutrin"],
   ["duloxetine","Cymbalta"],["venlafaxine","Effexor"],["citalopram","Celexa"],
   ["alprazolam","Xanax"],["clonazepam","Klonopin"],["lorazepam","Ativan"],
   ["zolpidem","Ambien"],["trazodone","Desyrel"],["quetiapine","Seroquel"],
   ["aripiprazole","Abilify"],["risperidone","Risperdal"],["olanzapine","Zyprexa"],
-  ["lithium","Lithobid"],["lamotrigine","Lamictal"],["valproate","Depakote"],
-  ["carbamazepine","Tegretol"],["topiramate","Topamax"],["levetiracetam","Keppra"],
-  ["atenolol","Tenormin"],["carvedilol","Coreg"],["bisoprolol","Zebeta"],
-  ["furosemide","Lasix"],["spironolactone","Aldactone"],["chlorthalidone","Thalitone"],
-  ["ramipril","Altace"],["enalapril","Vasotec"],["benazepril","Lotensin"],
+  ["lamotrigine","Lamictal"],["levetiracetam","Keppra"],["topiramate","Topamax"],
+  ["atenolol","Tenormin"],["carvedilol","Coreg"],["furosemide","Lasix"],
+  ["spironolactone","Aldactone"],["ramipril","Altace"],["enalapril","Vasotec"],
   ["valsartan","Diovan"],["irbesartan","Avapro"],["olmesartan","Benicar"],
-  ["rosuvastatin","Crestor"],["pravastatin","Pravachol"],["lovastatin","Mevacor"],
-  ["ezetimibe","Zetia"],["fenofibrate","Tricor"],["gemfibrozil","Lopid"],
+  ["rosuvastatin","Crestor"],["pravastatin","Pravachol"],["ezetimibe","Zetia"],
   ["warfarin","Coumadin"],["apixaban","Eliquis"],["rivaroxaban","Xarelto"],
   ["dabigatran","Pradaxa"],["clopidogrel","Plavix"],["ticagrelor","Brilinta"],
-  ["digoxin","Lanoxin"],["amiodarone","Cordarone","Pacerone"],["sotalol","Betapace"],
-  ["nitroglycerin","Nitrostat"],["isosorbide","Imdur"],["hydralazine","Apresoline"],
-  ["clonidine","Catapres"],["doxazosin","Cardura"],["tamsulosin","Flomax"],
-  ["sildenafil","Viagra","Revatio"],["tadalafil","Cialis","Adcirca"],
-  ["finasteride","Proscar","Propecia"],["dutasteride","Avodart"],
+  ["digoxin","Lanoxin"],["amiodarone","Cordarone"],["nitroglycerin","Nitrostat"],
+  ["clonidine","Catapres"],["tamsulosin","Flomax"],["sildenafil","Viagra","Revatio"],
+  ["tadalafil","Cialis"],["finasteride","Proscar","Propecia"],
   ["insulin glargine","Lantus","Toujeo"],["insulin lispro","Humalog"],
-  ["insulin aspart","NovoLog"],["insulin detemir","Levemir"],["insulin degludec","Tresiba"],
+  ["insulin aspart","NovoLog"],["insulin detemir","Levemir"],
   ["semaglutide","Ozempic","Wegovy","Rybelsus"],["liraglutide","Victoza","Saxenda"],
-  ["dulaglutide","Trulicity"],["exenatide","Byetta","Bydureon"],
-  ["sitagliptin","Januvia"],["saxagliptin","Onglyza"],["linagliptin","Tradjenta"],
+  ["dulaglutide","Trulicity"],["exenatide","Byetta"],
+  ["sitagliptin","Januvia"],["linagliptin","Tradjenta"],
   ["empagliflozin","Jardiance"],["dapagliflozin","Farxiga"],["canagliflozin","Invokana"],
   ["glipizide","Glucotrol"],["glyburide","DiaBeta"],["glimepiride","Amaryl"],
-  ["pioglitazone","Actos"],["rosiglitazone","Avandia"],
-  ["prednisone","Deltasone"],["methylprednisolone","Medrol"],["dexamethasone","Decadron"],
-  ["budesonide","Pulmicort","Entocort"],["fluticasone","Flonase","Flovent"],
-  ["mometasone","Nasonex"],["triamcinolone","Kenalog"],["hydrocortisone","Cortef"],
+  ["pioglitazone","Actos"],["prednisone","Deltasone"],["methylprednisolone","Medrol"],
+  ["dexamethasone","Decadron"],["budesonide","Pulmicort"],["fluticasone","Flonase","Flovent"],
   ["montelukast","Singulair"],["tiotropium","Spiriva"],["ipratropium","Atrovent"],
-  ["salmeterol","Serevent"],["formoterol","Foradil"],["umeclidinium","Incruse"],
-  ["omalizumab","Xolair"],["dupilumab","Dupixent"],["mepolizumab","Nucala"],
-  ["adalimumab","Humira"],["etanercept","Enbrel"],["infliximab","Remicade"],
-  ["methotrexate","Rheumatrex"],["hydroxychloroquine","Plaquenil"],["leflunomide","Arava"],
-  ["tofacitinib","Xeljanz"],["baricitinib","Olumiant"],["upadacitinib","Rinvoq"],
-  ["atorvastatin","Lipitor"],["colchicine","Colcrys"],["allopurinol","Zyloprim"],
-  ["febuxostat","Uloric"],["probenecid","Benemid"],
-  ["alendronate","Fosamax"],["risedronate","Actonel"],["ibandronate","Boniva"],
-  ["denosumab","Prolia","Xgeva"],["teriparatide","Forteo"],["raloxifene","Evista"],
-  ["calcitonin","Miacalcin"],["calcium carbonate","Tums","Os-Cal"],
-  ["levothyroxine","Synthroid"],["methimazole","Tapazole"],["propylthiouracil","PTU"],
-  ["testosterone","AndroGel","Testim"],["estradiol","Estrace","Vivelle"],
-  ["progesterone","Prometrium"],["medroxyprogesterone","Depo-Provera","Provera"],
-  ["norethindrone","Aygestin"],["conjugated estrogens","Premarin"],
+  ["omalizumab","Xolair"],["dupilumab","Dupixent"],["adalimumab","Humira"],
+  ["etanercept","Enbrel"],["infliximab","Remicade"],["methotrexate","Rheumatrex"],
+  ["hydroxychloroquine","Plaquenil"],["tofacitinib","Xeljanz"],
+  ["alendronate","Fosamax"],["risedronate","Actonel"],["denosumab","Prolia"],
+  ["levothyroxine","Synthroid"],["methimazole","Tapazole"],
+  ["testosterone","AndroGel"],["estradiol","Estrace"],["progesterone","Prometrium"],
   ["donepezil","Aricept"],["memantine","Namenda"],["rivastigmine","Exelon"],
-  ["galantamine","Razadyne"],
   ["ondansetron","Zofran"],["promethazine","Phenergan"],["metoclopramide","Reglan"],
   ["pantoprazole","Protonix"],["esomeprazole","Nexium"],["lansoprazole","Prevacid"],
-  ["ranitidine","Zantac"],["famotidine","Pepcid"],["sucralfate","Carafate"],
-  ["mesalamine","Asacol","Pentasa"],["sulfasalazine","Azulfidine"],
-  ["ursodiol","Actigall"],["lactulose","Enulose"],["polyethylene glycol","Miralax"],
-  ["docusate","Colace"],["senna","Senokot"],["bisacodyl","Dulcolax"],
-  ["loperamide","Imodium"],["diphenoxylate","Lomotil"],
+  ["famotidine","Pepcid"],["sucralfate","Carafate"],["mesalamine","Asacol"],
   ["cetirizine","Zyrtec"],["loratadine","Claritin"],["fexofenadine","Allegra"],
-  ["diphenhydramine","Benadryl"],["hydroxyzine","Atarax","Vistaril"],
-  ["doxycycline","Vibramycin"],["minocycline","Minocin"],["tetracycline","Sumycin"],
-  ["ciprofloxacin","Cipro"],["levofloxacin","Levaquin"],["moxifloxacin","Avelox"],
+  ["diphenhydramine","Benadryl"],["hydroxyzine","Vistaril"],
+  ["doxycycline","Vibramycin"],["ciprofloxacin","Cipro"],["levofloxacin","Levaquin"],
   ["trimethoprim","Bactrim"],["nitrofurantoin","Macrobid"],["cephalexin","Keflex"],
-  ["cefdinir","Omnicef"],["cefuroxime","Ceftin"],["clindamycin","Cleocin"],
-  ["metronidazole","Flagyl"],["fluconazole","Diflucan"],["nystatin","Mycostatin"],
+  ["clindamycin","Cleocin"],["metronidazole","Flagyl"],["fluconazole","Diflucan"],
   ["acyclovir","Zovirax"],["valacyclovir","Valtrex"],["oseltamivir","Tamiflu"],
-  ["naltrexone","Vivitrol","Revia"],["buprenorphine","Suboxone","Subutex"],
-  ["varenicline","Chantix"],["nicotine","Nicorette","NicoDerm"],
+  ["naltrexone","Vivitrol"],["buprenorphine","Suboxone"],["varenicline","Chantix"],
   ["oxycodone","OxyContin","Percocet"],["hydrocodone","Vicodin","Norco"],
-  ["morphine","MS Contin"],["tramadol","Ultram"],["fentanyl","Duragesic"],
-  ["cyclobenzaprine","Flexeril"],["methocarbamol","Robaxin"],["baclofen","Lioresal"],
-  ["carisoprodol","Soma"],["tizanidine","Zanaflex"],
+  ["tramadol","Ultram"],["cyclobenzaprine","Flexeril"],["baclofen","Lioresal"],
   ["methylphenidate","Ritalin","Concerta"],["amphetamine","Adderall","Vyvanse"],
-  ["atomoxetine","Strattera"],["guanfacine","Intuniv"],["clonidine","Kapvay"],
-  ["modafinil","Provigil"],["armodafinil","Nuvigil"],
-  ["atorvastatin","Lipitor"],["sildenafil","Viagra"],["tadalafil","Cialis"],
-  ["amlodipine","Norvasc"],["ramipril","Altace"]
+  ["atomoxetine","Strattera"],["modafinil","Provigil"],
+  ["colchicine","Colcrys"],["allopurinol","Zyloprim"],["febuxostat","Uloric"]
 ];
 
-// Flatten drug list into searchable entries
-var DRUG_ENTRIES = [];
-DRUGS.forEach(function(group) {
-  group.forEach(function(name) {
-    DRUG_ENTRIES.push({name: name, group: group});
+var DRUG_ENTRIES=[];
+var seen={};
+DRUGS.forEach(function(g){
+  g.forEach(function(n){
+    if(!seen[n.toLowerCase()]){seen[n.toLowerCase()]=1;DRUG_ENTRIES.push({name:n,group:g});}
   });
 });
-// Deduplicate
-var seen = {};
-DRUG_ENTRIES = DRUG_ENTRIES.filter(function(e) {
-  if (seen[e.name.toLowerCase()]) return false;
-  seen[e.name.toLowerCase()] = true;
-  return true;
-});
 
-function fuzzyScore(query, target) {
-  query = query.toLowerCase();
-  target = target.toLowerCase();
-  if (target.startsWith(query)) return 100;
-  if (target.includes(query)) return 80;
-  // Simple char-by-char fuzzy
-  var qi = 0, score = 0;
-  for (var ti = 0; ti < target.length && qi < query.length; ti++) {
-    if (target[ti] === query[qi]) { score += (qi === ti ? 2 : 1); qi++; }
+function fuzzyScore(query,target){
+  query=query.toLowerCase(); target=target.toLowerCase();
+  if(target.startsWith(query)) return 100;
+  if(target.includes(query)) return 80;
+  var qi=0,score=0;
+  for(var ti=0;ti<target.length&&qi<query.length;ti++){
+    if(target[ti]===query[qi]){score+=(qi===ti?2:1);qi++;}
   }
-  if (qi < query.length) return 0; // didn't match all chars
-  return Math.round((score / query.length) * 40);
+  if(qi<query.length) return 0;
+  return Math.round((score/query.length)*40);
 }
 
-function highlightMatch(name, query) {
-  if (!query) return name;
-  var idx = name.toLowerCase().indexOf(query.toLowerCase());
-  if (idx === -1) return name;
-  return name.slice(0, idx) + '<span class="ac-match">' + name.slice(idx, idx + query.length) + '</span>' + name.slice(idx + query.length);
-}
-
-var acSelectedIndex = -1;
-
-function showSuggestions(query) {
-  var list = document.getElementById('acList');
-  if (!query || query.length < 2) { list.classList.remove('show'); return; }
-
-  var results = [];
-  DRUG_ENTRIES.forEach(function(entry) {
-    var score = fuzzyScore(query, entry.name);
-    if (score > 20) results.push({entry: entry, score: score});
+function showSuggestions(query){
+  var list=document.getElementById('acList');
+  if(!query||query.length<2){list.classList.remove('show');return;}
+  var results=[];
+  DRUG_ENTRIES.forEach(function(e){
+    var s=fuzzyScore(query,e.name);
+    if(s>20) results.push({e:e,s:s});
   });
-  results.sort(function(a, b) { return b.score - a.score; });
-  results = results.slice(0, 8);
-
-  if (results.length === 0) { list.classList.remove('show'); return; }
-
-  var html = '';
-  results.forEach(function(r, i) {
-    var entry = r.entry;
-    var others = entry.group.filter(function(n) { return n !== entry.name; });
-    var altText = others.length ? '(' + others.slice(0,2).join(' / ') + ')' : '';
-    html += '<div class="ac-item" data-name="' + entry.name + '" onclick="selectSuggestion('' + entry.name.replace(/'/g, "\'") + '')">';
-    html += '<span class="ac-item-name">' + highlightMatch(entry.name, query) + '</span>';
-    if (altText) html += '<span class="ac-item-type">' + altText + '</span>';
-    html += '</div>';
+  results.sort(function(a,b){return b.s-a.s;});
+  results=results.slice(0,8);
+  if(!results.length){list.classList.remove('show');return;}
+  var html='';
+  results.forEach(function(r){
+    var e=r.e;
+    var others=e.group.filter(function(n){return n!==e.name;});
+    var alt=others.length?'('+others.slice(0,2).join(' / ')+')':'';
+    html+='<div class="ac-item" onclick="selectDrug(''+e.name.replace(/\/g,'\\').replace(/'/g,"\'")+'')">'+
+      '<span class="ac-item-name">'+e.name+'</span>'+
+      (alt?'<span class="ac-item-type">'+alt+'</span>':'')+
+      '</div>';
   });
-
-  list.innerHTML = html;
+  list.innerHTML=html;
   list.classList.add('show');
-  document.getElementById('drugInput').classList.add('has-suggestions');
-  acSelectedIndex = -1;
 }
 
-function selectSuggestion(name) {
-  document.getElementById('drugInput').value = name;
+function hideSuggestions(){
+  setTimeout(function(){
+    document.getElementById('acList').classList.remove('show');
+  },150);
+}
+
+function selectDrug(name){
+  document.getElementById('drugInput').value=name;
   document.getElementById('acList').classList.remove('show');
-  document.getElementById('drugInput').classList.remove('has-suggestions');
   generateCounseling();
 }
 
-function hideSuggestions() {
-  setTimeout(function() {
-    document.getElementById('acList').classList.remove('show');
-    document.getElementById('drugInput').classList.remove('has-suggestions');
-  }, 150);
-}
-
-// Keyboard navigation
-document.getElementById('drugInput').addEventListener('keydown', function(e) {
-  var items = document.querySelectorAll('.ac-item');
-  if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    acSelectedIndex = Math.min(acSelectedIndex + 1, items.length - 1);
-    items.forEach(function(el, i) { el.classList.toggle('selected', i === acSelectedIndex); });
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    acSelectedIndex = Math.max(acSelectedIndex - 1, -1);
-    items.forEach(function(el, i) { el.classList.toggle('selected', i === acSelectedIndex); });
-  } else if (e.key === 'Enter') {
-    if (acSelectedIndex >= 0 && items[acSelectedIndex]) {
-      e.preventDefault();
-      selectSuggestion(items[acSelectedIndex].getAttribute('data-name'));
-    } else {
-      generateCounseling();
-    }
-  } else if (e.key === 'Escape') {
-    hideSuggestions();
-  }
-});
-
-document.getElementById('drugInput').addEventListener('input', function() {
+document.getElementById('drugInput').addEventListener('input',function(){
   showSuggestions(this.value.trim());
 });
+document.getElementById('drugInput').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){
+    document.getElementById('acList').classList.remove('show');
+    generateCounseling();
+  }
+  if(e.key==='Escape') document.getElementById('acList').classList.remove('show');
+});
+document.getElementById('drugInput').addEventListener('blur',hideSuggestions);
 
-document.getElementById('drugInput').addEventListener('blur', hideSuggestions);
+// PWA install
+var deferredPrompt;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault(); deferredPrompt=e;
+  if(!localStorage.getItem('pt_install_dismissed')){
+    document.getElementById('installBanner').style.display='flex';
+  }
+});
+document.getElementById('installBtn').addEventListener('click',function(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(){
+      deferredPrompt=null;
+      document.getElementById('installBanner').style.display='none';
+      localStorage.setItem('pt_install_dismissed','1');
+    });
+  } else {
+    alert('To install: tap the Share button in Safari, then tap "Add to Home Screen".');
+    document.getElementById('installBanner').style.display='none';
+    localStorage.setItem('pt_install_dismissed','1');
+  }
+});
 
 var params=new URLSearchParams(window.location.search);
 var dp=params.get('drug');
