@@ -50,7 +50,7 @@ def counsel():
         '"foodAlcohol": "bullet points on food interactions, alcohol, and timing",'
         '"side": "3-4 bullet points of common side effects each prefixed with severity: [green] for mild, [yellow] for moderate, [red] for serious",'
         '"warn": "2-3 bullet points of serious warning signs requiring medical attention, each prefixed [red]",'
-        '"injection": "if this is an injectable or biologic drug provide numbered step-by-step administration instructions, otherwise return empty string",'
+        '"injection": "if injectable or biologic return a 1-2 sentence plain text summary of how it is administered, else empty string","injectionSteps": "array of 6-12 step strings for injectable drugs e.g. ['Wash hands with soap and water', 'Remove from fridge 30 minutes before', 'Clean injection site with alcohol swab']. Return empty array [] if not injectable","injectionType": "one word: pen, syringe, autoinjector, IV, inhaler, or patch. Empty string if not injectable","injectionSite": "1-2 sentences describing where to inject and how to rotate sites. Empty string if not injectable",'
         '"cost": "1-2 sentences on whether a generic is available and cost-saving options like GoodRx or manufacturer coupons",'
         '"teachback": ["patient question 1", "patient question 2", "patient question 3"],'
         '"caregiverTeachback": ["caregiver-specific question 1", "caregiver-specific question 2"],'

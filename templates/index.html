@@ -405,6 +405,10 @@ function populateResult(data){
     it.style.display='block';
     // Try visual steps
     var steps=data.injectionSteps;
+    // Handle if Gemini returns steps as a string instead of array
+    if(typeof steps==='string'&&steps.trim().length>5){
+      steps=steps.split(/\n/).map(function(s){return s.replace(/^[-*•\d.]+\s*/,'').trim();}).filter(Boolean);
+    }
     var visual=document.getElementById('inj-visual');
     var fallback=document.getElementById('inj-fallback');
     if(steps&&Array.isArray(steps)&&steps.length>0){
