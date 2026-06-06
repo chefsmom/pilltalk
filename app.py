@@ -8,6 +8,10 @@ API_KEY = os.environ.get("GEMINI_API_KEY", "")
 def landing():
     return send_from_directory('templates', 'landing.html')
 
+@app.route("/mymeds")
+def mymeds():
+    return send_from_directory("templates", "mymeds.html")
+
 @app.route("/app")
 def index():
     return send_from_directory('templates', 'index.html')
@@ -77,3 +81,59 @@ if __name__ == "__main__":
         print("GEMINI_API_KEY not set.")
     print("Pill Talk running at http://0.0.0.0:10000")
     app.run(host="0.0.0.0", port=10000, debug=False)
+
+@app.route("/interactions", methods=["POST"])
+def interactions():
+    if not API_KEY:
+        return jsonify({"error": "GEMINI_API_KEY not set."}), 500
+
+    body = request.get_json()
+    drugs = body.get("drugs", [])
+    level = body.get("level", "simple and clear language").strip()
+
+    if len(drugs) < 2:
+        return jsonify({"error": "Please add at least 2 medications to check interactions."}), 400
+
+    drug_list = ", ".join(drugs)
+
+    prompt = (
+        'You are a clinical pharmacist. The patient is taking these medications: ' + drug_list + '. '
+        'Check for drug-drug interactions, food-drug interactions, and duplications of therapy. '
+        'Use ' + level + ' reading level. '
+        'Respond ONLY with valid JSON, no markdown, no backticks, using exactly this schema: '
+        '{'
+        '"summary": "1-2 sentence overall summary of safety",'
+        '"interactions": ['
+        '  {"drugs": "Drug A + Drug B", "severity": "green or yellow or red", "description": "plain language explanation", "action": "what to do about it"}'
+        '],'
+        '"duplications": ["any therapeutic duplications as plain strings"],'
+        '"safe": true or false,'
+        '"recommendation": "overall recommendation in plain language"'
+        '}'
+        'If no interactions found, return empty interactions array and safe: true.'
+    )
+
+    payload = json.dumps({
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "temperature": 0.2,
+            "maxOutputTokens": 8192,
+            "responseMimeType": "application/json"
+        }
+    }).encode()
+
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY
+    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+
+    try:
+        with urllib.request.urlopen(req) as resp:
+            data = json.loads(resp.read())
+        text = data["candidates"][0]["content"]["parts"][0]["text"]
+        text = text.strip().replace("```json", "").replace("```", "").strip()
+        result = json.loads(text)
+        return jsonify(result)
+    except urllib.error.HTTPError as e:
+        err = json.loads(e.read())
+        return jsonify({"error": str(err)}), 502
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

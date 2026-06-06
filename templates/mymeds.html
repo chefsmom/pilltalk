@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Medications — Pill Talk</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --teal: #0d7a5f; --teal-dark: #0a5c47; --teal-light: #e8f5f1;
+  --red: #c0392b; --red-light: #fdecea;
+  --amber: #b35c00; --amber-light: #fef4e8;
+  --green: #166534; --green-light: #dcfce7;
+  --blue: #1a56a0; --blue-light: #eaf1fb;
+  --purple: #7c3aed; --purple-light: #f3f0ff;
+  --text: #1a1917; --muted: #6b6860; --faint: #bbb;
+  --bg: #f5f4f1; --surface: #fff; --border: #e4e2dc;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 0; }
+
+nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+.nav-logo { font-size: 17px; font-weight: 700; text-decoration: none; color: var(--text); display: flex; align-items: center; gap: 6px; }
+.nav-links { display: flex; gap: 6px; }
+.nav-link { padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; border-radius: 6px; }
+.nav-link:hover { background: var(--bg); color: var(--text); }
+.nav-link.active { background: var(--teal-light); color: var(--teal); }
+
+.page { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem; }
+h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+.page-sub { font-size: 14px; color: var(--muted); margin-bottom: 2rem; }
+
+/* add drug */
+.add-row { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+input[type=text] { flex: 1; padding: 10px 14px; font-size: 15px; font-family: inherit; border: 1.5px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); outline: none; }
+input[type=text]:focus { border-color: var(--teal); }
+input[type=text]::placeholder { color: var(--faint); }
+button.add { padding: 10px 20px; background: var(--teal); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+button.add:hover { background: var(--teal-dark); }
+
+/* med list */
+.med-list { margin-bottom: 1.5rem; }
+.empty-state { text-align: center; padding: 3rem; color: var(--muted); font-size: 14px; background: var(--surface); border: 1.5px dashed var(--border); border-radius: 12px; }
+.med-item { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; }
+.med-item:hover { border-color: var(--teal); }
+.med-name { font-size: 15px; font-weight: 600; }
+.med-actions { display: flex; gap: 8px; }
+button.med-lookup { padding: 5px 12px; font-size: 12px; font-weight: 500; background: var(--teal-light); color: var(--teal); border: 1px solid var(--teal); border-radius: 6px; cursor: pointer; font-family: inherit; text-decoration: none; }
+button.med-remove { padding: 5px 10px; font-size: 12px; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-family: inherit; }
+button.med-remove:hover { background: var(--red-light); color: var(--red); border-color: var(--red); }
+
+/* check interactions */
+.check-bar { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.check-bar-text { font-size: 14px; color: var(--muted); }
+.check-bar-text strong { color: var(--text); }
+button.check { padding: 10px 22px; background: var(--text); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+button.check:hover { background: #333; }
+button.check:disabled { background: #aaa; cursor: not-allowed; }
+
+/* spinner */
+.spinner { display: none; text-align: center; padding: 2.5rem 0; color: var(--muted); font-size: 14px; }
+.ring { width: 28px; height: 28px; border: 2.5px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 10px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* results */
+#interactionResult { display: none; }
+.result-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; padding: 1rem 1.25rem; border-radius: 10px; }
+.result-header.safe { background: var(--green-light); border: 1.5px solid #86efac; }
+.result-header.unsafe { background: var(--red-light); border: 1.5px solid #fca5a5; }
+.result-icon { font-size: 24px; }
+.result-summary { font-size: 15px; font-weight: 500; }
+
+.interaction-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 10px; }
+.interaction-card.green { border-left: 4px solid #22c55e; }
+.interaction-card.yellow { border-left: 4px solid #f59e0b; }
+.interaction-card.red { border-left: 4px solid #ef4444; }
+.int-drugs { font-size: 15px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.sev-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.sg { background: #22c55e; } .sy { background: #f59e0b; } .sr { background: #ef4444; }
+.int-desc { font-size: 14px; color: var(--muted); margin-bottom: 6px; line-height: 1.6; }
+.int-action { font-size: 13px; font-weight: 600; color: var(--text); background: var(--bg); padding: 6px 10px; border-radius: 6px; }
+
+.no-interactions { text-align: center; padding: 2rem; background: var(--green-light); border: 1.5px solid #86efac; border-radius: 10px; color: var(--green); font-size: 15px; font-weight: 500; margin-bottom: 1rem; }
+
+.rec-card { background: var(--blue-light); border: 1.5px solid #93c5fd; border-radius: 10px; padding: 14px 16px; margin-bottom: 1.5rem; font-size: 14px; color: var(--blue); }
+.rec-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+
+.dup-card { background: var(--amber-light); border: 1.5px solid #fcd34d; border-radius: 10px; padding: 14px 16px; margin-bottom: 1rem; }
+.dup-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--amber); margin-bottom: 8px; }
+.dup-item { font-size: 14px; color: var(--text); margin-bottom: 4px; }
+
+.result-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1rem; }
+button.sec { padding: 8px 16px; background: transparent; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; font-family: inherit; }
+button.sec:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
+
+.error { display: none; padding: 12px 16px; background: var(--red-light); border-radius: 8px; color: var(--red); font-size: 13px; margin-bottom: 1rem; }
+
+footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 11px; color: var(--faint); line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">&#128138; Pill Talk</a>
+  <div class="nav-links">
+    <a class="nav-link" href="/app">Look Up Drug</a>
+    <a class="nav-link active" href="/mymeds">My Medications</a>
+  </div>
+</nav>
+
+<div class="page">
+  <h1>&#128137; My Medications</h1>
+  <p class="page-sub">Save your medications and check for dangerous interactions.</p>
+
+  <div class="add-row">
+    <input type="text" id="addInput" placeholder="Add a medication (brand or generic)..." />
+    <button class="add" onclick="addMed()">+ Add</button>
+  </div>
+
+  <div class="med-list" id="medList"></div>
+
+  <div class="check-bar" id="checkBar" style="display:none">
+    <div class="check-bar-text"><strong id="medCount">0</strong> medications saved &mdash; ready to check for interactions</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="sec" onclick="clearAll()">Clear all</button>
+      <button class="check" id="checkBtn" onclick="checkInteractions()">Check Interactions &rarr;</button>
+    </div>
+  </div>
+
+  <div class="error" id="errorBox"></div>
+
+  <div class="spinner" id="spinner">
+    <div class="ring"></div>
+    Checking for interactions...
+  </div>
+
+  <div id="interactionResult">
+    <div class="result-header" id="resultHeader">
+      <div class="result-icon" id="resultIcon"></div>
+      <div class="result-summary" id="resultSummary"></div>
+    </div>
+
+    <div id="noInteractions" class="no-interactions" style="display:none">
+      &#10003; No significant drug interactions found between your medications.
+    </div>
+
+    <div id="interactionCards"></div>
+
+    <div id="dupSection" style="display:none">
+      <div class="dup-card">
+        <div class="dup-label">&#9888; Possible Therapeutic Duplications</div>
+        <div id="dupList"></div>
+      </div>
+    </div>
+
+    <div class="rec-card" id="recCard" style="display:none">
+      <div class="rec-label">&#128203; Pharmacist Recommendation</div>
+      <div id="recText"></div>
+    </div>
+
+    <div class="result-actions">
+      <button class="sec" onclick="copyReport()">&#10232; Copy Report</button>
+      <button class="sec" onclick="window.print()">&#9113; Print</button>
+      <button class="sec" onclick="document.getElementById('interactionResult').style.display='none'">&#8635; Check Again</button>
+    </div>
+  </div>
+
+  <footer>
+    AI-generated content. Always verify with your pharmacist or prescriber.
+    Not a substitute for professional clinical judgment.
+  </footer>
+</div>
+
+<script>
+var meds = JSON.parse(localStorage.getItem('pilltalk_meds') || '[]');
+var lastReport = {};
+
+function saveMeds() {
+  localStorage.setItem('pilltalk_meds', JSON.stringify(meds));
+}
+
+function renderMeds() {
+  var list = document.getElementById('medList');
+  var bar = document.getElementById('checkBar');
+  document.getElementById('medCount').textContent = meds.length;
+
+  if (meds.length === 0) {
+    list.innerHTML = '<div class="empty-state">&#128137; No medications added yet.<br>Add your first medication above.</div>';
+    bar.style.display = 'none';
+    return;
+  }
+
+  bar.style.display = 'flex';
+  var html = '';
+  for (var i = 0; i < meds.length; i++) {
+    html += '<div class="med-item">' +
+      '<div class="med-name">' + meds[i] + '</div>' +
+      '<div class="med-actions">' +
+      '<button class="med-lookup" onclick="lookupDrug(\'' + meds[i].replace(/'/g, "\\'") + '\')">Look up</button>' +
+      '<button class="med-remove" onclick="removeMed(' + i + ')">&#10005; Remove</button>' +
+      '</div></div>';
+  }
+  list.innerHTML = html;
+}
+
+function addMed() {
+  var input = document.getElementById('addInput');
+  var val = input.value.trim();
+  if (!val) return;
+  if (meds.indexOf(val) === -1) {
+    meds.push(val);
+    saveMeds();
+    renderMeds();
+  }
+  input.value = '';
+  input.focus();
+}
+
+function removeMed(i) {
+  meds.splice(i, 1);
+  saveMeds();
+  renderMeds();
+  document.getElementById('interactionResult').style.display = 'none';
+}
+
+function clearAll() {
+  meds = [];
+  saveMeds();
+  renderMeds();
+  document.getElementById('interactionResult').style.display = 'none';
+}
+
+function lookupDrug(name) {
+  window.location.href = '/app?drug=' + encodeURIComponent(name);
+}
+
+function showError(msg) {
+  var el = document.getElementById('errorBox');
+  el.textContent = msg;
+  el.style.display = 'block';
+  document.getElementById('spinner').style.display = 'none';
+  document.getElementById('checkBtn').disabled = false;
+}
+
+function checkInteractions() {
+  if (meds.length < 2) { showError('Add at least 2 medications to check interactions.'); return; }
+
+  document.getElementById('errorBox').style.display = 'none';
+  document.getElementById('interactionResult').style.display = 'none';
+  document.getElementById('spinner').style.display = 'block';
+  document.getElementById('checkBtn').disabled = true;
+
+  fetch('/interactions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ drugs: meds, level: 'simple and clear language, avoid jargon, explain terms' })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.error) { showError(data.error); return; }
+    lastReport = data;
+
+    var header = document.getElementById('resultHeader');
+    var icon = document.getElementById('resultIcon');
+    var summary = document.getElementById('resultSummary');
+
+    if (data.safe) {
+      header.className = 'result-header safe';
+      icon.textContent = '✅';
+    } else {
+      header.className = 'result-header unsafe';
+      icon.textContent = '⚠️';
+    }
+    summary.textContent = data.summary || '';
+
+    var cards = document.getElementById('interactionCards');
+    var noInt = document.getElementById('noInteractions');
+
+    if (!data.interactions || data.interactions.length === 0) {
+      noInt.style.display = 'block';
+      cards.innerHTML = '';
+    } else {
+      noInt.style.display = 'none';
+      var html = '';
+      for (var i = 0; i < data.interactions.length; i++) {
+        var int = data.interactions[i];
+        var sev = int.severity || 'green';
+        var dotClass = sev === 'red' ? 'sr' : sev === 'yellow' ? 'sy' : 'sg';
+        html += '<div class="interaction-card ' + sev + '">' +
+          '<div class="int-drugs"><span class="sev-dot ' + dotClass + '"></span>' + (int.drugs || '') + '</div>' +
+          '<div class="int-desc">' + (int.description || '') + '</div>' +
+          '<div class="int-action">&#128203; ' + (int.action || '') + '</div>' +
+          '</div>';
+      }
+      cards.innerHTML = html;
+    }
+
+    var dupSection = document.getElementById('dupSection');
+    var dupList = document.getElementById('dupList');
+    if (data.duplications && data.duplications.length > 0) {
+      var dhtml = '';
+      for (var j = 0; j < data.duplications.length; j++) {
+        dhtml += '<div class="dup-item">&#8226; ' + data.duplications[j] + '</div>';
+      }
+      dupList.innerHTML = dhtml;
+      dupSection.style.display = 'block';
+    } else {
+      dupSection.style.display = 'none';
+    }
+
+    var recCard = document.getElementById('recCard');
+    var recText = document.getElementById('recText');
+    if (data.recommendation) {
+      recText.textContent = data.recommendation;
+      recCard.style.display = 'block';
+    } else {
+      recCard.style.display = 'none';
+    }
+
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('interactionResult').style.display = 'block';
+    document.getElementById('checkBtn').disabled = false;
+  })
+  .catch(function(err) {
+    showError('Could not reach the server. (' + err.message + ')');
+  });
+}
+
+function copyReport() {
+  if (!lastReport.summary) return;
+  var r = lastReport;
+  var text = 'PILL TALK — MEDICATION INTERACTION REPORT\n';
+  text += 'Medications: ' + meds.join(', ') + '\n\n';
+  text += 'SUMMARY\n' + r.summary + '\n\n';
+  if (r.interactions && r.interactions.length > 0) {
+    text += 'INTERACTIONS\n';
+    for (var i = 0; i < r.interactions.length; i++) {
+      var int = r.interactions[i];
+      text += '• ' + int.drugs + ' [' + int.severity.toUpperCase() + ']\n';
+      text += '  ' + int.description + '\n';
+      text += '  Action: ' + int.action + '\n\n';
+    }
+  }
+  if (r.recommendation) text += 'RECOMMENDATION\n' + r.recommendation + '\n\n';
+  text += '---\nGenerated by Pill Talk · Always verify with your pharmacist';
+  navigator.clipboard.writeText(text);
+}
+
+document.getElementById('addInput').onkeydown = function(e) {
+  if (e.key === 'Enter') addMed();
+};
+
+// auto-populate from URL param
+var urlParams = new URLSearchParams(window.location.search);
+var drugParam = urlParams.get('drug');
+if (drugParam && meds.indexOf(drugParam) === -1) {
+  meds.push(drugParam);
+  saveMeds();
+}
+
+renderMeds();
+</script>
+</body>
+</html>
