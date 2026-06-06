@@ -91,7 +91,8 @@ Respond ONLY with valid JSON using EXACTLY this schema with ALL fields present:
   "caregiverTips": "2-3 sentences of practical advice for a caregiver helping someone take this medication",
   "caregiverMonitoring": "3-4 bullet points of things a caregiver should actively monitor in the patient",
   "caregiverAdmin": "3 bullet points on how a caregiver can help manage this medication day-to-day",
-  "caregiverWatchFor": "3 bullet points of warning signs a caregiver should watch for requiring doctor or 911"
+  "caregiverWatchFor": "3 bullet points of warning signs a caregiver should watch for requiring doctor or 911",
+  "financialResources": "3-5 bullet points of financial assistance for this drug: manufacturer PAP program name and website, GoodRx tip, NeedyMeds link. Be specific to this drug."
 }}""".format(drug=drug, level=level)
 
     try:
