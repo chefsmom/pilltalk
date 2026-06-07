@@ -7,6 +7,7 @@ var levels=[
   {id:'lv0',val:'simple and clear language - avoid medical jargon, explain technical words in plain terms, use short sentences, assume no medical background',label:'Simple'},
   {id:'lv1',val:'standard adult reading level',label:'Standard'},
   {id:'lv2',val:'clinical professional level with medical terminology',label:'Clinical'}
+];
 
   // Plain language / common misspellings handled by fuzzy match
   ["blood pressure pill","lisinopril","amlodipine","metoprolol"],
