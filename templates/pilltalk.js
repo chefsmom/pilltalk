@@ -86,12 +86,13 @@ function readAloud(){
   }
   if(!lastResult.drugName){alert('Search for a medication first.');return;}
   var r=lastResult;
+  function ts(v){if(!v)return '';if(Array.isArray(v))return v.join('. ');return String(v).replace(/<[^>]+>/g,'');}
   var text='Medication summary for '+r.drugName+'. ';
-  if(r.condition) text+='Used for: '+r.condition+'. ';
-  if(r.how) text+='How to take it: '+r.how.replace(/<[^>]+>/g,'')+'. ';
-  if(r.missedDose) text+='If you miss a dose: '+r.missedDose+'. ';
-  if(r.side) text+='Common side effects: '+r.side.replace(/<[^>]+>/g,'')+'. ';
-  if(r.warn) text+='Important warnings: '+r.warn.replace(/<[^>]+>/g,'')+'. ';
+  if(r.condition) text+='Used for: '+ts(r.condition)+'. ';
+  if(r.how) text+='How to take it: '+ts(r.how)+'. ';
+  if(r.missedDose) text+='If you miss a dose: '+ts(r.missedDose)+'. ';
+  if(r.side) text+='Common side effects: '+ts(r.side)+'. ';
+  if(r.warn) text+='Important warnings: '+ts(r.warn)+'. ';
   var utt=new SpeechSynthesisUtterance(text);
   utt.rate=0.88;utt.pitch=1;utt.lang='en-US';
   var rb=document.getElementById('readBtn');
