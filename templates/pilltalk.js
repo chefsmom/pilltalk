@@ -223,11 +223,13 @@ function generateCounseling(){
 
 function translateToSpanish(){
   var btn=document.getElementById('btnSpanish');
-  btn.disabled=true; btn.innerHTML='Translating...';
+  var btn2=document.getElementById('btnSpanishToggle');
+  if(btn){btn.disabled=true;btn.innerHTML='Translating...';}
+  if(btn2){btn2.disabled=true;btn2.innerHTML='Translating...';}
   fetch('/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:englishResult})})
   .then(function(r){return r.json();})
   .then(function(data){
-    if(data.error){alert('Translation error: '+data.error);spanishMode=false;btn.classList.remove('on-teal');}
+    if(data.error){alert('Translation error: '+data.error);spanishMode=false;if(btn2)btn2.disabled=false;btn.classList.remove('on-teal');}
     else{lastResult=data;populateResult(data);}
     btn.disabled=false;
     btn.innerHTML=spanishMode?'Español On':'Español';
@@ -1010,3 +1012,10 @@ document.getElementById('installBtn').addEventListener('click',function(){
 var params=new URLSearchParams(window.location.search);
 var dp=params.get('drug');
 if(dp){document.getElementById('drugInput').value=dp;generateCounseling();}
+
+// Keep-alive ping every 10 minutes to prevent Render cold starts
+setInterval(function(){
+  fetch('/app',{method:'HEAD'}).catch(function(){});
+}, 600000);
+// Also ping on page load to warm up
+fetch('/app',{method:'HEAD'}).catch(function(){});
