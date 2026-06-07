@@ -9,42 +9,6 @@ var levels=[
   {id:'lv2',val:'clinical professional level with medical terminology',label:'Clinical'}
 ];
 
-  // Plain language / common misspellings handled by fuzzy match
-  ["blood pressure pill","lisinopril","amlodipine","metoprolol"],
-  ["water pill","furosemide","hydrochlorothiazide"],
-  ["sugar pill","metformin","glipizide"],
-  ["cholesterol pill","atorvastatin","simvastatin","rosuvastatin"],
-  ["heart pill","digoxin","metoprolol","carvedilol"],
-  ["nerve pill","gabapentin","pregabalin"],
-  ["sleep pill","zolpidem","trazodone","melatonin"],
-  ["anxiety pill","alprazolam","lorazepam","buspirone"],
-  ["depression pill","sertraline","fluoxetine","escitalopram"],
-  ["allergy pill","cetirizine","loratadine","fexofenadine"],
-  ["pain pill","ibuprofen","acetaminophen","naproxen"],
-  ["stomach pill","omeprazole","pantoprazole","famotidine"],
-  ["thyroid pill","levothyroxine"],
-  ["blood thinner","warfarin","apixaban","rivaroxaban"],
-  ["diabetes shot","insulin","semaglutide","liraglutide"],
-  ["weight loss shot","semaglutide","tirzepatide","liraglutide"],
-  ["ozempic","semaglutide"],["mounjaro","tirzepatide"],["wegovy","semaglutide"],
-  ["victoza","liraglutide"],["trulicity","dulaglutide"],["jardiance","empagliflozin"],
-  ["farxiga","dapagliflozin"],["invokana","canagliflozin"],
-  ["eliquis","apixaban"],["xarelto","rivaroxaban"],["plavix","clopidogrel"],
-  ["lipitor","atorvastatin"],["crestor","rosuvastatin"],["zocor","simvastatin"],
-  ["synthroid","levothyroxine"],["prilosec","omeprazole"],["nexium","esomeprazole"],
-  ["zoloft","sertraline"],["lexapro","escitalopram"],["prozac","fluoxetine"],
-  ["wellbutrin","bupropion"],["cymbalta","duloxetine"],["effexor","venlafaxine"],
-  ["xanax","alprazolam"],["klonopin","clonazepam"],["ativan","lorazepam"],
-  ["ambien","zolpidem"],["seroquel","quetiapine"],["abilify","aripiprazole"],
-  ["humira","adalimumab"],["enbrel","etanercept"],["dupixent","dupilumab"],
-  ["singulair","montelukast"],["spiriva","tiotropium"],["advair","fluticasone salmeterol"],
-  ["ventolin","albuterol"],["proair","albuterol"],["flovent","fluticasone"],
-  ["lasix","furosemide"],["norvasc","amlodipine"],["lopressor","metoprolol"],
-  ["zestril","lisinopril"],["prinivil","lisinopril"],["cozaar","losartan"],
-  ["diovan","valsartan"],["glucophage","metformin"],["januvia","sitagliptin"],
-  ["aricept","donepezil"],["namenda","memantine"],["zofran","ondansetron"],
-];
-
 levels.forEach(function(lv){
   var btn=document.getElementById(lv.id);
   if(!btn) return;
