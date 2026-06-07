@@ -52,7 +52,7 @@ def gemini(prompt, max_tokens=8192):
     }).encode()
     url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY
     req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req) as resp:
+    with urllib.request.urlopen(req, timeout=30) as resp:
         data = json.loads(resp.read())
     text = data["candidates"][0]["content"]["parts"][0]["text"]
     return text.strip().replace("```json", "").replace("```", "").strip()
@@ -67,9 +67,10 @@ def counsel():
     if not drug:
         return jsonify({"error": "No drug name provided."}), 400
 
-    prompt = """You are a clinical pharmacist. The user entered: "{drug}". This may be a brand or generic name, and may contain misspellings or typos. Use your best clinical judgment to identify the intended medication. Handle both brand and generic names.
-Use {level} for ALL text fields.
-Respond ONLY with valid JSON using EXACTLY this schema with ALL fields present:
+    prompt = """You are a clinical pharmacist AI assistant built into Pill Talk, a plain-language medication education app.
+The user entered: "{drug}". This may be a brand name, generic name, plain language description (e.g. "water pill", "blood thinner"), abbreviation, or may contain misspellings. Use your best clinical judgment to identify the intended medication.
+Use {level} for ALL explanatory text fields. Be thorough, accurate, and patient-centered.
+Respond ONLY with a single valid JSON object. No markdown, no explanation, just JSON with EXACTLY this schema:
 {{
   "drugName": "Generic (Brand) or just Generic",
   "isBrand": true or false,
@@ -92,14 +93,32 @@ Respond ONLY with valid JSON using EXACTLY this schema with ALL fields present:
   "caregiverMonitoring": "3-4 bullet points of things a caregiver should actively monitor in the patient",
   "caregiverAdmin": "3 bullet points on how a caregiver can help manage this medication day-to-day",
   "caregiverWatchFor": "3 bullet points of warning signs a caregiver should watch for requiring doctor or 911",
-  "financialResources": "3-5 bullet points of financial assistance for this drug: manufacturer PAP program name and website, GoodRx tip, NeedyMeds link. Be specific to this drug."
+  "financialResources": "3-5 bullet points of financial help specific to this drug: 1) Manufacturer patient assistance program - name, eligibility (income-based), website. 2) GoodRx estimated price range and tip. 3) Any specialty pharmacy programs, copay cards, or foundations. Be specific to this exact medication.",
+  "alternatives": "1-2 sentences on therapeutic alternatives or generic availability if relevant"
 }}""".format(drug=drug, level=level)
 
     try:
-        result = json.loads(gemini(prompt))
+        raw = gemini(prompt)
+        result = json.loads(raw)
+        # Ensure all required fields exist
+        defaults = {"drugName": drug, "isBrand": False, "brandNote": "", "condition": "",
+                   "what": "", "how": "", "missedDose": "", "foodAlcohol": "", "side": "",
+                   "warn": "", "injection": "", "injectionSteps": [], "injectionType": "",
+                   "injectionSite": "", "cost": "", "teachback": [], "caregiverTeachback": [],
+                   "caregiverTips": "", "caregiverMonitoring": "", "caregiverAdmin": "",
+                   "caregiverWatchFor": "", "financialResources": "", "alternatives": ""}
+        for k, v in defaults.items():
+            if k not in result:
+                result[k] = v
         return jsonify(result)
     except urllib.error.HTTPError as e:
-        return jsonify({"error": json.loads(e.read()).get("error", {}).get("message", str(e))}), 502
+        try:
+            msg = json.loads(e.read()).get("error", {}).get("message", str(e))
+        except:
+            msg = str(e)
+        return jsonify({"error": f"AI service error: {msg}"}), 502
+    except json.JSONDecodeError as e:
+        return jsonify({"error": "Could not parse AI response. Please try again."}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -128,10 +147,27 @@ If no interactions found return empty interactions array and safe: true.""".form
         drugs=", ".join(drugs), level=level)
 
     try:
-        result = json.loads(gemini(prompt))
+        raw = gemini(prompt)
+        result = json.loads(raw)
+        # Ensure all required fields exist
+        defaults = {"drugName": drug, "isBrand": False, "brandNote": "", "condition": "",
+                   "what": "", "how": "", "missedDose": "", "foodAlcohol": "", "side": "",
+                   "warn": "", "injection": "", "injectionSteps": [], "injectionType": "",
+                   "injectionSite": "", "cost": "", "teachback": [], "caregiverTeachback": [],
+                   "caregiverTips": "", "caregiverMonitoring": "", "caregiverAdmin": "",
+                   "caregiverWatchFor": "", "financialResources": "", "alternatives": ""}
+        for k, v in defaults.items():
+            if k not in result:
+                result[k] = v
         return jsonify(result)
     except urllib.error.HTTPError as e:
-        return jsonify({"error": json.loads(e.read()).get("error", {}).get("message", str(e))}), 502
+        try:
+            msg = json.loads(e.read()).get("error", {}).get("message", str(e))
+        except:
+            msg = str(e)
+        return jsonify({"error": f"AI service error: {msg}"}), 502
+    except json.JSONDecodeError as e:
+        return jsonify({"error": "Could not parse AI response. Please try again."}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -189,10 +225,27 @@ def translate():
               "Respond ONLY with valid JSON using the exact same schema, translating only the values not the keys: "
               + json.dumps(data))
     try:
-        result = json.loads(gemini(prompt))
+        raw = gemini(prompt)
+        result = json.loads(raw)
+        # Ensure all required fields exist
+        defaults = {"drugName": drug, "isBrand": False, "brandNote": "", "condition": "",
+                   "what": "", "how": "", "missedDose": "", "foodAlcohol": "", "side": "",
+                   "warn": "", "injection": "", "injectionSteps": [], "injectionType": "",
+                   "injectionSite": "", "cost": "", "teachback": [], "caregiverTeachback": [],
+                   "caregiverTips": "", "caregiverMonitoring": "", "caregiverAdmin": "",
+                   "caregiverWatchFor": "", "financialResources": "", "alternatives": ""}
+        for k, v in defaults.items():
+            if k not in result:
+                result[k] = v
         return jsonify(result)
     except urllib.error.HTTPError as e:
-        return jsonify({"error": json.loads(e.read()).get("error", {}).get("message", str(e))}), 502
+        try:
+            msg = json.loads(e.read()).get("error", {}).get("message", str(e))
+        except:
+            msg = str(e)
+        return jsonify({"error": f"AI service error: {msg}"}), 502
+    except json.JSONDecodeError as e:
+        return jsonify({"error": "Could not parse AI response. Please try again."}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
