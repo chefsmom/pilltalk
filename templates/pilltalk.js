@@ -1,4 +1,50 @@
 
+function startVoice(){
+  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){
+    alert('Voice input not supported. Try Safari on iPhone or Chrome on Android.');return;
+  }
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  var r=new SR();
+  r.lang='en-US';r.continuous=false;r.interimResults=false;
+  var btn=document.getElementById('voiceBtn');
+  if(btn){btn.innerHTML='&#128308;';btn.style.background='#ef4444';btn.style.color='#fff';}
+  r.onresult=function(e){
+    var txt=e.results[0][0].transcript;
+    document.getElementById('drugInput').value=txt;
+    showSuggestions(txt);
+    if(btn){btn.innerHTML='&#127908;';btn.style.background='';btn.style.color='';}
+    generateCounseling();
+  };
+  r.onerror=r.onend=function(){
+    if(btn){btn.innerHTML='&#127908;';btn.style.background='';btn.style.color='';}
+  };
+  r.start();
+}
+
+function readAloud(){
+  if(!window.speechSynthesis){alert('Text-to-speech not supported in this browser.');return;}
+  if(window.speechSynthesis.speaking){
+    window.speechSynthesis.cancel();
+    var rb=document.getElementById('readBtn');
+    if(rb)rb.innerHTML='&#128266; Read';
+    return;
+  }
+  if(!lastResult.drugName){alert('Search for a medication first.');return;}
+  var r=lastResult;
+  var text='Medication summary for '+r.drugName+'. ';
+  if(r.condition) text+='Used for: '+r.condition+'. ';
+  if(r.how) text+='How to take it: '+r.how.replace(/<[^>]+>/g,'')+'. ';
+  if(r.missedDose) text+='If you miss a dose: '+r.missedDose+'. ';
+  if(r.side) text+='Common side effects: '+r.side.replace(/<[^>]+>/g,'')+'. ';
+  if(r.warn) text+='Important warnings: '+r.warn.replace(/<[^>]+>/g,'')+'. ';
+  var utt=new SpeechSynthesisUtterance(text);
+  utt.rate=0.88;utt.pitch=1;utt.lang='en-US';
+  var rb=document.getElementById('readBtn');
+  if(rb)rb.innerHTML='&#9646;&#9646; Stop';
+  utt.onend=function(){if(rb)rb.innerHTML='&#128266; Read';};
+  window.speechSynthesis.speak(utt);
+}
+
 var currentLevel='simple and clear language - avoid medical jargon, explain technical words in plain terms, use short sentences, assume no medical background';
 var caregiverMode=false,largeText=false,spanishMode=false;
 var lastResult={},englishResult={},currentDrug='';
