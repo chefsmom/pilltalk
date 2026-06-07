@@ -1,4 +1,59 @@
 
+var PRONUNCIATION={
+  "acetaminophen":"a-SEET-a-MIN-oh-fen","ibuprofen":"eye-byoo-PRO-fen",
+  "amoxicillin":"a-mox-i-SIL-in","azithromycin":"a-ZITH-roe-MY-sin",
+  "atorvastatin":"a-TOR-va-STAT-in","lisinopril":"ly-SIN-oh-pril",
+  "metformin":"MET-for-min","amlodipine":"am-LOH-di-peen",
+  "metoprolol":"me-TOE-proe-lol","omeprazole":"oh-MEP-ra-zole",
+  "simvastatin":"SIM-va-STAT-in","losartan":"loe-SAR-tan",
+  "albuterol":"al-BYOO-ter-ole","gabapentin":"ga-BAP-en-tin",
+  "sertraline":"SER-tra-leen","levothyroxine":"lee-voe-thy-ROX-een",
+  "fluoxetine":"floo-OX-e-teen","escitalopram":"es-SY-tal-oh-pram",
+  "bupropion":"byoo-PROE-pee-on","duloxetine":"doo-LOX-e-teen",
+  "venlafaxine":"ven-la-FAX-een","alprazolam":"al-PRAYZ-oh-lam",
+  "clonazepam":"kloe-NAZ-e-pam","lorazepam":"lor-AZ-e-pam",
+  "zolpidem":"ZOLE-pi-dem","quetiapine":"kwe-TY-a-peen",
+  "aripiprazole":"a-RIP-i-PRAE-zole","risperidone":"ris-PER-i-done",
+  "lamotrigine":"la-MOE-tri-jeen","levetiracetam":"lee-ve-tye-RA-se-tam",
+  "furosemide":"fyoor-OH-se-mide","spironolactone":"speer-on-oh-LAK-tone",
+  "warfarin":"WOR-far-in","apixaban":"a-PIX-a-ban",
+  "rivaroxaban":"ri-va-ROX-a-ban","clopidogrel":"kloe-PID-oh-grel",
+  "semaglutide":"sem-a-GLOO-tide","liraglutide":"lir-a-GLOO-tide",
+  "tirzepatide":"ter-ZEP-a-tide","sitagliptin":"sit-a-GLIP-tin",
+  "empagliflozin":"em-pa-gli-FLOE-zin","dapagliflozin":"dap-a-gli-FLOE-zin",
+  "glipizide":"GLIP-i-zide","prednisone":"PRED-ni-sone",
+  "budesonide":"byoo-DES-oh-nide","fluticasone":"floo-TIK-a-sone",
+  "montelukast":"mon-te-LOO-kast","tiotropium":"ty-oh-TROE-pee-um",
+  "adalimumab":"a-da-LIM-yoo-mab","dupilumab":"doo-PIL-yoo-mab",
+  "methotrexate":"meth-oh-TREX-ate","hydroxychloroquine":"hy-drox-ee-KLOR-oh-kwin",
+  "alendronate":"a-LEN-droe-nate","donepezil":"doe-NEP-e-zil",
+  "ondansetron":"on-DAN-se-tron","pantoprazole":"pan-TOE-pra-zole",
+  "esomeprazole":"ee-so-MEP-ra-zole","cetirizine":"se-TIR-i-zeen",
+  "loratadine":"lor-AT-a-deen","fexofenadine":"fex-oh-FEN-a-deen",
+  "diphenhydramine":"dye-fen-HY-dra-meen","doxycycline":"dox-i-SY-kleen",
+  "ciprofloxacin":"sip-roe-FLOX-a-sin","levofloxacin":"lee-voe-FLOX-a-sin",
+  "nitrofurantoin":"ny-troe-fyoor-AN-toyn","metronidazole":"me-troe-NI-da-zole",
+  "fluconazole":"floo-KON-a-zole","acyclovir":"a-SY-kloe-veer",
+  "valacyclovir":"val-a-SY-kloe-veer","oseltamivir":"os-el-TAM-i-veer",
+  "naltrexone":"nal-TREX-one","buprenorphine":"byoo-pre-NOR-feen",
+  "varenicline":"var-EN-i-kleen","methylphenidate":"meth-il-FEN-i-date",
+  "lisdexamfetamine":"lis-dex-am-FET-a-meen","atomoxetine":"a-TOE-mox-e-teen",
+  "colchicine":"KOL-chi-seen","allopurinol":"al-oh-PYOOR-i-nol",
+  "tamsulosin":"tam-SOO-loe-sin","sildenafil":"sil-DEN-a-fil",
+  "tadalafil":"ta-DAL-a-fil","finasteride":"fi-NAS-ter-ide",
+  "progesterone":"proe-JES-te-rone","tamoxifen":"ta-MOX-i-fen",
+  "letrozole":"LET-roe-zole","anastrozole":"a-NAS-troe-zole",
+  "imatinib":"i-MAT-i-nib","pembrolizumab":"pem-BROE-li-zoo-mab",
+  "nirmatrelvir":"neer-MA-trel-veer","rosuvastatin":"roe-SOO-va-STAT-in",
+  "pregabalin":"PREG-a-ba-lin","duloxetine":"doo-LOX-e-teen",
+  "citalopram":"si-TAL-oh-pram","paroxetine":"pa-ROX-e-teen"
+};
+
+function getPronunciation(name){
+  if(!name) return null;
+  return PRONUNCIATION[name.toLowerCase().trim()]||null;
+}
+
 function startVoice(){
   if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){
     alert('Voice input not supported. Try Safari on iPhone or Chrome on Android.');return;
@@ -136,6 +191,8 @@ function toBullets(val){
 function populateResult(data){
   var lv=levels.filter(function(l){return l.val===currentLevel})[0];
   document.getElementById('heroName').textContent=data.drugName||currentDrug;
+  var pronEl=document.getElementById('heroPronounce');
+  if(pronEl){var p=getPronunciation(data.drugName||currentDrug);pronEl.textContent=p?'Say it: '+p:'';}
   document.getElementById('heroCondition').textContent=data.condition?data.condition.split('.')[0]:'';
   document.getElementById('heroBadge').textContent=lv?lv.label:'';
   document.getElementById('heroBrand').style.display=data.isBrand?'block':'none';
