@@ -124,10 +124,9 @@ footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--bord
 
   <div class="levels">
     <span>Reading level:</span>
-    <button class="lv active" id="lv0">Simple</button>
-    <button class="lv" id="lv1">6th grade</button>
-    <button class="lv" id="lv2">standard</button>
-    <button class="lv" id="lv3">clinical</button>
+    <button class="level-seg on" id="lv0">Simple</button>
+    <button class="level-seg" id="lv1">Standard</button>
+    <button class="level-seg" id="lv2">Clinical</button>
   </div>
 
   <div class="error" id="errorBox"></div>
@@ -220,9 +219,8 @@ var currentTab = 'overview';
 // level buttons
 var levels = [
   {id:'lv0', val:'simple and clear language — avoid medical jargon, explain any necessary technical words in plain terms, use short sentences, assume no medical background'},
-  {id:'lv1', val:'6th grade reading level'},
+  {id:'lv1', val:'standard adult reading level'},
   {id:'lv2', val:'standard adult reading level'},
-  {id:'lv3', val:'clinical professional level with medical terminology'}
 ];
 for (var i = 0; i < levels.length; i++) {
   (function(lv) {
