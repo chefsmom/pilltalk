@@ -192,7 +192,7 @@ function populateResult(data){
   var lv=levels.filter(function(l){return l.val===currentLevel})[0];
   document.getElementById('heroName').textContent=data.drugName||currentDrug;
   var pronEl=document.getElementById('heroPronounce');
-  if(pronEl){var p=getPronunciation(data.drugName||currentDrug);pronEl.textContent=p?'Say it: '+p:'';}
+  if(pronEl){var dn=(data.drugName||currentDrug).split('(')[0].trim().toLowerCase();var p=getPronunciation(dn)||getPronunciation(data.drugName||currentDrug);pronEl.textContent=p?'Say it: '+p:'';}
   document.getElementById('heroCondition').textContent=data.condition?data.condition.split('.')[0]:'';
   document.getElementById('heroBadge').textContent=lv?lv.label:'';
   document.getElementById('heroBrand').style.display=data.isBrand?'block':'none';
