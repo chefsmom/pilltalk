@@ -229,15 +229,19 @@ function translateToSpanish(){
   fetch('/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:englishResult})})
   .then(function(r){return r.json();})
   .then(function(data){
-    if(data.error){alert('Translation error: '+data.error);spanishMode=false;if(btn2)btn2.disabled=false;btn.classList.remove('on-teal');}
+    if(data.error){alert('Translation error: '+data.error);spanishMode=false;}
     else{lastResult=data;populateResult(data);}
-    btn.disabled=false;
-    btn.innerHTML=spanishMode?'Español On':'Español';
+    if(btn){btn.disabled=false;btn.innerHTML=spanishMode?'ES On':'ES';}
+    if(btn2){btn2.disabled=false;btn2.innerHTML=spanishMode?'ES On':'Español';}
     document.getElementById('spinner').style.display='none';
     document.getElementById('result').style.display='block';
     document.getElementById('goBtn').disabled=false;
   })
-  .catch(function(err){alert('Translation failed: '+err.message);btn.disabled=false;});
+  .catch(function(err){
+    alert('Translation failed: '+err.message);
+    if(btn){btn.disabled=false;}
+    if(btn2){btn2.disabled=false;}
+  });
 }
 
 function saveToMyMeds(){
