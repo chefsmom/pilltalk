@@ -149,16 +149,6 @@ If no interactions found return empty interactions array and safe: true.""".form
     try:
         raw = gemini(prompt)
         result = json.loads(raw)
-        # Ensure all required fields exist
-        defaults = {"drugName": drug, "isBrand": False, "brandNote": "", "condition": "",
-                   "what": "", "how": "", "missedDose": "", "foodAlcohol": "", "side": "",
-                   "warn": "", "injection": "", "injectionSteps": [], "injectionType": "",
-                   "injectionSite": "", "cost": "", "teachback": [], "caregiverTeachback": [],
-                   "caregiverTips": "", "caregiverMonitoring": "", "caregiverAdmin": "",
-                   "caregiverWatchFor": "", "financialResources": "", "alternatives": ""}
-        for k, v in defaults.items():
-            if k not in result:
-                result[k] = v
         return jsonify(result)
     except urllib.error.HTTPError as e:
         try:
