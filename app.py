@@ -266,6 +266,17 @@ def service_worker():
 def offline():
     return send_from_directory("templates", "404.html")
 
+
+@app.route("/autocomplete")
+def autocomplete():
+    query = request.args.get("q", "").lower().strip()
+    if not query or len(query) < 2:
+        return json.dumps([])
+    with open(os.path.join(os.path.dirname(__file__), "drug_names.json")) as f:
+        names = json.load(f)
+    results = [n for n in names if query in n.lower()]
+    return json.dumps(results[:10])
+
 @app.route("/share/<drug>")
 def share_drug(drug):
     from flask import redirect
