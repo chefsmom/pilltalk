@@ -219,33 +219,21 @@ def translate():
     if not API_KEY:
         return jsonify({"error": "GEMINI_API_KEY not set."}), 500
     body = request.get_json()
-    data = body.get("data", {})
+    text = body.get("text", "")
+    if not text:
+        return jsonify({"error": "No text provided"}), 400
     prompt = ("Translate the following medication information from English to plain conversational Spanish. "
-              "Preserve medical accuracy. Keep bullet point formatting. "
-              "Respond ONLY with valid JSON using the exact same schema, translating only the values not the keys: "
-              + json.dumps(data))
+              "Preserve medical accuracy. Respond ONLY with the translated text and nothing else: "
+              + text)
     try:
-        raw = gemini(prompt)
-        result = json.loads(raw)
-        # Ensure all required fields exist
-        defaults = {"drugName": drug, "isBrand": False, "brandNote": "", "condition": "",
-                   "what": "", "how": "", "missedDose": "", "foodAlcohol": "", "side": "",
-                   "warn": "", "injection": "", "injectionSteps": [], "injectionType": "",
-                   "injectionSite": "", "cost": "", "teachback": [], "caregiverTeachback": [],
-                   "caregiverTips": "", "caregiverMonitoring": "", "caregiverAdmin": "",
-                   "caregiverWatchFor": "", "financialResources": "", "alternatives": ""}
-        for k, v in defaults.items():
-            if k not in result:
-                result[k] = v
-        return jsonify(result)
+        translated = gemini(prompt)
+        return jsonify({"translated_text": translated})
     except urllib.error.HTTPError as e:
         try:
             msg = json.loads(e.read()).get("error", {}).get("message", str(e))
         except:
             msg = str(e)
         return jsonify({"error": f"AI service error: {msg}"}), 502
-    except json.JSONDecodeError as e:
-        return jsonify({"error": "Could not parse AI response. Please try again."}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
