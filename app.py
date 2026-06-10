@@ -246,11 +246,72 @@ def offline():
     return send_from_directory("templates", "404.html")
 
 
+PLAIN_LANGUAGE_MAP = {
+    "water pill": ["furosemide", "Lasix", "hydrochlorothiazide", "HCTZ", "chlorthalidone", "torsemide", "bumetanide", "indapamide", "metolazone", "spironolactone"],
+    "blood thinner": ["warfarin", "Coumadin", "apixaban", "Eliquis", "rivaroxaban", "Xarelto", "dabigatran", "Pradaxa", "clopidogrel", "Plavix", "aspirin", "enoxaparin", "Lovenox"],
+    "blood pressure pill": ["lisinopril", "amlodipine", "metoprolol", "losartan", "hydrochlorothiazide", "atenolol", "carvedilol", "valsartan", "ramipril", "benazepril"],
+    "heart pill": ["metoprolol", "carvedilol", "lisinopril", "digoxin", "amiodarone", "warfarin", "furosemide", "spironolactone", "atorvastatin", "aspirin"],
+    "cholesterol pill": ["atorvastatin", "Lipitor", "rosuvastatin", "Crestor", "simvastatin", "Zocor", "pravastatin", "lovastatin", "ezetimibe", "Zetia"],
+    "statin": ["atorvastatin", "Lipitor", "rosuvastatin", "Crestor", "simvastatin", "Zocor", "pravastatin", "lovastatin", "pitavastatin", "fluvastatin"],
+    "sugar pill": ["metformin", "Glucophage", "glipizide", "glimepiride", "sitagliptin", "Januvia", "empagliflozin", "Jardiance", "semaglutide", "Ozempic"],
+    "diabetes pill": ["metformin", "Glucophage", "glipizide", "glimepiride", "sitagliptin", "Januvia", "empagliflozin", "Jardiance", "dapagliflozin", "Farxiga"],
+    "diabetes injection": ["semaglutide", "Ozempic", "Wegovy", "liraglutide", "Victoza", "dulaglutide", "Trulicity", "tirzepatide", "Mounjaro", "insulin glargine", "Lantus"],
+    "weight loss injection": ["semaglutide", "Ozempic", "Wegovy", "tirzepatide", "Mounjaro", "Zepbound", "liraglutide", "Saxenda"],
+    "weight loss pill": ["orlistat", "Xenical", "phentermine", "topiramate", "naltrexone bupropion", "Contrave"],
+    "thyroid pill": ["levothyroxine", "Synthroid", "Levoxyl", "Tirosint", "liothyronine", "Cytomel", "Armour Thyroid"],
+    "sleeping pill": ["zolpidem", "Ambien", "eszopiclone", "Lunesta", "zaleplon", "Sonata", "trazodone", "melatonin", "diphenhydramine", "suvorexant", "Belsomra"],
+    "anxiety pill": ["alprazolam", "Xanax", "lorazepam", "Ativan", "clonazepam", "Klonopin", "buspirone", "sertraline", "Zoloft", "escitalopram", "Lexapro"],
+    "depression pill": ["sertraline", "Zoloft", "escitalopram", "Lexapro", "fluoxetine", "Prozac", "bupropion", "Wellbutrin", "duloxetine", "Cymbalta", "venlafaxine", "Effexor"],
+    "antidepressant": ["sertraline", "Zoloft", "escitalopram", "Lexapro", "fluoxetine", "Prozac", "bupropion", "Wellbutrin", "duloxetine", "Cymbalta", "mirtazapine", "Remeron"],
+    "nerve pill": ["gabapentin", "Neurontin", "pregabalin", "Lyrica", "duloxetine", "Cymbalta", "amitriptyline", "carbamazepine", "Tegretol"],
+    "seizure pill": ["levetiracetam", "Keppra", "lamotrigine", "Lamictal", "phenytoin", "Dilantin", "valproate", "Depakote", "carbamazepine", "Tegretol", "topiramate", "Topamax"],
+    "pain pill": ["ibuprofen", "Advil", "acetaminophen", "Tylenol", "naproxen", "Aleve", "oxycodone", "hydrocodone", "tramadol", "gabapentin", "Neurontin"],
+    "allergy pill": ["cetirizine", "Zyrtec", "loratadine", "Claritin", "fexofenadine", "Allegra", "diphenhydramine", "Benadryl", "levocetirizine", "Xyzal"],
+    "stomach acid pill": ["omeprazole", "Prilosec", "esomeprazole", "Nexium", "pantoprazole", "Protonix", "lansoprazole", "Prevacid", "famotidine", "Pepcid"],
+    "acid reflux pill": ["omeprazole", "Prilosec", "esomeprazole", "Nexium", "pantoprazole", "Protonix", "lansoprazole", "Prevacid", "famotidine", "Pepcid"],
+    "heartburn pill": ["omeprazole", "Prilosec", "esomeprazole", "Nexium", "famotidine", "Pepcid", "calcium carbonate", "Tums", "ranitidine"],
+    "steroid pill": ["prednisone", "prednisolone", "dexamethasone", "methylprednisolone", "Medrol", "hydrocortisone"],
+    "antibiotic pill": ["amoxicillin", "azithromycin", "Zithromax", "doxycycline", "cephalexin", "Keflex", "ciprofloxacin", "Cipro", "trimethoprim sulfamethoxazole", "Bactrim"],
+    "inhaler": ["albuterol", "ProAir", "Ventolin", "fluticasone", "Flovent", "budesonide", "Pulmicort", "Advair", "Symbicort", "Breo", "Spiriva", "tiotropium"],
+    "rescue inhaler": ["albuterol", "ProAir HFA", "Ventolin HFA", "Proventil", "levalbuterol", "Xopenex"],
+    "mood stabilizer": ["lithium", "Lithobid", "valproate", "Depakote", "lamotrigine", "Lamictal", "carbamazepine", "Tegretol", "quetiapine", "Seroquel"],
+    "antipsychotic": ["quetiapine", "Seroquel", "aripiprazole", "Abilify", "olanzapine", "Zyprexa", "risperidone", "Risperdal", "lurasidone", "Latuda"],
+    "adhd pill": ["methylphenidate", "Ritalin", "Concerta", "amphetamine", "Adderall", "lisdexamfetamine", "Vyvanse", "atomoxetine", "Strattera"],
+    "birth control pill": ["norethindrone", "levonorgestrel", "Yaz", "Yasmin", "Lo Loestrin", "Junel", "Ortho Tri-Cyclen", "Sprintec"],
+    "purple pill": ["esomeprazole", "Nexium"],
+    "little white pill": ["lisinopril", "metformin", "atorvastatin", "levothyroxine", "metoprolol"],
+    "blood sugar medicine": ["metformin", "Glucophage", "insulin", "glipizide", "sitagliptin", "Januvia", "empagliflozin", "Jardiance"],
+    "gout pill": ["allopurinol", "Zyloprim", "febuxostat", "Uloric", "colchicine", "Colcrys", "indomethacin"],
+    "arthritis pill": ["methotrexate", "hydroxychloroquine", "Plaquenil", "sulfasalazine", "leflunomide", "Arava", "adalimumab", "Humira", "etanercept", "Enbrel"],
+    "osteoporosis pill": ["alendronate", "Fosamax", "risedronate", "Actonel", "ibandronate", "Boniva", "denosumab", "Prolia"],
+    "migraine pill": ["sumatriptan", "Imitrex", "rizatriptan", "Maxalt", "topiramate", "Topamax", "propranolol", "amitriptyline", "ubrogepant", "Ubrelvy"],
+    "diuretic": ["furosemide", "Lasix", "hydrochlorothiazide", "HCTZ", "chlorthalidone", "spironolactone", "torsemide", "bumetanide"],
+    "beta blocker": ["metoprolol", "atenolol", "carvedilol", "bisoprolol", "propranolol", "nebivolol", "labetalol"],
+    "ace inhibitor": ["lisinopril", "enalapril", "ramipril", "benazepril", "captopril", "fosinopril", "quinapril"],
+    "arb": ["losartan", "valsartan", "irbesartan", "olmesartan", "candesartan", "telmisartan", "azilsartan"],
+    "ssri": ["sertraline", "Zoloft", "fluoxetine", "Prozac", "escitalopram", "Lexapro", "paroxetine", "Paxil", "citalopram", "Celexa"],
+    "snri": ["venlafaxine", "Effexor", "duloxetine", "Cymbalta", "desvenlafaxine", "Pristiq", "levomilnacipran", "Fetzima"],
+    "glp-1": ["semaglutide", "Ozempic", "Wegovy", "liraglutide", "Victoza", "dulaglutide", "Trulicity", "exenatide", "Byetta", "tirzepatide", "Mounjaro"],
+    "ppi": ["omeprazole", "Prilosec", "esomeprazole", "Nexium", "pantoprazole", "Protonix", "lansoprazole", "Prevacid", "rabeprazole", "Aciphex"],
+    "blood clot medicine": ["warfarin", "Coumadin", "apixaban", "Eliquis", "rivaroxaban", "Xarelto", "enoxaparin", "Lovenox", "heparin"],
+    "nausea pill": ["ondansetron", "Zofran", "promethazine", "Phenergan", "metoclopramide", "Reglan", "prochlorperazine", "Compazine"],
+    "constipation pill": ["polyethylene glycol", "MiraLax", "bisacodyl", "Dulcolax", "docusate", "Colace", "psyllium", "Metamucil", "lactulose"],
+    "diarrhea pill": ["loperamide", "Imodium", "bismuth subsalicylate", "Pepto-Bismol", "diphenoxylate", "Lomotil"],
+    "infection pill": ["amoxicillin", "azithromycin", "doxycycline", "cephalexin", "ciprofloxacin", "trimethoprim sulfamethoxazole", "Bactrim", "metronidazole", "Flagyl"],
+}
+
 @app.route("/autocomplete")
 def autocomplete():
     query = request.args.get("q", "").lower().strip()
     if not query or len(query) < 2:
         return json.dumps([])
+    
+    # Check plain language map first
+    for term, drugs in PLAIN_LANGUAGE_MAP.items():
+        if query in term or term in query or term.startswith(query):
+            return json.dumps(drugs[:10])
+    
+    # Fall back to regular name matching
     with open(os.path.join(os.path.dirname(__file__), "drug_names.json")) as f:
         names = json.load(f)
     results = [n for n in names if query in n.lower()]
