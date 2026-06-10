@@ -94,7 +94,8 @@ Respond ONLY with a single valid JSON object. No markdown, no explanation, just 
   "caregiverAdmin": "3 bullet points on how a caregiver can help manage this medication day-to-day",
   "caregiverWatchFor": "3 bullet points of warning signs a caregiver should watch for requiring doctor or 911",
   "financialResources": "3-5 bullet points of financial help specific to this drug: 1) Manufacturer patient assistance program - name, eligibility (income-based), website. 2) GoodRx estimated price range and tip. 3) Any specialty pharmacy programs, copay cards, or foundations. Be specific to this exact medication.",
-  "alternatives": "1-2 sentences on therapeutic alternatives or generic availability if relevant"
+  "alternatives": "1-2 sentences on therapeutic alternatives or generic availability if relevant",
+  "pregnancyWarning": "If this medication has known risks during pregnancy or breastfeeding, provide a 1-2 sentence plain language warning and recommend consulting a doctor or calling MotherToBaby at 1-866-626-6847. If generally considered safe or low risk, say so briefly. Never leave this empty."
 }}""".format(drug=drug, level=level)
 
     try:
