@@ -326,6 +326,26 @@ def share_drug(drug):
 def not_found(e):
     return send_from_directory("templates", "404.html"), 404
 
+
+@app.route('/prn-ask', methods=['POST'])
+def prn_ask():
+    try:
+        data = request.get_json()
+        messages = data.get('messages', [])
+        system_prompt = data.get('system', '')
+        if not messages:
+            return jsonify({'error': 'No messages provided'}), 400
+        response = anthropic_client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=2048,
+            system=system_prompt,
+            messages=messages
+        )
+        reply = response.content[0].text
+        return jsonify({'response': reply})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == "__main__":
     if not API_KEY:
         print("GEMINI_API_KEY not set.")
